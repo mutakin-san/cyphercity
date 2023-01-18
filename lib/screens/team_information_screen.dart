@@ -1,0 +1,235 @@
+import 'dart:ui';
+
+import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/widgets/background_gradient.dart';
+import 'package:cyphercity/widgets/brand_logo.dart';
+import 'package:flutter/material.dart';
+
+class TeamInformationScreen extends StatelessWidget {
+  const TeamInformationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const BackgroundGradient(),
+        SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 16),
+                    const BrandLogo(width: 50, height: 50),
+                    Text(
+                      "SMPN 2 CIAMIS",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 50),
+                              decoration: BoxDecoration(
+                                color: Color.gray,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(30),
+                                  topRight: Radius.circular(30),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      color: Color.purple,
+                                      image: const DecorationImage(
+                                          image: NetworkImage(
+                                              "https://th.bing.com/th/id/OIP.Y_6f7ZGEjjN9CDqfSQTRXQHaEK?pid=ImgDet&rs=1"),
+                                          fit: BoxFit.cover),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(30),
+                                        topRight: Radius.circular(30),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        Text(
+                                          "Biodata Team : ",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(height: 1.5),
+                                        ),
+                                        Text(
+                                          "Lorem ipsum dolor amet ",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(height: 1.5),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        MaterialButton(
+                                          onPressed: () {},
+                                          color: Colors.white,
+                                          elevation: 10,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: const Text(
+                                              "Edit Your Biodata Team"),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Text(
+                                          "Achievement : ",
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                  height: 1.5,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Flexible(
+                                              flex: 1,
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    child: const Icon(
+                                                        Icons.sports_soccer,
+                                                        size: 45),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text("Futsal\nTeam",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.copyWith()),
+                                                ],
+                                              ),
+                                            ),
+                                            Flexible(
+                                              flex: 1,
+                                              child: GestureDetector(
+                                                onTap: () {},
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      child: const Icon(
+                                                          Icons
+                                                              .sports_volleyball,
+                                                          size: 45),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text("Vollyball\nTeam",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith()),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Flexible(
+                                              flex: 1,
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    child: const Icon(
+                                                        Icons.sports_basketball,
+                                                        size: 45),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text("Basketball\nTeam",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.copyWith()),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.amber,
+                              radius: 60,
+                              child: FlutterLogo(size: 90),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+}
