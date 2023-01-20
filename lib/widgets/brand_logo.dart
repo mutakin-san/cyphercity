@@ -12,9 +12,11 @@ class BrandLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: FlutterLogoDecoration(style: FlutterLogoStyle.stacked, textColor: isDark ? Colors.black : Colors.white),
       width: width,
       height: height,
+      decoration: const BoxDecoration(
+        image: DecorationImage(image: AssetImage("assets/images/cc_logo.png"))
+      ),
     );
   }
 }

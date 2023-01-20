@@ -1,12 +1,11 @@
 import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/screens/create_team_screen.dart';
 import 'package:cyphercity/screens/login_screen.dart';
 import 'package:cyphercity/screens/register_screen.dart';
 import 'package:cyphercity/screens/splash_screen.dart';
 import 'package:cyphercity/screens/team_information_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:supercharged/supercharged.dart';
 
-import 'screens/home_screen.dart';
 import 'screens/main_screen.dart';
 
 void main() {
@@ -37,10 +36,11 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/' :(context) => const SplashScreen(),
-        '/login' : (context) => const LoginScreen(),
-        '/register' : (context) => const RegisterScreen(),
+        '/login' : (context) => LoginScreen(),
+        '/register' : (context) => RegisterScreen(),
         '/main' : (context) => const MainScreen(),
         '/team-information' : (context) => const TeamInformationScreen(),
+        '/edit-biodata' :(context) => CreateTeamScreen()
 
       },
     );

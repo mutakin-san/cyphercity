@@ -3,8 +3,13 @@ import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/cc_text_form_field.dart';
+
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
+
+  final TextEditingController usernameCtrl = TextEditingController();
+  final TextEditingController passwordCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,48 +40,29 @@ class LoginScreen extends StatelessWidget {
                                       .titleMedium
                                       ?.copyWith(color: Colors.white)),
                               const SizedBox(height: 16),
-                              TextFormField(
-                                  keyboardType: TextInputType.text,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      prefixIcon: const Icon(
-                                          Icons.account_circle_outlined),
-                                      hintText: "User Name",
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 10))),
+                              CCTextFormField(
+                                controller: usernameCtrl,
+                                label: "Username",
+                                hintText: "User Name",
+                                icon: const Icon(Icons.account_circle_outlined),
+                                textInputAction: TextInputAction.next,
+                              ),
                               const SizedBox(height: 16),
-                              TextFormField(
-                                  textInputAction: TextInputAction.done,
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      prefixIcon:
-                                          const Icon(Icons.lock_outlined),
-                                      hintText: "Password",
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 10))),
+                              CCTextFormField(
+                                controller: passwordCtrl,
+                                icon: const Icon(Icons.lock_outlined),
+                                textInputAction: TextInputAction.done,
+                                isObsecure: true,
+                                label: "Password",
+                                hintText: "Password",
+                              ),
                               const SizedBox(height: 16),
-                              MaterialButton(
-                                  color: Color.red,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100)),
-                                  minWidth: 150,
-                                  height: 45,
-                                  textColor: Colors.white,
-                                  onPressed: () {
-                                     Navigator.pushNamed(context, '/main');
-                                  },
-                                  child: const Text("Log In")),
+                              CCMaterialRedButton(
+                                text: "Log In",
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/main');
+                                },
+                              ),
                               const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -123,5 +109,28 @@ class LoginScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class CCMaterialRedButton extends StatelessWidget {
+  const CCMaterialRedButton({
+    Key? key,
+    required this.onPressed,
+    required this.text,
+  }) : super(key: key);
+
+  final VoidCallback? onPressed;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+        color: Color.red,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        minWidth: 150,
+        height: 45,
+        textColor: Colors.white,
+        onPressed: onPressed,
+        child: Text(text));
   }
 }

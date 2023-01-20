@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:cyphercity/consts/colors.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
@@ -84,7 +83,9 @@ class TeamInformationScreen extends StatelessWidget {
                                         ),
                                         const SizedBox(height: 16),
                                         MaterialButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.pushNamed(context, '/edit-biodata');
+                                          },
                                           color: Colors.white,
                                           elevation: 10,
                                           shape: RoundedRectangleBorder(
@@ -210,14 +211,14 @@ class TeamInformationScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const Positioned(
+                           Positioned(
                             top: 0,
                             left: 0,
                             right: 0,
                             child: CircleAvatar(
-                              backgroundColor: Colors.amber,
                               radius: 60,
-                              child: FlutterLogo(size: 90),
+                              backgroundColor: Colors.white,
+                              child: Image.asset("assets/images/cc_logo_futsal.png", width: 80),
                             ),
                           )
                         ],
