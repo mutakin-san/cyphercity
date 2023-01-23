@@ -1,5 +1,6 @@
 
 import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/screens/add_team_screen.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
@@ -113,37 +114,44 @@ class TeamInformationScreen extends StatelessWidget {
                                           children: [
                                             Flexible(
                                               flex: 1,
-                                              child: Column(
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pushNamed(context, '/add-team', arguments: AddType.Futsal);
+                                                },
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                10),
+                                                      ),
+                                                      child: const Icon(
+                                                          Icons.sports_soccer,
+                                                          size: 45),
                                                     ),
-                                                    child: const Icon(
-                                                        Icons.sports_soccer,
-                                                        size: 45),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text("Futsal\nTeam",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.copyWith()),
-                                                ],
+                                                    const SizedBox(height: 8),
+                                                    Text("Futsal\nTeam",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith()),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                             Flexible(
                                               flex: 1,
                                               child: GestureDetector(
-                                                onTap: () {},
+                                                onTap: () {
+                                                  Navigator.pushNamed(context, '/add-team', arguments: AddType.Vollyball);
+                                                },
                                                 child: Column(
                                                   children: [
                                                     Container(
@@ -175,31 +183,36 @@ class TeamInformationScreen extends StatelessWidget {
                                             ),
                                             Flexible(
                                               flex: 1,
-                                              child: Column(
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
+                                              child: GestureDetector(
+                                                onTap: (){
+                                                  Navigator.pushNamed(context, '/add-team', arguments: AddType.Basketball);
+                                                },
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              16),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                10),
+                                                      ),
+                                                      child: const Icon(
+                                                          Icons.sports_basketball,
+                                                          size: 45),
                                                     ),
-                                                    child: const Icon(
-                                                        Icons.sports_basketball,
-                                                        size: 45),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text("Basketball\nTeam",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.copyWith()),
-                                                ],
+                                                    const SizedBox(height: 8),
+                                                    Text("Basketball\nTeam",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith()),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ],

@@ -5,7 +5,9 @@ import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+  HomeScreen({super.key, required this.onCreateTeamClicked});
+
+  final VoidCallback onCreateTeamClicked;
 
   final CarouselController _controller = CarouselController();
 
@@ -84,8 +86,7 @@ class HomeScreen extends StatelessWidget {
                   Flexible(
                     flex: 1,
                     child: GestureDetector(
-                      onTap: () {
-                      },
+                      onTap: onCreateTeamClicked,
                       child: Column(
                         children: [
                           Container(

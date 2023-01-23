@@ -4,10 +4,10 @@ import 'package:cyphercity/widgets/cc_text_form_field.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/brand_logo.dart';
-import 'login_screen.dart';
+import '../widgets/cc_material_button.dart';
 
-class CreateTeamScreen extends StatelessWidget {
-  CreateTeamScreen({super.key});
+class EditTeamBiodataScreen extends StatelessWidget {
+  EditTeamBiodataScreen({super.key});
 
   final TextEditingController schoolNameCtrl = TextEditingController();
   final TextEditingController npsnCtrl = TextEditingController();

@@ -3,6 +3,7 @@ import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -109,28 +110,5 @@ class LoginScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class CCMaterialRedButton extends StatelessWidget {
-  const CCMaterialRedButton({
-    Key? key,
-    required this.onPressed,
-    required this.text,
-  }) : super(key: key);
-
-  final VoidCallback? onPressed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialButton(
-        color: Color.red,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-        minWidth: 150,
-        height: 45,
-        textColor: Colors.white,
-        onPressed: onPressed,
-        child: Text(text));
   }
 }

@@ -1,5 +1,8 @@
 import 'package:cyphercity/consts/colors.dart';
-import 'package:cyphercity/screens/create_team_screen.dart';
+import 'package:cyphercity/screens/add_team_players_screen.dart';
+import 'package:cyphercity/screens/add_team_screen.dart';
+import 'package:cyphercity/screens/edit_team_biodata_screen.dart';
+import 'package:cyphercity/screens/form_add_team_screen.dart';
 import 'package:cyphercity/screens/login_screen.dart';
 import 'package:cyphercity/screens/register_screen.dart';
 import 'package:cyphercity/screens/splash_screen.dart';
@@ -30,7 +33,6 @@ class MyApp extends StatelessWidget {
           onBackground: Colors.white,
           secondary: Color.red,
           onSecondary: Colors.white,
-          onSurface: Colors.white
         )
       ),
       initialRoute: '/',
@@ -40,7 +42,10 @@ class MyApp extends StatelessWidget {
         '/register' : (context) => RegisterScreen(),
         '/main' : (context) => const MainScreen(),
         '/team-information' : (context) => const TeamInformationScreen(),
-        '/edit-biodata' :(context) => CreateTeamScreen()
+        '/edit-biodata' :(context) => EditTeamBiodataScreen(),
+        '/add-team' :(context) => const AddTeamScreen(),
+        '/submit-team' :(context) => FormAddTeamScreen(),
+        '/add-players' :(context) => const AddTeamPlayersScreen()
 
       },
     );

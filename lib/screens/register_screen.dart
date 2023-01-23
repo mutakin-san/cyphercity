@@ -2,8 +2,8 @@ import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
-import 'login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});

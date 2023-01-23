@@ -18,7 +18,11 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(index: _selectedMenuIndex, children: [
         const CompetitionScreen(),
-        HomeScreen(),
+        HomeScreen(
+          onCreateTeamClicked: () => setState(() {
+            _selectedMenuIndex = 2;
+          }),
+        ),
         const TeamInformationScreen(),
       ]),
       bottomNavigationBar: BottomNavigationBar(
