@@ -1,4 +1,4 @@
-import 'package:cyphercity/screens/competition_screen.dart';
+import 'package:cyphercity/screens/events_screen.dart';
 import 'package:cyphercity/screens/home_screen.dart';
 import 'package:cyphercity/screens/team_information_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +17,13 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _selectedMenuIndex, children: [
-        const CompetitionScreen(),
+        const EventsScreen(),
         HomeScreen(
+          onEventsClicked: () {
+            setState(() {
+              _selectedMenuIndex = 0;
+            });
+          },
           onCreateTeamClicked: () => setState(() {
             _selectedMenuIndex = 2;
           }),

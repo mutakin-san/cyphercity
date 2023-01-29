@@ -1,19 +1,17 @@
 import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/models/cabor.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
 import '../models/team.dart';
 
-// ignore_for_file: constant_identifier_names
-enum AddType { Vollyball, Futsal, Basketball }
-
 class AddTeamScreen extends StatelessWidget {
   const AddTeamScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final addType = ModalRoute.of(context)?.settings.arguments as AddType;
+    final cabor = ModalRoute.of(context)?.settings.arguments as Cabor;
 
     return Scaffold(
       body: Stack(
@@ -75,8 +73,7 @@ class AddTeamScreen extends StatelessWidget {
                                             CrossAxisAlignment.stretch,
                                         children: [
                                           AddTeamList(
-                                            addType: addType,
-                                            title: "Team ${addType.name} (PA)",
+                                            title: "${cabor.namaCabor} (PA)",
                                             createNewPressed: () {
                                               Navigator.pushNamed(context, '/submit-team', arguments: TeamType.Man);
                                             },
@@ -84,8 +81,7 @@ class AddTeamScreen extends StatelessWidget {
                                           ),
                                           const SizedBox(height: 16),
                                           AddTeamList(
-                                            addType: addType,
-                                            title: "Team ${addType.name} (PI)",
+                                            title: "${cabor.namaCabor} (PI)",
                                             createNewPressed: () {
                                               Navigator.pushNamed(context, '/submit-team', arguments: TeamType.Woman);
                                             },
@@ -131,10 +127,8 @@ class AddTeamList extends StatelessWidget {
     required this.title,
     required this.createNewPressed,
     required this.teams,
-    required this.addType,
   }) : super(key: key);
 
-  final AddType addType;
   final String title;
   final List<Team> teams;
   final VoidCallback createNewPressed;

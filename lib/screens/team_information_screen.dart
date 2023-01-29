@@ -1,6 +1,7 @@
-
 import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/consts/config.dart';
 import 'package:cyphercity/screens/add_team_screen.dart';
+import 'package:cyphercity/services/api_services.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +86,8 @@ class TeamInformationScreen extends StatelessWidget {
                                         const SizedBox(height: 16),
                                         MaterialButton(
                                           onPressed: () {
-                                            Navigator.pushNamed(context, '/edit-biodata');
+                                            Navigator.pushNamed(
+                                                context, '/edit-biodata');
                                           },
                                           color: Colors.white,
                                           elevation: 10,
@@ -108,114 +110,145 @@ class TeamInformationScreen extends StatelessWidget {
                                                   fontSize: 18),
                                         ),
                                         const SizedBox(height: 16),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Flexible(
-                                              flex: 1,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pushNamed(context, '/add-team', arguments: AddType.Futsal);
-                                                },
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              16),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                10),
-                                                      ),
-                                                      child: const Icon(
-                                                          Icons.sports_soccer,
-                                                          size: 45),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text("Futsal\nTeam",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium
-                                                            ?.copyWith()),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              flex: 1,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pushNamed(context, '/add-team', arguments: AddType.Vollyball);
-                                                },
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              16),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: const Icon(
-                                                          Icons
-                                                              .sports_volleyball,
-                                                          size: 45),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text("Vollyball\nTeam",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium
-                                                            ?.copyWith()),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              flex: 1,
-                                              child: GestureDetector(
-                                                onTap: (){
-                                                  Navigator.pushNamed(context, '/add-team', arguments: AddType.Basketball);
-                                                },
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              16),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                10),
-                                                      ),
-                                                      child: const Icon(
-                                                          Icons.sports_basketball,
-                                                          size: 45),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text("Basketball\nTeam",
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium
-                                                            ?.copyWith()),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                        FutureBuilder(
+                                          future: ApiServices.getAllCabor(),
+                                          builder: (context, snapshot) {
+                                            return Wrap(
+                                                spacing: 16,
+                                                runSpacing: 8,
+                                                alignment: WrapAlignment.center,
+                                                children: snapshot.data?.data
+                                                        ?.map(
+                                                            (cabor) =>
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    Navigator.pushNamed(
+                                                                        context,
+                                                                        '/add-team',
+                                                                        arguments:
+                                                                            cabor);
+                                                                  },
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Container(
+                                                                          padding: const EdgeInsets.all(
+                                                                              16),
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(10),
+                                                                          ),
+                                                                          child: Image.network(
+                                                                              "$baseImageUrlCabor/${cabor.gambar}",
+                                                                              width: 50)),
+                                                                      const SizedBox(
+                                                                          height:
+                                                                              8),
+                                                                      Text(
+                                                                          cabor
+                                                                              .namaCabor,
+                                                                          textAlign: TextAlign
+                                                                              .center,
+                                                                          style: Theme.of(context)
+                                                                              .textTheme
+                                                                              .bodyMedium
+                                                                              ?.copyWith()),
+                                                                    ],
+                                                                  ),
+                                                                ))
+                                                        .toList() ??
+                                                    []
+                                                //   [
+
+                                                //   Flexible(
+                                                //     flex: 1,
+                                                //     child: GestureDetector(
+                                                //       onTap: () {
+                                                //         Navigator.pushNamed(
+                                                //             context, '/add-team',
+                                                //             arguments: AddType
+                                                //                 .Vollyball);
+                                                //       },
+                                                //       child: Column(
+                                                //         children: [
+                                                //           Container(
+                                                //             padding:
+                                                //                 const EdgeInsets
+                                                //                     .all(16),
+                                                //             decoration:
+                                                //                 BoxDecoration(
+                                                //               color: Colors.white,
+                                                //               borderRadius:
+                                                //                   BorderRadius
+                                                //                       .circular(
+                                                //                           10),
+                                                //             ),
+                                                //             child: const Icon(
+                                                //                 Icons
+                                                //                     .sports_volleyball,
+                                                //                 size: 45),
+                                                //           ),
+                                                //           const SizedBox(
+                                                //               height: 8),
+                                                //           Text("Vollyball\nTeam",
+                                                //               textAlign: TextAlign
+                                                //                   .center,
+                                                //               style: Theme.of(
+                                                //                       context)
+                                                //                   .textTheme
+                                                //                   .bodyMedium
+                                                //                   ?.copyWith()),
+                                                //         ],
+                                                //       ),
+                                                //     ),
+                                                //   ),
+                                                //   Flexible(
+                                                //     flex: 1,
+                                                //     child: GestureDetector(
+                                                //       onTap: () {
+                                                //         Navigator.pushNamed(
+                                                //             context, '/add-team',
+                                                //             arguments: AddType
+                                                //                 .Basketball);
+                                                //       },
+                                                //       child: Column(
+                                                //         children: [
+                                                //           Container(
+                                                //             padding:
+                                                //                 const EdgeInsets
+                                                //                     .all(16),
+                                                //             decoration:
+                                                //                 BoxDecoration(
+                                                //               color: Colors.white,
+                                                //               borderRadius:
+                                                //                   BorderRadius
+                                                //                       .circular(
+                                                //                           10),
+                                                //             ),
+                                                //             child: const Icon(
+                                                //                 Icons
+                                                //                     .sports_basketball,
+                                                //                 size: 45),
+                                                //           ),
+                                                //           const SizedBox(
+                                                //               height: 8),
+                                                //           Text("Basketball\nTeam",
+                                                //               textAlign: TextAlign
+                                                //                   .center,
+                                                //               style: Theme.of(
+                                                //                       context)
+                                                //                   .textTheme
+                                                //                   .bodyMedium
+                                                //                   ?.copyWith()),
+                                                //         ],
+                                                //       ),
+                                                //     ),
+                                                //   ),
+                                                // ],
+                                                );
+                                          },
                                         ),
                                       ],
                                     ),
@@ -224,14 +257,16 @@ class TeamInformationScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                           Positioned(
+                          Positioned(
                             top: 0,
                             left: 0,
                             right: 0,
                             child: CircleAvatar(
                               radius: 60,
                               backgroundColor: Colors.white,
-                              child: Image.asset("assets/images/cc_logo_futsal.png", width: 80),
+                              child: Image.asset(
+                                  "assets/images/cc_logo_futsal.png",
+                                  width: 80),
                             ),
                           )
                         ],

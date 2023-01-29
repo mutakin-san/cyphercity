@@ -39,11 +39,11 @@ class AddTeamPlayersScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text("Pemain Bola Voli"),
-                          buildPlayerInput(),
-                          buildPlayerInput(),
-                          buildPlayerInput(),
-                          buildPlayerInput(),
-                          buildPlayerInput(),
+                          buildPlayerInput(context),
+                          buildPlayerInput(context),
+                          buildPlayerInput(context),
+                          buildPlayerInput(context),
+                          buildPlayerInput(context),
                           const SizedBox(height: 24),
                           Center(
                             child: CCMaterialRedButton(
@@ -67,7 +67,7 @@ class AddTeamPlayersScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPlayerInput() {
+  Widget buildPlayerInput(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -85,7 +85,9 @@ class AddTeamPlayersScreen extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/submit-player');
+            },
             child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(

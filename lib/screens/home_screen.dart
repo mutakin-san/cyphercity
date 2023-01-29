@@ -5,9 +5,10 @@ import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key, required this.onCreateTeamClicked});
+  HomeScreen({super.key, required this.onCreateTeamClicked, required this.onEventsClicked});
 
   final VoidCallback onCreateTeamClicked;
+  final VoidCallback onEventsClicked;
 
   final CarouselController _controller = CarouselController();
 
@@ -64,23 +65,26 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Flexible(
                     flex: 1,
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Color.gray,
-                            borderRadius: BorderRadius.circular(10),
+                    child: GestureDetector(
+                      onTap: onEventsClicked,
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Color.gray,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.event, size: 45),
                           ),
-                          child: const Icon(Icons.event, size: 45),
-                        ),
-                        const SizedBox(height: 8),
-                        Text("Event",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.white)),
-                      ],
+                          const SizedBox(height: 8),
+                          Text("Event",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: Colors.white)),
+                        ],
+                      ),
                     ),
                   ),
                   Flexible(
@@ -110,23 +114,28 @@ class HomeScreen extends StatelessWidget {
                   ),
                   Flexible(
                     flex: 1,
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Color.gray,
-                            borderRadius: BorderRadius.circular(10),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/information');
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Color.gray,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.info_outlined, size: 45),
                           ),
-                          child: const Icon(Icons.info_outlined, size: 45),
-                        ),
-                        const SizedBox(height: 8),
-                        Text("Information",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.white)),
-                      ],
+                          const SizedBox(height: 8),
+                          Text("Information",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: Colors.white)),
+                        ],
+                      ),
                     ),
                   ),
                 ],
