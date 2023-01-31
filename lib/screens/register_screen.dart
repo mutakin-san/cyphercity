@@ -5,6 +5,7 @@ import 'package:cyphercity/services/login_pref_service.dart';
 import 'package:cyphercity/utilities/colors.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
+import 'package:cyphercity/widgets/cc_dropdown_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
+  int _selectedUserType = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         key: _formKey,
                         child: Column(
                           children: [
+                            CCDropdownFormField(
+                                label: 'User Type',
+                                items: [0, 1]
+                                    .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(
+                                            e == 0 ? "Personal" : "Sekolah")))
+                                    .toList(),
+                                selectedValue: _selectedUserType,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedUserType = value ?? 0;
+                                  });
+                                }),
+                            const SizedBox(height: 16),
                             CCTextFormField(
                               controller: emailCtrl,
                               textInputAction: TextInputAction.next,
@@ -85,7 +102,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               label: "Username",
                               validator: ValidationBuilder().required().build(),
                             ),
-                            const SizedBox(height: 16),
                             const SizedBox(height: 16),
                             CCTextFormField(
                               controller: nameCtrl,
@@ -153,25 +169,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                                         final result =
                                             await apiServices.register(
-                                                email: emailCtrl.text,
-                                                username: usernameCtrl.text,
-                                                name: nameCtrl.text,
-                                                password: passwordCtrl.text,
-                                                confirmPassword:
-                                                    confirmPasswordCtrl.text);
+                                          email: emailCtrl.text,
+                                          username: usernameCtrl.text,
+                                          name: nameCtrl.text,
+                                          password: passwordCtrl.text,
+                                          confirmPassword:
+                                              confirmPasswordCtrl.text,
+                                          noHp: noHpCtrl.text,
+                                          statusSekolah: _selectedUserType,
+                                        );
 
-                                       if (result.data != null) {
-                                            debugPrint(
-                                                "${result.data as User}");
-                                            await LoginPrefService.setLogin(true);
-                                            await LoginPrefService.setLoginDetails(result.data!.toJson());
+                                        if (result.data != null) {
+                                          debugPrint("${result.data as User}");
+                                          await LoginPrefService.setLogin(true);
+                                          await LoginPrefService
+                                              .setLoginDetails(
+                                                  result.data!.toJson());
 
-                                            Navigator.pushReplacementNamed(context, '/');
-                                          } else {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text(result.message!)),
-                                            );
-                                          }
+                                          Navigator.pushReplacementNamed(
+                                              context, '/');
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(result.message!)),
+                                          );
+                                        }
 
                                         setState(() {
                                           _isLoading = false;

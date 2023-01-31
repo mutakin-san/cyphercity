@@ -1,4 +1,5 @@
 import 'package:cyphercity/utilities/colors.dart';
+import 'package:cyphercity/widgets/cc_dropdown_form_field.dart';
 import 'package:cyphercity/widgets/cc_material_button.dart';
 import 'package:flutter/material.dart';
 
@@ -16,37 +17,20 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
   List<Widget> buildTeamSelection(int numberOfTeam) {
     return List.generate(numberOfTeam, (index) {
       String selectedTeam = "Team 1";
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-          const Text("Select Team"),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            items: ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6"]
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    ))
-                .toList(),
-            isDense: true,
-            isExpanded: true,
-            value: selectedTeam,
-            decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white),
-            onChanged: (value) {
-              setState(() {
-                selectedTeam = value ?? selectedTeam;
-              });
-            },
-          ),
-        ],
+      return CCDropdownFormField<String>(
+        items: ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6"]
+            .map((e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(e),
+                ))
+            .toList(),
+        selectedValue: selectedTeam,
+        onChanged: (value) {
+          setState(() {
+            selectedTeam = value ?? selectedTeam;
+          });
+        },
+        label: "Select Team",
       );
     });
   }
@@ -85,34 +69,21 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                           child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Number of Teams"),
-                            const SizedBox(height: 8),
-                            DropdownButtonFormField<int>(
+                            CCDropdownFormField<int>(
                               items: [1, 2, 3, 4, 5, 6]
                                   .map((e) => DropdownMenuItem(
                                         value: e,
                                         child: Text("$e"),
                                       ))
                                   .toList(),
-                              isDense: true,
-                              isExpanded: true,
-                              value: _numberOfTeam,
-                              decoration: InputDecoration(
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white),
                               onChanged: (value) {
                                 setState(() {
                                   _numberOfTeam = value ?? _numberOfTeam;
                                 });
                               },
+                              label: "Number of Teams",
+                              selectedValue: _numberOfTeam,
                             ),
                             ...buildTeamSelection(_numberOfTeam),
                             const SizedBox(height: 8),
@@ -142,8 +113,10 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                       ))
                     ],
                   ),
-                
-                  IconButton(onPressed: () => Navigator.pop(context), iconSize: 35, icon: const Icon(Icons.arrow_back))
+                  IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      iconSize: 35,
+                      icon: const Icon(Icons.arrow_back))
                 ],
               ),
             ),

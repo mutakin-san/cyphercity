@@ -85,7 +85,7 @@ class ApiServices {
       String noHp = "0",
       required String password,
       required String confirmPassword,
-      int statusSekolah = 1}) async {
+      int statusSekolah = 0}) async {
     late ApiReturnValue<User> returnValue;
 
     try {
@@ -105,6 +105,7 @@ class ApiServices {
         final apiResponse = ApiResponse.fromJson(response);
 
         if (apiResponse.status == 'success' && apiResponse.code == 200) {
+          print(apiResponse);
           returnValue =
               ApiReturnValue(data: User.fromJson(apiResponse.response as Map<String, dynamic>), message: apiResponse.message);
         } else {

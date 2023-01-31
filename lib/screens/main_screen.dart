@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
                 _selectedMenuIndex = value;
               }),
           items: const [
-            BottomNavigationBarItem(label: "", icon: Icon(Icons.people)),
+            BottomNavigationBarItem(label: "", icon: Icon(Icons.emoji_events)),
             BottomNavigationBarItem(label: "", icon: Icon(Icons.home)),
             BottomNavigationBarItem(
                 label: "", icon: Icon(Icons.account_circle)),

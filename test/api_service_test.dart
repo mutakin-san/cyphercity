@@ -157,7 +157,7 @@ void main() {
         'no_hp': "0",
         'password': "mutakin123",
         'password_ulang': "mutakin123",
-        'status_sekolah': "1",
+        'status_sekolah': "0",
       })).thenAnswer((_) async => http.Response(httpResponse, 200));
 
       final result = await apiServices.register(
