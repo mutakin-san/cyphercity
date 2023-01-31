@@ -1,4 +1,4 @@
-import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/utilities/colors.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:flutter/material.dart';
 

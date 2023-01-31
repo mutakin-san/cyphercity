@@ -1,14 +1,17 @@
-import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/utilities/colors.dart';
+import 'package:cyphercity/services/api_services.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:cyphercity/widgets/cc_material_button.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final apiServices = ApiServices(http.Client());
     return Stack(
       children: [
         const BackgroundGradient(),
@@ -62,17 +65,26 @@ class EventsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: ListView.builder(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: [
-                      Container(
+            FutureBuilder(
+              future: apiServices.getAllEvents(),
+              builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return  Center(child: CircularProgressIndicator(color: Color.yellow,));
+                }
+
+
+                final listEvent = snapshot.data?.data;
+                
+                return Expanded(
+                  child: ListView.builder(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    itemCount: listEvent?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return Container(
                         height: 150,
                         margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                             color: Colors.white,
                             image: const DecorationImage(
@@ -86,22 +98,24 @@ class EventsScreen extends StatelessWidget {
                                   color: Colors.black54,
                                   blurRadius: 10)
                             ]),
-                      ),
-                      Positioned(
-                        bottom: 16,
-                        left: 100,
-                        right: 100,
-                        child: CCMaterialRedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/register-competition');
-                          },
-                          text: "REG",
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(listEvent?.elementAt(index).namaEvent ?? "", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontSize: 24, shadows: const [Shadow(color: Colors.black, blurRadius: 8, offset: Offset(0.0, 2)), Shadow(color: Colors.black, blurRadius: 8, offset: Offset(0.0, 3))])),
+                                CCMaterialRedButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, '/register-competition');
+                                  },
+                                  text: "REG",
+                                ),
+                              ],
+                            ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ],
         ),

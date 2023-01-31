@@ -1,16 +1,33 @@
-import 'package:cyphercity/consts/colors.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cyphercity/models/api_response.dart';
+import 'package:cyphercity/utilities/colors.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
+import 'package:form_validator/form_validator.dart';
+import 'package:http/http.dart' as http;
 
+import '../services/api_services.dart';
+import '../services/login_pref_service.dart';
 import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController usernameCtrl = TextEditingController();
+
   final TextEditingController passwordCtrl = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +50,7 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(),
                         const BrandLogo(width: 150, height: 100),
                         Form(
+                          key: _formKey,
                           child: Column(
                             children: [
                               Text("Please Sign In",
@@ -45,6 +63,8 @@ class LoginScreen extends StatelessWidget {
                                 controller: usernameCtrl,
                                 label: "Username",
                                 hintText: "User Name",
+                                validator:
+                                    ValidationBuilder().required().build(),
                                 icon: const Icon(Icons.account_circle_outlined),
                                 textInputAction: TextInputAction.next,
                               ),
@@ -55,15 +75,57 @@ class LoginScreen extends StatelessWidget {
                                 textInputAction: TextInputAction.done,
                                 isObsecure: true,
                                 label: "Password",
+                                validator: ValidationBuilder()
+                                    .required()
+                                    .minLength(4)
+                                    .build(),
                                 hintText: "Password",
                               ),
                               const SizedBox(height: 16),
-                              CCMaterialRedButton(
-                                text: "Log In",
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/main');
-                                },
-                              ),
+                              _isLoading
+                                  ? Center(
+                                      child: CircularProgressIndicator(
+                                          color: Color.yellow))
+                                  : CCMaterialRedButton(
+                                      text: "Log In",
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          _formKey.currentState!.save();
+
+                                          setState(() {
+                                            _isLoading = true;
+                                          });
+
+                                          final apiServices =
+                                              ApiServices(http.Client());
+
+                                          final result =
+                                              await apiServices.login(
+                                                  username: usernameCtrl.text,
+                                                  password: passwordCtrl.text);
+
+                                          if (result.data != null) {
+                                            debugPrint(
+                                                "${result.data}");
+                                            if(
+                                              await LoginPrefService.setLogin(true) &&
+                                              await LoginPrefService.setLoginDetails(result.data!.toJson())
+                                            )
+                                            {
+                                              Navigator.pushReplacementNamed(context, '/');
+                                            }
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text(result.message!)),
+                                            );
+                                          }
+
+                                          setState(() {
+                                            _isLoading = false;
+                                          });
+                                        }
+                                      },
+                                    ),
                               const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

@@ -42,6 +42,7 @@ class CCTextFormField extends StatelessWidget {
             : const SizedBox(),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller,
           obscureText: isObsecure,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,

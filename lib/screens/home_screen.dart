@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/services/login_pref_service.dart';
+import 'package:cyphercity/utilities/colors.dart';
 import 'package:cyphercity/widgets/background_gradient.dart';
 import 'package:cyphercity/widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,11 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.black,
                         ),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            LoginPrefService.setLogin(false);
+                            LoginPrefService.setLoginDetails(null);
+                            Navigator.pushReplacementNamed(context, '/');
+                          },
                           color: Colors.white,
                           icon: const Icon(
                             Icons.account_circle_outlined,

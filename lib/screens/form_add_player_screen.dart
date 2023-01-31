@@ -1,4 +1,4 @@
-import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/utilities/colors.dart';
 import 'package:cyphercity/widgets/cc_text_form_field.dart';
 import 'package:flutter/material.dart';
 

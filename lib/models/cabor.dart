@@ -1,4 +1,6 @@
-class Cabor {
+import 'package:equatable/equatable.dart';
+
+class Cabor extends Equatable {
   final String id;
   final String namaCabor;
   final String gambar;
@@ -13,5 +15,8 @@ class Cabor {
       gambar: map['gambar'],
     );
   }
+  
+  @override
+  List<Object?> get props => [id, namaCabor, gambar];
 }
 

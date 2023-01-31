@@ -1,5 +1,5 @@
 
-import 'package:cyphercity/consts/colors.dart';
+import 'package:cyphercity/utilities/colors.dart';
 import 'package:flutter/material.dart';
 
 class CCMaterialRedButton extends StatelessWidget {
