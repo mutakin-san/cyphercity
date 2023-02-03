@@ -1,4 +1,4 @@
-import '../cubit/school_cubit.dart';
+import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../utilities/config.dart';
 import '../services/api_services.dart';
@@ -25,23 +25,9 @@ class SchoolInformationScreen extends StatelessWidget {
             slivers: [
               SliverFillRemaining(
                 hasScrollBody: false,
-                child: BlocBuilder<SchoolCubit, SchoolState>(
-                  builder: (_, state) {
-                    if (state is SchoolInitial) {
-                      return Center(
-                          child:
-                              CircularProgressIndicator(color: Color.yellow));
-                    }
-
-                    School? data;
-
-                    if (state is SchoolFailed) {
-                      data = null;
-                    } 
-                    
-                    if(state is SchoolLoaded) {
-                      data = state.data;
-                    }
+                child: BlocSelector<SchoolBloc, SchoolState, School?>(
+                  selector: (state) => state is SchoolLoaded ? state.data : null,
+                  builder: (_, data) {
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

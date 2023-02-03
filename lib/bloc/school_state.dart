@@ -1,4 +1,4 @@
-part of 'school_cubit.dart';
+part of 'school_bloc.dart';
 
 abstract class SchoolState extends Equatable {
   const SchoolState();

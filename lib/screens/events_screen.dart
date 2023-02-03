@@ -1,3 +1,4 @@
+import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../services/api_services.dart';
 import '../widgets/background_gradient.dart';
@@ -6,8 +7,6 @@ import '../widgets/cc_material_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-
-import '../cubit/user_cubit.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -40,11 +39,11 @@ class EventsScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                       BlocBuilder<UserCubit, UserState>(
+                      BlocBuilder<UserBloc, UserState>(
                         builder: (context, state) {
-                          if(state is UserLoaded) {
+                          if (state is UserAuthenticated) {
                             return Text("Hi,\n${state.user.nama}",
-                                style: Theme.of(context).textTheme.titleMedium);
+                                style: Theme.of(context).textTheme.titleLarge);
                           }
 
                           return const SizedBox();
@@ -80,13 +79,15 @@ class EventsScreen extends StatelessWidget {
             FutureBuilder(
               future: apiServices.getAllEvents(),
               builder: (context, snapshot) {
-                if(snapshot.connectionState == ConnectionState.waiting) {
-                  return  Center(child: CircularProgressIndicator(color: Color.yellow,));
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                      child: CircularProgressIndicator(
+                    color: Color.yellow,
+                  ));
                 }
 
-
                 final listEvent = snapshot.data?.data;
-                
+
                 return Expanded(
                   child: ListView.builder(
                     padding:
@@ -101,8 +102,10 @@ class EventsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             color: Colors.white,
                             image: DecorationImage(
-                                image: NetworkImage(event != null && event.gambar.isNotEmpty ? "https://sfc.webseitama.com/upload/event/${event.gambar}" :
-                                    "https://via.placeholder.com/480x300"),
+                                image: NetworkImage(event != null &&
+                                        event.gambar.isNotEmpty
+                                    ? "https://sfc.webseitama.com/upload/event/${event.gambar}"
+                                    : "https://via.placeholder.com/480x300"),
                                 fit: BoxFit.cover),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: const [
@@ -111,19 +114,46 @@ class EventsScreen extends StatelessWidget {
                                   color: Colors.black54,
                                   blurRadius: 10)
                             ]),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text(listEvent?.elementAt(index).namaEvent ?? "", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontSize: 24, shadows: const [Shadow(color: Colors.black, blurRadius: 8, offset: Offset(0.0, 2)), Shadow(color: Colors.black, blurRadius: 8, offset: Offset(0.0, 3))])),
-                                if((context.read<UserCubit>().state as UserLoaded).user.level == "1")  CCMaterialRedButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, '/register-competition', arguments: listEvent?.elementAt(index));
-                                  },
-                                  text: "REG",
-                                ),
-                              ],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(listEvent?.elementAt(index).namaEvent ?? "",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        shadows: const [
+                                      Shadow(
+                                          color: Colors.black,
+                                          blurRadius: 8,
+                                          offset: Offset(0.0, 2)),
+                                      Shadow(
+                                          color: Colors.black,
+                                          blurRadius: 8,
+                                          offset: Offset(0.0, 3))
+                                    ])),
+                            BlocBuilder<SchoolBloc, SchoolState>(
+                              builder: (context, state) {
+                                if(state is SchoolLoaded) {
+                                  return CCMaterialRedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, '/register-competition',
+                                          arguments:
+                                              listEvent?.elementAt(index));
+                                    },
+                                    text: "REG",
+                                  );
+                                }
+
+
+                                return const SizedBox();
+                              },
                             ),
+                          ],
+                        ),
                       );
                     },
                   ),

@@ -1,20 +1,16 @@
-import 'dart:convert';
+part of 'local.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/user.dart';
-
-class LoginPrefService {
+class AuthLocalPreferences {
   static const _isLoggedIn = "is_loggedin";
 
   static const _loginDetails = "login_details";
 
-  static Future<bool> get isLogin async {
+  Future<bool> get isLogin async {
     final prefs = await SharedPreferences.getInstance();
     return Future.value(prefs.getBool(_isLoggedIn) ?? false);
   }
 
-  static Future<User?> get loginDetails async {
+  Future<User?> get loginDetails async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final stringData = prefs.getString(_loginDetails);
@@ -29,7 +25,7 @@ class LoginPrefService {
     }
   }
 
-  static Future<bool> setLogin(bool value) async {
+  Future<bool> setLogin(bool value) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       return Future.value(prefs.setBool(_isLoggedIn, value));
@@ -38,7 +34,7 @@ class LoginPrefService {
     }
   }
 
-  static Future<bool> setLoginDetails(Map<String, dynamic>? json) async {
+  Future<bool> setLoginDetails(Map<String, dynamic>? json) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       return Future.value(prefs.setString(_loginDetails, jsonEncode(json)));

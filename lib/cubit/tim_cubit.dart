@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import '../models/tim.dart';
 import '../services/api_services.dart';
@@ -12,6 +13,8 @@ class TimCubit extends Cubit<TimState> {
   Future<void> loadTim(String idUser, String idSchool) async {
     final result =
         await ApiServices(http.Client()).getListTim(idUser: idUser, idSekolah: idSchool);
+
+    debugPrint(result.toString());
 
     if (result.data != null) {
       emit(TimLoaded(result.data!));

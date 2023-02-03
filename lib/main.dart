@@ -12,14 +12,23 @@ import '../screens/register_screen.dart';
 import '../screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
-import 'cubit/school_cubit.dart';
-import 'cubit/user_cubit.dart';
+import 'bloc/bloc.dart';
+import 'core/repos/repositories.dart';
 import 'screens/main_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiRepositoryProvider(
+    providers: [
+      RepositoryProvider(
+        create: (_) => UserRepository(),
+      ),
+      RepositoryProvider(
+        create: (_) => SchoolRepository(),
+      ),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -30,10 +39,16 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => UserCubit(),
+          create: (context) {
+            final userRepo = RepositoryProvider.of<UserRepository>(context);
+            return UserBloc(userRepo);
+          },
         ),
         BlocProvider(
-          create: (_) => SchoolCubit(http.Client()),
+          create: (_) {
+            final schoolRepo = RepositoryProvider.of<SchoolRepository>(context);
+            return SchoolBloc(schoolRepo);
+          },
         ),
         BlocProvider(
           create: (_) => TimCubit(),
@@ -62,7 +77,8 @@ class MyApp extends StatelessWidget {
           '/submit-team': (context) => FormAddTeamScreen(),
           '/submit-player': (context) => FormAddPlayerScreen(),
           '/add-players': (context) => const AddTeamPlayersScreen(),
-          '/register-competition': (context) => const RegisterCompetitionScreen(),
+          '/register-competition': (context) =>
+              const RegisterCompetitionScreen(),
           '/information': (context) => const InformationScreen()
         },
       ),

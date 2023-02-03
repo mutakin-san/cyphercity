@@ -5,22 +5,20 @@ class User extends Equatable {
   final String username;
   final String nama;
   final String level;
-  final bool sessId;
 
   const User(
       {required this.userId,
       required this.username,
       required this.nama,
-      required this.level,
-      required this.sessId});
+      required this.level});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
         userId: "${json['user_id']}",
         username: json['username'],
-        nama: json['nama'],
-        level: json['level'],
-        sessId: json['sess_id']);
+        nama: json['nama'] ?? json['nama_lengkap'],
+        level: json['level'] ?? json['status_sekolah'],
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -29,10 +27,9 @@ class User extends Equatable {
       'username': username,
       'nama': nama,
       'level': level,
-      'sess_id': sessId
     };
   }
 
   @override
-  List<Object?> get props => [userId, username, nama, level, sessId];
+  List<Object?> get props => [userId, username, nama, level];
 }
