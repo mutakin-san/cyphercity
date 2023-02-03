@@ -1,16 +1,14 @@
-// ignore_for_file: use_build_context_synchronously
+import 'dart:async';
 
-import 'package:cyphercity/services/api_services.dart';
-import 'package:cyphercity/services/login_pref_service.dart';
-import 'package:cyphercity/utilities/colors.dart';
-import 'package:cyphercity/widgets/background_gradient.dart';
-import 'package:cyphercity/widgets/brand_logo.dart';
-import 'package:cyphercity/widgets/cc_dropdown_form_field.dart';
+import '../utilities/colors.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/brand_logo.dart';
+import '../widgets/cc_dropdown_form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:http/http.dart' as http;
 
-import '../models/user.dart';
+import '../cubit/user_cubit.dart';
 import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
@@ -22,6 +20,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
   final TextEditingController emailCtrl = TextEditingController();
 
   final TextEditingController nameCtrl = TextEditingController();
@@ -36,7 +35,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool _isLoading = false;
   int _selectedUserType = 0;
 
   @override
@@ -56,11 +54,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       const SizedBox(height: 24),
                       const BrandLogo(width: 150, height: 100),
-                      Text("Create New Account",
+                      Text("Buat Akun Baru",
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
-                              .titleMedium
+                              .titleLarge
                               ?.copyWith(color: Colors.white)),
                       const SizedBox(height: 45),
                       Form(
@@ -68,12 +66,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Column(
                           children: [
                             CCDropdownFormField(
-                                label: 'User Type',
+                                label: 'Tipe Akun',
                                 items: [0, 1]
                                     .map((e) => DropdownMenuItem(
                                         value: e,
                                         child: Text(
-                                            e == 0 ? "Personal" : "Sekolah")))
+                                            e == 0 ? "Pribadi" : "Sekolah")))
                                     .toList(),
                                 selectedValue: _selectedUserType,
                                 onChanged: (value) {
@@ -85,6 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             CCTextFormField(
                               controller: emailCtrl,
                               textInputAction: TextInputAction.next,
+                              inputType: TextInputType.emailAddress,
                               icon: const Icon(Icons.email_outlined),
                               hintText: "Alamat Email",
                               label: "Alamat Email",
@@ -115,6 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             CCTextFormField(
                               controller: noHpCtrl,
                               textInputAction: TextInputAction.next,
+                              inputType: TextInputType.phone,
                               icon: const Icon(Icons.school_outlined),
                               hintText: "No Hp",
                               label: "No Hp",
@@ -146,73 +146,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   .add((value) => (value != null &&
                                           value == passwordCtrl.text)
                                       ? null
-                                      : "Password doesn't match")
+                                      : "Kata Sandi Tidak Cocok")
                                   .build(),
                             ),
                             const SizedBox(height: 16),
-                            _isLoading
-                                ? Center(
-                                    child: CircularProgressIndicator(
-                                        color: Color.yellow))
-                                : CCMaterialRedButton(
-                                    text: "Sign Up",
-                                    onPressed: () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        _formKey.currentState!.save();
-
-                                        setState(() {
-                                          _isLoading = true;
-                                        });
-
-                                        final apiServices =
-                                            ApiServices(http.Client());
-
-                                        final result =
-                                            await apiServices.register(
-                                          email: emailCtrl.text,
-                                          username: usernameCtrl.text,
-                                          name: nameCtrl.text,
-                                          password: passwordCtrl.text,
-                                          confirmPassword:
-                                              confirmPasswordCtrl.text,
-                                          noHp: noHpCtrl.text,
-                                          statusSekolah: _selectedUserType,
-                                        );
-
-                                        if (result.data != null) {
-                                          debugPrint("${result.data as User}");
-                                          await LoginPrefService.setLogin(true);
-                                          await LoginPrefService
-                                              .setLoginDetails(
-                                                  result.data!.toJson());
-
-                                          Navigator.pushReplacementNamed(
-                                              context, '/');
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(result.message!)),
-                                          );
-                                        }
-
-                                        setState(() {
-                                          _isLoading = false;
-                                        });
-                                      }
-                                    },
-                                  ),
+                            BlocBuilder<UserCubit, UserState>(
+                                builder: (context, state) {
+                                  if(state is UserLoading) {
+                                    return Center(child: CircularProgressIndicator(color: Color.yellow));
+                                  } else if(state is UserError) {
+                                    return buildButton(context);
+                                  } else {
+                                    return buildButton(context);
+                                  }
+                                },
+                              ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 30),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text("Version: CC V.0.1"),
-                          Text("Created by : Mutakin")
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Sudah punya akun? ",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                            child: Text("Masuk Sekarang",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: Color.yellow)),
+                          )
                         ],
-                      )
+                      ),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
@@ -221,6 +198,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ],
       ),
+    );
+  }
+
+
+  
+  Widget buildButton(BuildContext context) {
+    return CCMaterialRedButton(
+      text: "Daftar",
+      onPressed: () async {
+        
+        FocusManager.instance.primaryFocus?.unfocus();
+
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+
+          final userCubit = context.read<UserCubit>();
+
+          await userCubit.register(
+              email: emailCtrl.text,
+              username: usernameCtrl.text,
+              name: nameCtrl.text,
+              password: passwordCtrl.text,
+              confirmPassword:
+                  confirmPasswordCtrl.text,
+              noHp: noHpCtrl.text,
+              statusSekolah: _selectedUserType
+            );
+
+
+
+
+          final state = context.read<UserCubit>().state;
+
+
+          if(state is UserError) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        
+          if(state is UserLoaded) {
+            Navigator.pushReplacementNamed(context, '/');
+          }
+        }
+      },
     );
   }
 }

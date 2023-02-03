@@ -1,4 +1,4 @@
-import 'package:cyphercity/utilities/colors.dart';
+import '../utilities/colors.dart';
 import 'package:flutter/widgets.dart';
 
 class BackgroundGradient extends StatelessWidget {

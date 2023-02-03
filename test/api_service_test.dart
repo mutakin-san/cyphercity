@@ -1,4 +1,3 @@
-import 'package:cyphercity/models/school.dart';
 import 'package:cyphercity/models/tim.dart';
 import 'package:cyphercity/models/user.dart';
 import 'package:cyphercity/utilities/config.dart';
@@ -62,7 +61,7 @@ void main() {
             gambar: "7654d207943327b400d3f08461290a60.png")
       ];
 
-      when(client.get(Uri.parse("$baseUrl/api/home/getCabor")))
+      when(client.get(Uri.parse("$baseUrl/api/ws/getListCabor")))
           .thenAnswer((_) async => http.Response(httpResponse, 200));
 
       final result = await apiServices.getAllCabor();
@@ -77,7 +76,7 @@ void main() {
         "msg": "Resource not found"
     }""";
 
-      when(client.get(Uri.parse("$baseUrl/api/home/getCabor")))
+      when(client.get(Uri.parse("$baseUrl/api/ws/getListCabor")))
           .thenAnswer((_) async => http.Response(httpResponse, 200));
 
       final result = await apiServices.getAllCabor();
@@ -98,6 +97,7 @@ void main() {
                   "tanggal_start": "2023-01-01",
                   "tanggal_end": "2023-01-27",
                   "exp_reg": "2023-01-05",
+                  "gambar": "",
                   "status": "1"
               }
           ]
@@ -111,10 +111,11 @@ void main() {
             tanggalStart: DateTime.parse("2023-01-01"),
             tanggalEnd: DateTime.parse("2023-01-27"),
             expReg: DateTime.parse("2023-01-05"),
+            gambar: "",
             status: "1")
       ];
 
-      when(client.get(Uri.parse("$baseUrl/api/home/getEvent")))
+      when(client.get(Uri.parse("$baseUrl/api/ws/getListEvent")))
           .thenAnswer((_) async => http.Response(httpResponse, 200));
 
       final result = await apiServices.getAllEvents();
@@ -131,7 +132,7 @@ void main() {
     }
     """;
 
-      when(client.get(Uri.parse("$baseUrl/api/home/getEvent")))
+      when(client.get(Uri.parse("$baseUrl/api/ws/getListEvent")))
           .thenAnswer((_) async => http.Response(httpResponse, 200));
 
       final result = await apiServices.getAllEvents();
@@ -165,6 +166,7 @@ void main() {
           name: "Mutakin",
           email: "mutakin.email@gmail.com",
           password: "mutakin123",
+          noHp: "0",
           confirmPassword: "mutakin123");
 
       expect(result, isA<ApiReturnValue>());
@@ -194,7 +196,9 @@ void main() {
           name: "Mutakin",
           email: "mutakin.email@gmail.com",
           password: "mutakin123",
-          confirmPassword: "mutakin123");
+          confirmPassword: "mutakin123",
+          noHp: "0",
+          statusSekolah: 1);
 
       expect(result, isA<ApiReturnValue>());
       expect(result.message, "Data Tidak Lengkap!");
@@ -243,41 +247,14 @@ void main() {
     });
   });
 
-  test('Test Get ID Sekolah', () async {
-    const httpResponse =
-        """{"code":200,"status":"success","response":{"id":"1","id_user":"1","nama_sekolah":"SPN 2 Ciamis","npsn":"0","biodata":"-","logo":"","gambar":"","status":"1"}}""";
-
-    when(client.post(Uri.parse("$baseUrl/api/home/getIdSekolah"), body: {
-      'id_user': "1",
-    })).thenAnswer((_) async => http.Response(httpResponse, 200));
-
-    final result = await apiServices.getIDSekolah(idUser: "1");
-
-    expect(result, isA<ApiReturnValue>());
-    expect(result.data, isA<School>());
-  });
-
-  test('Test If Get ID Sekolah Return unsuccessfully response', () async {
-    const httpResponse =
-        """{"code": 200, "status":"success","response": null}""";
-
-    when(client.post(Uri.parse("$baseUrl/api/home/getIdSekolah"), body: {
-      'id_user': "1",
-    })).thenAnswer((_) async => http.Response(httpResponse, 200));
-
-    final result = await apiServices.getIDSekolah(idUser: "1");
-
-    expect(result, isA<ApiReturnValue>());
-    expect(result.data, null);
-    expect(result.message, isA<String>());
-  });
 
   test('Test Get ID Tim', () async {
     const httpResponse =
-        """{"code":200,"status":"success","response":[{"id_user":"1","id_sekolah":"1","id_cabor":"1","nama_team":"Nedascis Futsal A","pembina":"Ilham","pelatih":"Ilham","asisten_pelatih":"Ilham","team_medis":"Ilham","kordinator_supporter":"Ilham","0":true}]}""";
+        """{"code":200,"status":"success","response":[{"id": "1", "id_user":"1","id_sekolah":"1","id_cabor":"1","nama_team":"Nedascis Futsal A","pembina":"Ilham","pelatih":"Ilham","asisten_pelatih":"Ilham","team_medis":"Ilham","kordinator_supporter":"Ilham","0":true}]}""";
 
     const expectedResult = [
       Tim(
+          id: "1",
           idUser: "1",
           idSekolah: "1",
           idCabor: "1",

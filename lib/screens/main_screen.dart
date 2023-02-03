@@ -1,7 +1,11 @@
-import 'package:cyphercity/screens/events_screen.dart';
-import 'package:cyphercity/screens/home_screen.dart';
-import 'package:cyphercity/screens/team_information_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../models/user.dart';
+import '../screens/events_screen.dart';
+import '../screens/home_screen.dart';
+import '../screens/school_information_screen.dart';
+import '../cubit/user_cubit.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,6 +16,13 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   var _selectedMenuIndex = 1;
+  late User user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = (context.read<UserCubit>().state as UserLoaded).user;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +35,11 @@ class _MainScreenState extends State<MainScreen> {
               _selectedMenuIndex = 0;
             });
           },
-          onCreateTeamClicked: () => setState(() {
+          onCreateTeamClicked: user.level == "1" ? () => setState(() {
             _selectedMenuIndex = 2;
-          }),
+          }) : null,
         ),
-        const TeamInformationScreen(),
+        if (user.level == "1") const SchoolInformationScreen(),
       ]),
       bottomNavigationBar: BottomNavigationBar(
           showUnselectedLabels: false,
@@ -37,10 +48,10 @@ class _MainScreenState extends State<MainScreen> {
           onTap: (value) => setState(() {
                 _selectedMenuIndex = value;
               }),
-          items: const [
-            BottomNavigationBarItem(label: "", icon: Icon(Icons.emoji_events)),
-            BottomNavigationBarItem(label: "", icon: Icon(Icons.home)),
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(label: "", icon: Icon(Icons.emoji_events)),
+            const BottomNavigationBarItem(label: "", icon: Icon(Icons.home)),
+            if(user.level == "1") const BottomNavigationBarItem(
                 label: "", icon: Icon(Icons.account_circle)),
           ]),
     );

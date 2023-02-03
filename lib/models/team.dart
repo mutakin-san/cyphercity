@@ -1,4 +1,4 @@
-import 'package:cyphercity/screens/add_team_screen.dart';
+import '../screens/add_team_screen.dart';
 import 'package:flutter/material.dart';
 
 class Team {

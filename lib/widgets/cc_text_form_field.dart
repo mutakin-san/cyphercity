@@ -13,7 +13,8 @@ class CCTextFormField extends StatelessWidget {
     this.icon,
     this.validator,
     this.textColor = Colors.white,
-    this.maxLines
+    this.maxLines,
+    this.inputType = TextInputType.text
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -25,6 +26,7 @@ class CCTextFormField extends StatelessWidget {
   final Icon? icon;
   final String? Function(String?)? validator;
   final int? maxLines;
+  final TextInputType? inputType;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class CCTextFormField extends StatelessWidget {
         TextFormField(
           controller: controller,
           obscureText: isObsecure,
-          keyboardType: TextInputType.text,
+          keyboardType: inputType,
           textInputAction: TextInputAction.next,
           validator: validator,
           maxLines: maxLines ?? 1,

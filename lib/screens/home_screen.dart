@@ -1,20 +1,24 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cyphercity/services/login_pref_service.dart';
-import 'package:cyphercity/utilities/colors.dart';
-import 'package:cyphercity/widgets/background_gradient.dart';
-import 'package:cyphercity/widgets/brand_logo.dart';
+import '../services/login_pref_service.dart';
+import '../utilities/colors.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/user_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key, required this.onCreateTeamClicked, required this.onEventsClicked});
+  HomeScreen({super.key, this.onCreateTeamClicked, this.onEventsClicked});
 
-  final VoidCallback onCreateTeamClicked;
-  final VoidCallback onEventsClicked;
+  final VoidCallback? onCreateTeamClicked;
+  final VoidCallback? onEventsClicked;
 
   final CarouselController _controller = CarouselController();
 
   @override
   Widget build(BuildContext context) {
+    final user = (context.read<UserCubit>().state as UserLoaded).user;
     return Stack(
       children: [
         const BackgroundGradient(),
@@ -39,8 +43,8 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Hi,\nSMPN : CIAMIS",
-                          style: Theme.of(context).textTheme.titleMedium),
+                      Text("Hi,\n${user.nama}",
+                          style: Theme.of(context).textTheme.titleLarge),
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
@@ -92,31 +96,32 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: GestureDetector(
-                      onTap: onCreateTeamClicked,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Color.gray,
-                              borderRadius: BorderRadius.circular(10),
+                  if (user.level == "1")
+                    Flexible(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: onCreateTeamClicked,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Color.gray,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child:
+                                  const Icon(Icons.group_add_rounded, size: 45),
                             ),
-                            child:
-                                const Icon(Icons.group_add_rounded, size: 45),
-                          ),
-                          const SizedBox(height: 8),
-                          Text("Create Team",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Colors.white)),
-                        ],
+                            const SizedBox(height: 8),
+                            Text("Create Team",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: Colors.white)),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   Flexible(
                     flex: 1,
                     child: GestureDetector(

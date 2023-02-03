@@ -1,6 +1,6 @@
-import 'package:cyphercity/utilities/colors.dart';
-import 'package:cyphercity/widgets/background_gradient.dart';
-import 'package:cyphercity/widgets/cc_text_form_field.dart';
+import '../utilities/colors.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/cc_text_form_field.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/brand_logo.dart';

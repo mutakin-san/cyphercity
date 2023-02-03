@@ -1,15 +1,17 @@
-import 'package:cyphercity/cubit/user_cubit.dart';
-import 'package:cyphercity/utilities/colors.dart';
-import 'package:cyphercity/utilities/config.dart';
-import 'package:cyphercity/services/api_services.dart';
-import 'package:cyphercity/widgets/background_gradient.dart';
-import 'package:cyphercity/widgets/brand_logo.dart';
+import '../cubit/school_cubit.dart';
+import '../utilities/colors.dart';
+import '../utilities/config.dart';
+import '../services/api_services.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
-class TeamInformationScreen extends StatelessWidget {
-  const TeamInformationScreen({super.key});
+import '../models/school.dart';
+
+class SchoolInformationScreen extends StatelessWidget {
+  const SchoolInformationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,25 +25,29 @@ class TeamInformationScreen extends StatelessWidget {
             slivers: [
               SliverFillRemaining(
                 hasScrollBody: false,
-                child: FutureBuilder(
-                  future: apiService.getIDSekolah(
-                      idUser: (context.read<UserCubit>().state as UserLoaded)
-                          .user
-                          .userId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                child: BlocBuilder<SchoolCubit, SchoolState>(
+                  builder: (_, state) {
+                    if (state is SchoolInitial) {
                       return Center(
                           child:
                               CircularProgressIndicator(color: Color.yellow));
                     }
 
-                    final data = snapshot.data?.data;
+                    School? data;
+
+                    if (state is SchoolFailed) {
+                      data = null;
+                    } 
+                    
+                    if(state is SchoolLoaded) {
+                      data = state.data;
+                    }
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 16),
-                        const BrandLogo(width: 50, height: 50),
+                        BrandLogo(logoUrl: data?.logo, width: 50, height: 50),
                         Text(
                           data?.namaSekolah ?? "",
                           textAlign: TextAlign.center,
@@ -75,7 +81,7 @@ class TeamInformationScreen extends StatelessWidget {
                                               image: NetworkImage((data !=
                                                           null &&
                                                       data.gambar.isNotEmpty)
-                                                  ? data.gambar
+                                                  ? "https://sfc.webseitama.com/upload/tim/${data.gambar}"
                                                   : "https://via.placeholder.com/480x300"),
                                               fit: BoxFit.cover),
                                           borderRadius: const BorderRadius.only(
@@ -98,7 +104,10 @@ class TeamInformationScreen extends StatelessWidget {
                                                   ?.copyWith(height: 1.5),
                                             ),
                                             Text(
-                                              data?.biodata ?? "-",
+                                              data != null &&
+                                                      data.biodata.isNotEmpty
+                                                  ? data.biodata
+                                                  : "-",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium
@@ -108,7 +117,8 @@ class TeamInformationScreen extends StatelessWidget {
                                             MaterialButton(
                                               onPressed: () {
                                                 Navigator.pushNamed(
-                                                    context, '/edit-biodata');
+                                                    context, '/edit-biodata',
+                                                    arguments: data?.id);
                                               },
                                               color: Colors.white,
                                               elevation: 10,
@@ -153,28 +163,40 @@ class TeamInformationScreen extends StatelessWidget {
                                                             .data?.data
                                                             ?.map((cabor) =>
                                                                 GestureDetector(
-                                                                  onTap: () {
-                                                                    Navigator.pushNamed(
-                                                                        context,
-                                                                        '/add-team',
-                                                                        arguments:
-                                                                            cabor);
-                                                                  },
+                                                                  onTap: data !=
+                                                                          null
+                                                                      ? () {
+                                                                          Navigator.pushNamed(
+                                                                              context,
+                                                                              '/add-team',
+                                                                              arguments: cabor);
+                                                                        }
+                                                                      : () {},
                                                                   child: Column(
                                                                     children: [
                                                                       Container(
-                                                                          padding: const EdgeInsets.all(
-                                                                              16),
+                                                                        padding:
+                                                                            const EdgeInsets.all(16),
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                        ),
+                                                                        child:
+                                                                            Container(
+                                                                          width:
+                                                                              50,
+                                                                          height:
+                                                                              50,
                                                                           decoration:
                                                                               BoxDecoration(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(10),
+                                                                            image:
+                                                                                DecorationImage(image: NetworkImage("$baseImageUrlCabor/${cabor.gambar}")),
                                                                           ),
-                                                                          child: Image.network(
-                                                                              "$baseImageUrlCabor/${cabor.gambar}",
-                                                                              width: 50)),
+                                                                        ),
+                                                                      ),
                                                                       const SizedBox(
                                                                           height:
                                                                               8),

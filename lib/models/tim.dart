@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Tim extends Equatable{
   const Tim({
+    required this.id,
     required this.idUser,
     required this.idSekolah,
     required this.idCabor,
@@ -13,6 +14,7 @@ class Tim extends Equatable{
     required this.kordinatorSupporter,
   });
 
+  final String id;
   final String idUser;
   final String idSekolah;
   final String idCabor;
@@ -25,6 +27,7 @@ class Tim extends Equatable{
 
   factory Tim.fromMap(Map<String, dynamic> map) {
     return Tim(
+      id: map['id'],
       idUser: map['id_user'],
       idSekolah: map['id_sekolah'],
       idCabor: map['id_cabor'],
@@ -39,6 +42,8 @@ class Tim extends Equatable{
 
   Map<String, dynamic> toMap() {
     return {
+
+      'id': id,
       'id_user': idUser,
       'id_sekolah': idSekolah,
       'id_cabor': idCabor,

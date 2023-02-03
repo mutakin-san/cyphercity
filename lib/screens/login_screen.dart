@@ -1,20 +1,15 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:cyphercity/models/api_response.dart';
-import 'package:cyphercity/utilities/colors.dart';
-import 'package:cyphercity/widgets/background_gradient.dart';
-import 'package:cyphercity/widgets/brand_logo.dart';
+import '../cubit/user_cubit.dart';
+import '../utilities/colors.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:http/http.dart' as http;
-
-import '../services/api_services.dart';
-import '../services/login_pref_service.dart';
 import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -26,8 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController usernameCtrl = TextEditingController();
 
   final TextEditingController passwordCtrl = TextEditingController();
-
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,23 +34,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32.0, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(),
                         const BrandLogo(width: 150, height: 100),
+                        const SizedBox(height: 30),
                         Form(
                           key: _formKey,
                           child: Column(
                             children: [
-                              Text("Please Sign In",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(color: Colors.white)),
+                              Text("Silahkan Masuk", style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white)),
                               const SizedBox(height: 16),
                               CCTextFormField(
                                 controller: usernameCtrl,
@@ -74,64 +63,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                 icon: const Icon(Icons.lock_outlined),
                                 textInputAction: TextInputAction.done,
                                 isObsecure: true,
-                                label: "Password",
+                                label: "Kata Sandi",
                                 validator: ValidationBuilder()
                                     .required()
                                     .minLength(4)
                                     .build(),
-                                hintText: "Password",
+                                hintText: "Kata Sandi",
                               ),
                               const SizedBox(height: 16),
-                              _isLoading
-                                  ? Center(
-                                      child: CircularProgressIndicator(
-                                          color: Color.yellow))
-                                  : CCMaterialRedButton(
-                                      text: "Log In",
-                                      onPressed: () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          _formKey.currentState!.save();
-
-                                          setState(() {
-                                            _isLoading = true;
-                                          });
-
-                                          final apiServices =
-                                              ApiServices(http.Client());
-
-                                          final result =
-                                              await apiServices.login(
-                                                  username: usernameCtrl.text,
-                                                  password: passwordCtrl.text);
-
-                                          if (result.data != null) {
-                                            debugPrint(
-                                                "${result.data}");
-                                            if(
-                                              await LoginPrefService.setLogin(true) &&
-                                              await LoginPrefService.setLoginDetails(result.data!.toJson())
-                                            )
-                                            {
-                                              Navigator.pushReplacementNamed(context, '/');
-                                            }
-                                          } else {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text(result.message!)),
-                                            );
-                                          }
-
-                                          setState(() {
-                                            _isLoading = false;
-                                          });
-                                        }
-                                      },
-                                    ),
+                              BlocBuilder<UserCubit, UserState>(
+                                builder: (context, state) {
+                                  if(state is UserLoading) {
+                                    return Center(child: CircularProgressIndicator(color: Color.yellow));
+                                  } else if(state is UserError) {
+                                    return buildButton(context);
+                                  } else {
+                                    return buildButton(context);
+                                  }
+                                },
+                              ),
                               const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "- or create ",
+                                    "Belum punya akun? ",
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall
@@ -141,9 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context, '/register');
+                                      Navigator.pushReplacementNamed(context, '/register');
                                     },
-                                    child: Text("New Account -",
+                                    child: Text("Buat Sekarang",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall
@@ -155,13 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                         ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text("Version: CC V.0.1"),
-                            Text("Created by : Mutakin")
-                          ],
-                        )
                       ],
                     ),
                   ),
@@ -171,6 +120,40 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildButton(BuildContext context) {
+    return CCMaterialRedButton(
+      text: "Masuk",
+      onPressed: () async {
+        
+        FocusManager.instance.primaryFocus?.unfocus();
+
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+
+          final userCubit = context.read<UserCubit>();
+
+          await userCubit.login(
+                  username: usernameCtrl.text,
+                  password: passwordCtrl.text);
+                  
+                  
+          final state = context.read<UserCubit>().state;
+
+
+          if(state is UserError) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        
+          if(state is UserLoaded) {
+            Navigator.pushReplacementNamed(context, '/');
+          }
+
+
+        }
+      },
     );
   }
 }

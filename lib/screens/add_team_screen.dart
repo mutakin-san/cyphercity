@@ -1,7 +1,7 @@
-import 'package:cyphercity/utilities/colors.dart';
-import 'package:cyphercity/models/cabor.dart';
-import 'package:cyphercity/widgets/background_gradient.dart';
-import 'package:cyphercity/widgets/brand_logo.dart';
+import '../utilities/colors.dart';
+import '../models/cabor.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/brand_logo.dart';
 import 'package:flutter/material.dart';
 
 import '../models/team.dart';
@@ -190,6 +190,7 @@ class AddTeamList extends StatelessWidget {
   }
 }
 
+// ignore: constant_identifier_names
 enum TeamType { Man, Woman }
 
 class TeamItem extends StatelessWidget {

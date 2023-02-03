@@ -23,7 +23,7 @@ class School extends Equatable {
 
   factory School.fromMap(Map<String, dynamic> map) {
     return School(
-        id: map['id'],
+        id: map['id'] ?? map['id_sekolah'],
         idUser: map['id_user'],
         namaSekolah: map['nama_sekolah'],
         npsn: map['npsn'],
