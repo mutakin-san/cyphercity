@@ -75,16 +75,51 @@ class SchoolServices {
           returnValue =
               ApiReturnValue(data: true, message: apiResponse.message);
         } else {
-          returnValue = ApiReturnValue(message: apiResponse.message);
+          returnValue = ApiReturnValue(data : false, message: apiResponse.message);
         }
       } else {
-        returnValue = ApiReturnValue(message: result.reasonPhrase);
+        returnValue = ApiReturnValue(data : false, message: result.reasonPhrase);
       }
 
       return returnValue;
     } catch (e) {
-      return ApiReturnValue(message: e.toString());
+      return ApiReturnValue(data: false, message: e.toString());
     }
+  }
+
+
+
+  Future<ApiReturnValue<bool>> uploadLogoSekolah({required String schoolId, required String userId, required XFile image}) async {
+    
+      final request = MultipartRequest("POST", Uri.parse(uploadLogoUrl));
+
+      request.headers['content-type'] = 'multipart/form-data';
+
+        request.files.add(
+          await MultipartFile.fromPath('file', image.path)
+        );
+
+        request.fields['kode'] = schoolId;
+        request.fields['id_user'] = userId;
+
+        try {
+          final result = await request.send();
+
+          if (result.statusCode == 200) {
+            final Map<String, dynamic> response = jsonDecode(await result.stream.bytesToString());
+            final apiResponse = ApiResponse.fromJson(response);
+
+            if (apiResponse.status == 'success' && apiResponse.code == 200) {
+              return ApiReturnValue(data: true, message: apiResponse.message);
+            } else {
+              return ApiReturnValue(data: false, message: apiResponse.message);
+            }
+          } else {
+            return ApiReturnValue(data : false, message: result.reasonPhrase);
+          }
+        } catch (e) {
+          return ApiReturnValue(data : false, message: e.toString());
+        }
   }
 
 

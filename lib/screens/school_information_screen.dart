@@ -26,14 +26,16 @@ class SchoolInformationScreen extends StatelessWidget {
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: BlocSelector<SchoolBloc, SchoolState, School?>(
-                  selector: (state) => state is SchoolLoaded ? state.data : null,
+                  selector: (state) =>
+                      state is SchoolLoaded ? state.data : null,
                   builder: (_, data) {
-
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 16),
-                        BrandLogo(logoUrl: data?.logo, width: 50, height: 50),
+                        const BrandLogo(
+                            width: 50,
+                            height: 50),
                         Text(
                           data?.namaSekolah ?? "",
                           textAlign: TextAlign.center,
@@ -67,7 +69,7 @@ class SchoolInformationScreen extends StatelessWidget {
                                               image: NetworkImage((data !=
                                                           null &&
                                                       data.gambar.isNotEmpty)
-                                                  ? "https://sfc.webseitama.com/upload/tim/${data.gambar}"
+                                                  ? "$baseImageUrlTim/${data.gambar}"
                                                   : "https://via.placeholder.com/480x300"),
                                               fit: BoxFit.cover),
                                           borderRadius: const BorderRadius.only(
@@ -217,7 +219,17 @@ class SchoolInformationScreen extends StatelessWidget {
                                   radius: 60,
                                   backgroundColor: Colors.white,
                                   child: data != null && data.logo.isNotEmpty
-                                      ? Image.network(data.logo, width: 80)
+                                      ? Container(
+                                          width: 100,
+                                          height: 100,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                  "$baseImageUrlLogo/${data.logo}"),
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ))
                                       : Icon(Icons.image_not_supported_outlined,
                                           color: Color.purple, size: 45),
                                 ),

@@ -16,6 +16,7 @@ class CCMaterialRedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
         color: Color.red,
+        disabledColor: Color.redBlack,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         minWidth: 150,
         height: 45,

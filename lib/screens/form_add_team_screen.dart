@@ -16,6 +16,11 @@ class FormAddTeamScreen extends StatelessWidget {
   final TextEditingController medisTeamCtrl = TextEditingController();
   final TextEditingController koordinatorSupporterCtrl = TextEditingController();
 
+
+//   {"code":200,"status":"success","msg":"Team Berhasil
+// dibuat!","response":{"id_user":"14","id_sekolah":null,"id_cabor":"1","nama_team":"Futsal Argantara
+// A","pembina":"Mutakin","pelatih":"Mutakin","asisten_pelatih":null,"team_medis":null,"kordinator_supporter":null,"skkp":"d9f42ca722e0dc2a12ea8b8997583bc8.jpg"}}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

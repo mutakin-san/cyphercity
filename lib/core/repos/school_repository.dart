@@ -18,4 +18,14 @@ class SchoolRepository{
       throw Exception(result.message);
     }
   }
+
+  Future<bool> uploadSchoolLogo({required String schoolId, required String userId, required XFile image}) async {
+
+    final result = await _network.uploadLogoSekolah(schoolId: schoolId, userId: userId, image: image);
+    if (result.data != null && result.data!) {
+      return result.data!;
+    } else {
+      throw Exception(result.message);
+    }
+  }
 }

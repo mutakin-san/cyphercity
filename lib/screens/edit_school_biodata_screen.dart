@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cyphercity/utilities/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
@@ -36,18 +37,25 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _schoolimage = image;
-    });
+    if (image != null) {
+      setState(() {
+        _schoolimage = image;
+      });
+    }
   }
 
-  Future<void> getLogoImage() async {
+  Future<void> getLogoImage(String? kode, String userId) async {
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _logoImage = image;
-    });
+    if (image != null) {
+      if (kode != null && userId.isNotEmpty) {
+        context.read<SchoolBloc>().add(EditSchoolLogo(kode, userId, image));
+      }
+      setState(() {
+        _logoImage = image;
+      });
+    }
   }
 
   @override
@@ -101,10 +109,12 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                       top: 60.0, left: 16, right: 16),
                                   child: BlocBuilder<SchoolBloc, SchoolState>(
                                     builder: (context, state) {
-                                      if(state is SchoolLoaded) {
-                                        schoolNameCtrl.text = state.data.namaSekolah;
+                                      if (state is SchoolLoaded) {
+                                        schoolNameCtrl.text =
+                                            state.data.namaSekolah;
                                         npsnCtrl.text = state.data.npsn;
-                                        biodataTimCtrl.text = state.data.biodata;
+                                        biodataTimCtrl.text =
+                                            state.data.biodata;
                                       }
                                       return Form(
                                         key: _formKey,
@@ -236,7 +246,27 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                 }
 
                                                 if (state is SchoolLoaded) {
-                                                  Navigator.pop(context);
+                                                  const duration =
+                                                      Duration(seconds: 1);
+                                                  if (_logoImage != null) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                            const SnackBar(
+                                                                content: Text(
+                                                                    "Logo Berhasil Di Update"),
+                                                                duration:
+                                                                    duration));
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                            const SnackBar(
+                                                                content: Text(
+                                                                    "Data Sekolah Berhasil Di Update"),
+                                                                duration:
+                                                                    duration));
+                                                  }
                                                 }
                                               },
                                             ),
@@ -257,46 +287,120 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                 radius: 60,
                                 backgroundColor: Colors.white,
                                 child: _logoImage != null
-                                    ? Stack(
-                                        children: [
-                                          Container(
-                                            width: 100,
-                                            height: 100,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    image: FileImage(
-                                                        File(_logoImage!.path)),
-                                                    fit: BoxFit.cover)),
-                                          ),
-                                          Positioned(
-                                            top: 0,
-                                            right: 0,
-                                            bottom: 0,
-                                            left: 0,
-                                            child: IconButton(
-                                                color: Colors.white,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _logoImage = null;
-                                                  });
-                                                },
-                                                icon: const Icon(
-                                                    Icons.close_rounded)),
-                                          ),
-                                        ],
+                                    ? BlocBuilder<SchoolBloc, SchoolState>(
+                                        builder: (context, state) {
+                                          if (state is SchoolLoading) {
+                                            return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        color: Color.yellow));
+                                          }
+
+                                          if (state is SchoolLoaded) {
+                                            return Stack(
+                                              children: [
+                                                Container(
+                                                  width: 100,
+                                                  height: 100,
+                                                  decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      image: DecorationImage(
+                                                          image: FileImage(File(
+                                                              _logoImage!
+                                                                  .path)),
+                                                          fit: BoxFit.cover)),
+                                                ),
+                                                Positioned(
+                                                  top: 0,
+                                                  right: 0,
+                                                  bottom: 0,
+                                                  left: 0,
+                                                  child: IconButton(
+                                                      color: Colors.white,
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _logoImage = null;
+                                                        });
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.close_rounded)),
+                                                ),
+                                              ],
+                                            );
+                                          }
+
+                                          return Icon(Icons.image_not_supported_outlined,
+                                          color: Color.purple, size: 45);
+                                        },
                                       )
-                                    : GestureDetector(
-                                        onTap: getLogoImage,
-                                        child: Text(
-                                          "Upload\nLogo Team",
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(color: Color.red),
-                                        ),
-                                      ),
+                                    : BlocSelector<UserBloc, UserState, String>(
+                                        selector: (state) {
+                                        return state is UserAuthenticated
+                                            ? state.user.userId
+                                            : "";
+                                      }, builder: (context, userId) {
+                                        return BlocSelector<SchoolBloc,
+                                            SchoolState, String>(
+                                          selector: (state) {
+                                            return state is SchoolLoaded
+                                                ? state.data.logo
+                                                : "";
+                                          },
+                                          builder: (context, logo) {
+                                            if (logo.isNotEmpty) {
+                                              return Container(
+                                                width: 100,
+                                                height: 100,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          "$baseImageUrlLogo/$logo"),
+                                                      fit: BoxFit.cover),
+                                                ),
+                                                child: IconButton(
+                                                    color: Color.yellow,
+                                                    onPressed: () =>
+                                                        getLogoImage(
+                                                            kode, userId),
+                                                    icon: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4),
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                              color: Colors
+                                                                  .black45,
+                                                              blurRadius: 10,
+                                                              spreadRadius: 4)
+                                                        ],
+                                                        color: Colors.white,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: const Icon(
+                                                          Icons.edit),
+                                                    )),
+                                              );
+                                            } else {
+                                              return GestureDetector(
+                                                onTap: () =>
+                                                    getLogoImage(kode, userId),
+                                                child: Text(
+                                                  "Upload\nLogo Team",
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                          color: Color.red),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        );
+                                      }),
                               ),
                             )
                           ],
@@ -324,6 +428,8 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
             text: "SUBMIT",
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
+
+              _logoImage = null;
 
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();

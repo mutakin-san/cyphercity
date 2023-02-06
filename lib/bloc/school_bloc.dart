@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,7 +21,7 @@ class SchoolBloc extends Bloc<SchoolEvent, SchoolState> {
       emit(SchoolLoading());
 
       final result =
-          await _repository.getDetailSchool(event.id);
+          await _repository.getDetailSchool(event.userId);
 
       if (result.data != null) {
         emit(SchoolLoaded(result.data!));
@@ -33,17 +31,36 @@ class SchoolBloc extends Bloc<SchoolEvent, SchoolState> {
     });
 
     on<EditSchoolBiodata>((event, emit) async {
+      emit(SchoolLoading());
+
       try {
         final result = await _repository.editBiodata(kode: event.kode, idUser: event.idUser, namaSekolah: event.namaSekolah, npsn: event.npsn, biodata: event.biodata, image: event.image);
 
         if(result) {
           add(LoadSchool(event.idUser));
+        } else {
+          emit(const SchoolFailed("Edit Sekolah Gagal"));
         }
         
       } catch (e) {
         emit(SchoolFailed(e.toString()));
       }
 
+    });
+
+    on<EditSchoolLogo>((event, emit) async {
+      emit(SchoolLoading());
+
+      try {
+        final result = await _repository.uploadSchoolLogo(schoolId: event.schoolId, userId: event.userId, image: event.image);
+
+        if(result) {
+          add(LoadSchool(event.userId));
+        }
+
+      } catch (e) {
+        emit(SchoolFailed(e.toString()));
+      }
     });
   }
 }

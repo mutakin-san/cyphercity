@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/bloc.dart';
-import '../bloc/user_bloc.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 

@@ -1,5 +1,4 @@
 import '../bloc/bloc.dart';
-import '../cubit/tim_cubit.dart';
 import '../models/event.dart';
 import '../services/api_services.dart';
 import '../utilities/colors.dart';
@@ -21,7 +20,7 @@ class RegisterCompetitionScreen extends StatefulWidget {
 }
 
 class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
-  int _numberOfTeam = 0;
+  int _numberOfTeam = 1;
   late String _selectedTeam;
 
   late String userId;
@@ -52,18 +51,9 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 16),
-                      BlocBuilder<SchoolBloc, SchoolState>(
-                        builder: (context, state) {
-                          if (state is SchoolLoaded) {
-                            return BrandLogo(
-                                width: 50,
-                                height: 50,
-                                logoUrl: state.data.logo);
-                          }
-
-                          return const SizedBox(height: 50);
-                        },
-                      ),
+                      const BrandLogo(
+                          width: 50,
+                          height: 50),
                       const SizedBox(height: 16),
                       Text(
                         event.namaEvent,
@@ -78,13 +68,13 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                           child: Builder(builder: (_) {
                             if (userId.isNotEmpty && schoolId.isNotEmpty) {
                               context
-                                  .read<TimCubit>()
-                                  .loadTim(userId, schoolId);
+                                  .read<TimBloc>()
+                                  .add(LoadTim(userId, schoolId));
                             }
 
                             return Column(
                               children: [
-                                BlocBuilder<TimCubit, TimState>(
+                                BlocBuilder<TimBloc, TimState>(
                                   builder: (context, state) {
                                     if (state is TimLoaded) {
                                       return Column(
@@ -99,7 +89,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                             }).toList(),
                                             onChanged: (value) {
                                               setState(() {
-                                                _numberOfTeam = value! - 1;
+                                                _numberOfTeam = value!;
                                               });
                                             },
                                             label: "Number of Teams",
@@ -139,7 +129,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                 const SizedBox(height: 16),
                                 Center(
                                   child: CCMaterialRedButton(
-                                      onPressed: () async {
+                                      onPressed: _numberOfTeam > 0 ? () async {
                                         if (userId.isNotEmpty &&
                                             schoolId.isNotEmpty) {
                                           final result =
@@ -156,7 +146,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                                   content: Text(
                                                       "${result.message}")));
                                         }
-                                      },
+                                      } : null,
                                       text: "REG"),
                                 ),
                               ],

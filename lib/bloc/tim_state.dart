@@ -1,4 +1,4 @@
-part of 'tim_cubit.dart';
+part of 'tim_bloc.dart';
 
 abstract class TimState extends Equatable {
   const TimState();

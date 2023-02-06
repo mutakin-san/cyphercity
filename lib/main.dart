@@ -1,4 +1,3 @@
-import '../cubit/tim_cubit.dart';
 import '../utilities/colors.dart';
 import '../screens/add_team_players_screen.dart';
 import '../screens/add_team_screen.dart';
@@ -26,6 +25,9 @@ void main() {
       RepositoryProvider(
         create: (_) => SchoolRepository(),
       ),
+      RepositoryProvider(
+        create: (_) => TeamRepository(),
+      ),
     ],
     child: const MyApp(),
   ));
@@ -51,7 +53,11 @@ class MyApp extends StatelessWidget {
           },
         ),
         BlocProvider(
-          create: (_) => TimCubit(),
+          
+          create: (_) {
+            final teamRepo = RepositoryProvider.of<TeamRepository>(context);
+            return TimBloc(teamRepo);
+          },
         )
       ],
       child: MaterialApp(

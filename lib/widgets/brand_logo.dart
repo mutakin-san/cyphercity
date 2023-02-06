@@ -16,7 +16,8 @@ class BrandLogo extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        image: (logoUrl != null && logoUrl!.isNotEmpty) ? DecorationImage(image: NetworkImage("$logoUrl")) : const DecorationImage(image: AssetImage("assets/images/cc_logo.png"))
+        shape: (logoUrl != null) ? BoxShape.circle : BoxShape.rectangle,
+        image: (logoUrl != null && logoUrl!.isNotEmpty) ? DecorationImage(image: NetworkImage("$logoUrl"), fit: BoxFit.cover) : const DecorationImage(image: AssetImage("assets/images/cc_logo.png"))
       ),
     );
   }

@@ -1,12 +1,9 @@
 import 'dart:convert';
 
-import '../models/school.dart';
 import '../models/user.dart';
 import '../utilities/config.dart';
 import '../models/api_response.dart';
 import '../services/api_return_value.dart';
-import 'package:image_picker/image_picker.dart';
-
 import '../models/cabor.dart';
 import 'package:http/http.dart' as http;
 
@@ -197,42 +194,6 @@ class ApiServices {
     }
   }
 
-  Future<ApiReturnValue<List<Tim>>> getListTim(
-      {required String idUser, required String idSekolah}) async {
-    late ApiReturnValue<List<Tim>> returnValue;
-
-    try {
-      final result =
-          await _client.post(Uri.parse("$baseUrl/api/ws/getListTim"), body: {
-        'id_user': idUser.trim(),
-        'id_sekolah': idSekolah.trim(),
-      });
-
-      if (result.statusCode == 200) {
-        final Map<String, dynamic> response = jsonDecode(result.body);
-        final apiResponse = ApiResponse.fromJson(response);
-
-        if (apiResponse.status == 'success' && apiResponse.code == 200) {
-          final data = (apiResponse.response as List)
-              .map((e) => Tim.fromMap(e))
-              .toList();
-
-          returnValue =
-              ApiReturnValue(data: data, message: apiResponse.message);
-        } else {
-          returnValue = ApiReturnValue(message: apiResponse.message);
-        }
-      } else if (result.statusCode == 404) {
-        returnValue = const ApiReturnValue(message: "Resource not found");
-      } else {
-        returnValue = const ApiReturnValue(message: "Something error");
-      }
-
-      return returnValue;
-    } catch (e) {
-      return ApiReturnValue(message: e.toString());
-    }
-  }
 
   Future<ApiReturnValue<ApiResponse>> registerEvent(
       {required String idEvent, required String idUser, required String idSekolah, required String idTim}) async {
