@@ -11,7 +11,9 @@ import '../widgets/cc_dropdown_form_field.dart';
 import '../widgets/cc_material_button.dart';
 
 class RegisterCompetitionScreen extends StatefulWidget {
-  const RegisterCompetitionScreen({super.key});
+  const RegisterCompetitionScreen({super.key, required this.event});
+
+  final Event event;
 
   @override
   State<RegisterCompetitionScreen> createState() =>
@@ -21,23 +23,36 @@ class RegisterCompetitionScreen extends StatefulWidget {
 class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
   int _numberOfTeam = 1;
   List<int> _selectedTeams = [];
-  late int _selectedTeam;
+  bool isLoading = false;
 
   late String userId;
   late String schoolId;
 
   final _formKey = GlobalKey<FormState>();
 
+  late TimBloc timBloc;
+
   @override
   void initState() {
+
     userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
     schoolId = (context.read<SchoolBloc>().state as SchoolLoaded).data.id;
+    timBloc = context
+        .read<TimBloc>();
+    if (userId.isNotEmpty && schoolId.isNotEmpty) {
+          
+      timBloc.add(LoadTim(userId, schoolId, widget.event.idCabor));
+    }
     super.initState();
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final event = ModalRoute.of(context)?.settings.arguments as Event;
     return Scaffold(
       backgroundColor: Color.gray,
       body: SafeArea(
@@ -54,7 +69,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                       const BrandLogo(width: 50, height: 50),
                       const SizedBox(height: 16),
                       Text(
-                        event.namaEvent,
+                        widget.event.namaEvent,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
@@ -63,14 +78,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                         key: _formKey,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Builder(builder: (_) {
-                            if (userId.isNotEmpty && schoolId.isNotEmpty) {
-                              context
-                                  .read<TimBloc>()
-                                  .add(LoadTim(userId, schoolId, event.idCabor));
-                            }
-
-                            return Column(
+                          child: Column(
                               children: [
                                 BlocBuilder<TimBloc, TimState>(
                                   builder: (context, state) {
@@ -88,6 +96,12 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                             onChanged: (value) {
                                               setState(() {
                                                 _numberOfTeam = value!;
+                                                if(_selectedTeams.length < _numberOfTeam) {
+                                                  _selectedTeams.addAll(List.generate(_numberOfTeam - _selectedTeams.length, (index) => int.parse(state.data.first.id)));
+                                                } else {
+                                                  _selectedTeams.removeRange(_numberOfTeam, _selectedTeams.length);
+                                                }
+
                                               });
                                             },
                                             label: "Number of Teams",
@@ -100,7 +114,11 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                       );
                                     }
 
-                                    return const SizedBox();
+                                    if(state is TimFailed) {
+                                      return Center(child: Text(state.message));
+                                    }
+
+                                    return Center(child: CircularProgressIndicator(color: Color.yellow));
                                   },
                                 ),
                                 const SizedBox(height: 8),
@@ -112,7 +130,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(
-                                            context, '/submit-team');
+                                            context, '/submit-team', arguments: widget.event.idCabor);
                                       },
                                       child: Text(
                                         "Click Here",
@@ -126,14 +144,14 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Center(
-                                  child: CCMaterialRedButton(
+                                  child: isLoading ? Center(child: CircularProgressIndicator(color: Color.yellow)): CCMaterialRedButton(
                                       onPressed: _numberOfTeam > 0
                                           ? () async {
+                                              setState(() {
+                                                isLoading = true;
+                                              });
                                               if (userId.isNotEmpty &&
                                                   schoolId.isNotEmpty) {
-                                                print(_selectedTeams);
-
-                                                return;
 
                                                 for (var idTeam
                                                     in _selectedTeams) {
@@ -142,7 +160,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                                               .of<EventRepository>(
                                                                   context)
                                                           .registerEvent(
-                                                              idEvent: event.id,
+                                                              idEvent: widget.event.id,
                                                               idUser: userId,
                                                               idSekolah:
                                                                   schoolId,
@@ -158,16 +176,25 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                                         .showSnackBar(SnackBar(
                                                             content: Text(
                                                                 "${result.message}")));
+                                                  } else {
+                                                    // ignore: use_build_context_synchronously
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(SnackBar(
+                                                            content: Text(
+                                                                "${result.message}")));
                                                   }
                                                 }
                                               }
+                                              setState(() {
+                                                isLoading = false;
+                                              });
                                             }
                                           : null,
                                       text: "REG"),
                                 ),
-                              ],
-                            );
-                          }),
+                            ],
+                          )
                         ),
                       )
                     ],
@@ -187,10 +214,11 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
 
   List<Widget> buildTeamSelection(int numberOfTeam, List<Tim> teams) {
     if(teams.isNotEmpty) {
-      _selectedTeams = List.generate(numberOfTeam, (index) => int.parse(teams.first.id));
-
-      _selectedTeam = int.parse(teams.first.id);
+      if(_selectedTeams.isEmpty){
+        _selectedTeams = List.generate(_numberOfTeam, (index) => int.parse(teams.first.id));
+      } 
       return List.generate(numberOfTeam, (index) {
+        int selectedTeam = int.parse(teams.first.id);
         return CCDropdownFormField<int>(
           items: teams
               .map((e) => DropdownMenuItem(
@@ -198,13 +226,12 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
             child: Text(e.namaTeam),
           ))
               .toList(),
-          selectedValue: _selectedTeams[index],
+          selectedValue: selectedTeam,
           onChanged: (value) {
-            setState(() {
-              final List<int> newList = [..._selectedTeams];
-              newList[index] = value!;
-              _selectedTeams = newList;
-            });
+              selectedTeam = value!;
+              _selectedTeams[index] = selectedTeam;
+            // setState(() {
+            // });
           },
           label: "Select Team",
           labelColor: Colors.black,

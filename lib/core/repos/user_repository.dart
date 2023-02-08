@@ -42,6 +42,7 @@ class UserRepository {
       noHp: noHp,
       password: password,
       confirmPassword: confirmPassword,
+      statusSekolah: statusSekolah,
     );
 
     if (result.data != null) {

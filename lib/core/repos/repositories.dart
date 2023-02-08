@@ -1,5 +1,5 @@
-import 'package:cyphercity/core/local/local.dart';
-import 'package:cyphercity/core/network/network.dart';
+import '../../../../core/local/local.dart';
+import '../../../../core/network/network.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';

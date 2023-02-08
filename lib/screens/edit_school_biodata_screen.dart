@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cyphercity/utilities/config.dart';
+import '../utilities/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
@@ -14,7 +14,9 @@ import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class EditSchoolBiodataScreen extends StatefulWidget {
-  const EditSchoolBiodataScreen({super.key});
+  const EditSchoolBiodataScreen({super.key, this.kode});
+
+  final String? kode;
 
   @override
   State<EditSchoolBiodataScreen> createState() =>
@@ -62,7 +64,6 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final kode = ModalRoute.of(context)?.settings.arguments as String?;
     return Scaffold(
       body: Stack(
         children: [
@@ -232,7 +233,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                                   .yellow));
                                                 } else {
                                                   return buildButton(
-                                                      context, kode);
+                                                      context, widget.kode);
                                                 }
                                               },
                                               listener: (context, state) {
@@ -362,7 +363,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                 child: IconButton(
                                                     color: Color.yellow,
                                                     onPressed: () =>
-                                                        getLogoImage(kode,
+                                                        getLogoImage(widget.kode,
                                                             userId, context),
                                                     icon: Container(
                                                       padding:
@@ -387,7 +388,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                             } else {
                                               return GestureDetector(
                                                 onTap: () => getLogoImage(
-                                                    kode, userId, context),
+                                                    widget.kode, userId, context),
                                                 child: Text(
                                                   "Upload\nLogo Team",
                                                   textAlign: TextAlign.center,
@@ -429,8 +430,6 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
             text: "SUBMIT",
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
-
-              _logoImage = null;
 
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();

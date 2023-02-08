@@ -7,7 +7,9 @@ import '../utilities/colors.dart';
 import '../widgets/cc_material_button.dart';
 
 class AddTeamPlayersScreen extends StatefulWidget {
-  const AddTeamPlayersScreen({super.key});
+  const AddTeamPlayersScreen({super.key, required this.team});
+
+  final Team team;
 
   @override
   State<AddTeamPlayersScreen> createState() => _AddTeamPlayersScreenState();
@@ -16,14 +18,18 @@ class AddTeamPlayersScreen extends StatefulWidget {
 class _AddTeamPlayersScreenState extends State<AddTeamPlayersScreen> {
   int numberOfPlayer = 1;
 
+
   @override
-  Widget build(BuildContext context) {
-    final team = ModalRoute.of(context)?.settings.arguments as Team;
+  void initState() {
     final userId = (context.read<UserBloc>().state as UserAuthenticated)
         .user
         .userId;
-    context.read<PlayerBloc>().add(LoadPlayer(userId, team.id));
+    context.read<PlayerBloc>().add(LoadPlayer(userId, widget.team.id));
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.gray,
       body: SafeArea(
@@ -39,11 +45,11 @@ class _AddTeamPlayersScreenState extends State<AddTeamPlayersScreen> {
                       child: CircleAvatar(
                         radius: 45,
                         backgroundColor: Colors.white,
-                        child: team.logo,
+                        child: widget.team.logo,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(team.name,
+                    Text(widget.team.name,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 16),
@@ -51,7 +57,7 @@ class _AddTeamPlayersScreenState extends State<AddTeamPlayersScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Pemain ${team.name}"),
+                          Text("Pemain ${widget.team.name}"),
                           const SizedBox(height: 30),
                           BlocBuilder<PlayerBloc, PlayerState>(
                               builder: (context, state) {
@@ -79,7 +85,7 @@ class _AddTeamPlayersScreenState extends State<AddTeamPlayersScreen> {
                                               onPressed: () {
                                             Navigator.pushNamed(
                                                 context, '/submit-player',
-                                                arguments: team.id);
+                                                arguments: widget.team.id);
                                           })),
                                 ],
                               );

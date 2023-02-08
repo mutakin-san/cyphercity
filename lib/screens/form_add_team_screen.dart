@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import '../screens/add_team_screen.dart';
+import '../widgets/cc_dropdown_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
@@ -13,7 +15,9 @@ import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class FormAddTeamScreen extends StatefulWidget {
-  const FormAddTeamScreen({super.key});
+  const FormAddTeamScreen({super.key, required this.caborId});
+
+  final String caborId;
 
   @override
   State<FormAddTeamScreen> createState() => _FormAddTeamScreenState();
@@ -34,6 +38,7 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
       TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  String teamType = TeamType.PA.name;
 
   late String userId;
   late String schoolId;
@@ -60,17 +65,13 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final routeData =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>;
-    final idCabor = routeData['id_cabor'] as String;
-    final teamType = routeData['team_type'] as String;
     return BlocListener<TimBloc, TimState>(
       listener: (context, state) {
         if (state is TimCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Tim berhasil dibuat!")));
 
-          context.read<TimBloc>().add(LoadTim(userId, schoolId, idCabor));
+          // context.read<TimBloc>().add(LoadTim(userId, schoolId, widget.caborId));
 
           Future.delayed(const Duration(seconds: 2))
               .then((value) => Navigator.pop(context));
@@ -140,6 +141,12 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                                   .required()
                                                   .build(),
                                               textColor: Colors.black),
+                                          const SizedBox(height: 8),
+                                          CCDropdownFormField(label: 'Tipe Team', labelColor: Colors.black, items: TeamType.values.map((e) => DropdownMenuItem(value: e.name,child: Text(e.name))).toList(), selectedValue: teamType, onChanged: (value) {
+                                            setState(() {
+                                              teamType = value!;
+                                            });
+                                          },),
                                           const SizedBox(height: 8),
                                           CCTextFormField(
                                               controller: pembinaCtrl,
@@ -257,7 +264,7 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                                 }
 
                                                 return buildButton(
-                                                    context, idCabor, teamType);
+                                                    context, widget.caborId, teamType);
                                               },
                                             ),
                                           ),

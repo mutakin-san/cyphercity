@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cyphercity/bloc/bloc.dart';
+import '../bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
@@ -11,7 +11,9 @@ import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class FormAddPlayerScreen extends StatefulWidget {
-  const FormAddPlayerScreen({super.key});
+  const FormAddPlayerScreen({super.key, required this.teamId});
+
+  final String teamId;
 
   @override
   State<FormAddPlayerScreen> createState() => _FormAddPlayerScreenState();
@@ -69,17 +71,14 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final teamId = ModalRoute.of(context)?.settings.arguments as String;
-    final userId =
-        (context.read<UserBloc>().state as UserAuthenticated).user.userId;
-
+    
     return BlocListener<PlayerBloc, PlayerState>(
       listener: (_, state) {
         if (state is PlayerCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Pemain berhasil dibuat!")));
 
-          context.read<PlayerBloc>().add(LoadPlayer(userId, teamId));
+          // context.read<PlayerBloc>().add(LoadPlayer(userId, teamId));
 
           Future.delayed(const Duration(seconds: 2))
               .then((value) => Navigator.pop(context));
@@ -329,7 +328,7 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                         color: Color.yellow);
                                   }
 
-                                  return buildButton(context, userId, teamId);
+                                  return buildButton(context);
                                 },
                               ),
                             ),
@@ -385,7 +384,10 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
   }
 
   CCMaterialRedButton buildButton(
-      BuildContext context, String userId, String teamId) {
+      BuildContext context) {
+        final userId =
+        (context.read<UserBloc>().state as UserAuthenticated).user.userId;
+
     return CCMaterialRedButton(
       text: "SUBMIT",
       onPressed: () {
@@ -400,10 +402,10 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
             return;
           }
 
-          if (userId.isNotEmpty && teamId.isNotEmpty) {
+          if (userId.isNotEmpty && widget.teamId.isNotEmpty) {
             context.read<PlayerBloc>().add(AddNewPlayer(
                 idUser: userId,
-                idTim: teamId,
+                idTim: widget.teamId,
                 playerName: playerNameCtrl.text,
                 tglLahir: tanggalLahirCtrl.text,
                 nisn: nisnCtrl.text,

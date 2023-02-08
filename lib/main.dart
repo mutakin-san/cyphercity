@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../models/event.dart';
+import '../models/team.dart';
 import '../screens/add_team_players_screen.dart';
 import '../screens/add_team_screen.dart';
 import '../screens/edit_school_biodata_screen.dart';
@@ -14,6 +16,7 @@ import '../screens/splash_screen.dart';
 import '../utilities/colors.dart';
 import 'bloc/bloc.dart';
 import 'core/repos/repositories.dart';
+import 'models/cabor.dart';
 import 'screens/main_screen.dart';
 
 void main() {
@@ -84,19 +87,50 @@ class MyApp extends StatelessWidget {
               onSecondary: Colors.white,
             )),
         initialRoute: '/',
-        routes: {
-          '/': (context) => const SplashScreen(),
-          '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegisterScreen(),
-          '/main': (context) => const MainScreen(),
-          '/edit-biodata': (context) => const EditSchoolBiodataScreen(),
-          '/add-team': (context) => const AddTeamScreen(),
-          '/submit-team': (context) => const FormAddTeamScreen(),
-          '/submit-player': (context) => const FormAddPlayerScreen(),
-          '/add-players': (context) => const AddTeamPlayersScreen(),
-          '/register-competition': (context) =>
-              const RegisterCompetitionScreen(),
-          '/information': (context) => const InformationScreen()
+        onGenerateRoute: (settings) {
+          final args = settings.arguments;
+
+          switch (settings.name) {
+            case '/':
+              return MaterialPageRoute(
+                  builder: (context) => const SplashScreen());
+            case '/login':
+              return MaterialPageRoute(
+                  builder: (context) => const LoginScreen());
+            case '/register':
+              return MaterialPageRoute(
+                  builder: (context) => const RegisterScreen());
+            case '/main':
+              return MaterialPageRoute(
+                  builder: (context) => const MainScreen());
+            case '/edit-biodata':
+              return MaterialPageRoute(
+                  builder: (context) => EditSchoolBiodataScreen(kode: args as String?,));
+            case '/add-team':
+              return MaterialPageRoute(
+                  builder: (context) => AddTeamScreen(cabor: args as Cabor));
+            case '/submit-team':
+              return MaterialPageRoute(
+                  builder: (context) => FormAddTeamScreen(caborId: args as String));
+            case '/submit-player':
+              return MaterialPageRoute(
+                builder: (context) => FormAddPlayerScreen(teamId: args as String),
+              );
+            case '/add-players':
+              return MaterialPageRoute(
+                builder: (context) => AddTeamPlayersScreen(team: args as Team),
+              );
+            case '/register-competition':
+              return MaterialPageRoute(
+                  builder: (context) => RegisterCompetitionScreen(event: args as Event));
+            case '/information':
+              return MaterialPageRoute(
+                  builder: (context) => const InformationScreen());
+            default:
+              return MaterialPageRoute(
+                  builder: (context) => const Scaffold(
+                      body: Center(child: Text("Page Not Found"))));
+          }
         },
       ),
     );

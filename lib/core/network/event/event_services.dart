@@ -42,7 +42,7 @@ class EventServices {
 
     try {
       final result =
-          await _client.post(Uri.parse("$baseUrl/api/ws/RegisEvent"), body: {
+          await _client.post(Uri.parse(registerEventUrl), body: {
         'id_event': idEvent.trim(),
         'id_user': idUser.trim(),
         'id_sekolah': idSekolah.trim(),
@@ -59,10 +59,8 @@ class EventServices {
         } else {
           returnValue = ApiReturnValue(message: apiResponse.message);
         }
-      } else if (result.statusCode == 404) {
-        returnValue = const ApiReturnValue(message: "Resource not found");
       } else {
-        returnValue = const ApiReturnValue(message: "Something error");
+        returnValue = ApiReturnValue(message: result.reasonPhrase);
       }
 
       return returnValue;

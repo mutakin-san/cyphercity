@@ -1,8 +1,8 @@
-import 'package:cyphercity/core/network/network.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/bloc.dart';
+import '../core/repos/repositories.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
@@ -13,7 +13,6 @@ class EventsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final apiServices = EventServices();
     return Stack(
       children: [
         const BackgroundGradient(),
@@ -77,7 +76,7 @@ class EventsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             FutureBuilder(
-              future: apiServices.getAllEvents(),
+              future: RepositoryProvider.of<EventRepository>(context).getAllEvents(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(

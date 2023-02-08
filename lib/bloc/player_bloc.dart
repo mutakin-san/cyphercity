@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:cyphercity/core/repos/repositories.dart';
+import '../core/repos/repositories.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -13,6 +13,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   PlayerBloc(this._teamRepository) : super(PlayerInitial()) {
     on<LoadPlayer>((event, emit) async {
+      emit(PlayerLoading());
       final result = await _teamRepository.getListPlayer(
           idUser: event.idUser, idTim: event.idTim);
       if (result.data != null) {

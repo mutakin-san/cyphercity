@@ -13,3 +13,4 @@ const editBiodataUrl = "$baseUrl/api/ws/EditSekolah";
 const createTeamUrl = "$baseUrl/api/ws/CreateTim";
 const createPlayerUrl = "$baseUrl/api/ws/CreatePemain";
 const uploadLogoUrl = "$baseUrl/api/ws/editLogoSekolah";
+const registerEventUrl = "$baseUrl/api/event/RegisEvent";

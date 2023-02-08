@@ -85,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   selectedValue: _selectedUserType,
                                   onChanged: (value) {
                                     setState(() {
-                                      _selectedUserType = value ?? 0;
+                                      _selectedUserType = value!;
                                     });
                                   }),
                               const SizedBox(height: 16),

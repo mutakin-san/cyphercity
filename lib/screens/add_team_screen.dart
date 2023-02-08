@@ -10,7 +10,9 @@ import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 
 class AddTeamScreen extends StatefulWidget {
-  const AddTeamScreen({super.key});
+  const AddTeamScreen({super.key, required this.cabor});
+
+  final Cabor cabor;
 
   @override
   State<AddTeamScreen> createState() => _AddTeamScreenState();
@@ -24,13 +26,12 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   void initState() {
     userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
     schoolId = (context.read<SchoolBloc>().state as SchoolLoaded).data.id;
+    context.read<TimBloc>().add(LoadTim(userId, schoolId, widget.cabor.id));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cabor = ModalRoute.of(context)?.settings.arguments as Cabor;
-    context.read<TimBloc>().add(LoadTim(userId, schoolId, cabor.id));
     return Scaffold(
       body: Stack(
         children: [
@@ -110,17 +111,12 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                                   CrossAxisAlignment.stretch,
                                               children: [
                                                 AddTeamList(
-                                                    title: cabor.namaCabor,
+                                                    title: widget.cabor.namaCabor,
                                                     createNewPressed: () {
                                                       Navigator.pushNamed(
                                                           context,
                                                           '/submit-team',
-                                                          arguments: {
-                                                            'id_cabor':
-                                                                cabor.id,
-                                                            'team_type':
-                                                                TeamType.PA.name
-                                                          });
+                                                          arguments: widget.cabor.id);
                                                     },
                                                     teams: state.data
                                                         .map((tim) => Team(
@@ -135,7 +131,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                                                 image:
                                                                     DecorationImage(
                                                                   image: NetworkImage(
-                                                                      "$baseImageUrlCabor/${cabor.gambar}"),
+                                                                      "$baseImageUrlCabor/${widget.cabor.gambar}"),
                                                                 ),
                                                               ),
                                                             )))
@@ -175,7 +171,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: NetworkImage(
-                                            "$baseImageUrlCabor/${cabor.gambar}"),
+                                            "$baseImageUrlCabor/${widget.cabor.gambar}"),
                                       ),
                                     ),
                                   )),

@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:cyphercity/core/repos/repositories.dart';
+import '../core/repos/repositories.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -13,6 +13,7 @@ class TimBloc extends Bloc<TimEvent, TimState> {
 
   TimBloc(this._teamRepository) : super(TimInitial()) {
     on<LoadTim>((event, emit) async {
+      emit(TimLoading());
       final result = await _teamRepository.getListTim(
           idUser: event.idUser, idSekolah: event.idSchool, idCabor: event.idCabor);
       if (result.data != null) {
@@ -43,17 +44,5 @@ class TimBloc extends Bloc<TimEvent, TimState> {
         emit(TimFailed(result.message ?? "Something error"));
       }
     });
-  }
-
-  List<Tim> getTeamByCabor(String idCabor) {
-    if (state is TimLoaded) {
-      final filteredData = (state as TimLoaded)
-          .data
-          .where((element) => element.idCabor == idCabor)
-          .toList();
-      return filteredData;
-    } else {
-      return [];
-    }
   }
 }

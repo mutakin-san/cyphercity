@@ -13,6 +13,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   UserBloc(this._repository) : super(UserInitial()) {
     on<LoadUser>((event, emit) async {
+      emit(UserLoading());
       final isLogin = await _repository.isLogin;
       final loginDetails = await _repository.loginDetails;
       if (isLogin && loginDetails != null) {

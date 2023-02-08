@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cyphercity/utilities/config.dart';
+import '../../../../utilities/config.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 

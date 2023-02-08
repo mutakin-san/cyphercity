@@ -26,7 +26,7 @@ class TeamServices {
           returnValue =
               ApiReturnValue(data: data, message: apiResponse.message);
         } else {
-          returnValue = ApiReturnValue(message: apiResponse.message);
+          returnValue = ApiReturnValue(data: [], message: apiResponse.message);
         }
       } else {
         returnValue = ApiReturnValue(message: result.reasonPhrase);
