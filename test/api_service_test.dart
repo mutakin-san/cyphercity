@@ -1,13 +1,12 @@
+import 'package:cyphercity/core/network/api_return_value.dart';
+import 'package:cyphercity/models/cabor.dart';
+import 'package:cyphercity/models/event.dart';
 import 'package:cyphercity/models/tim.dart';
 import 'package:cyphercity/models/user.dart';
 import 'package:cyphercity/utilities/config.dart';
-import 'package:cyphercity/models/cabor.dart';
-import 'package:cyphercity/models/event.dart';
-import 'package:cyphercity/services/api_return_value.dart';
-import 'package:cyphercity/services/api_services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'api_service_test.mocks.dart';
@@ -247,7 +246,6 @@ void main() {
     });
   });
 
-
   test('Test Get ID Tim', () async {
     const httpResponse =
         """{"code":200,"status":"success","response":[{"id": "1", "id_user":"1","id_sekolah":"1","id_cabor":"1","nama_team":"Nedascis Futsal A","pembina":"Ilham","pelatih":"Ilham","asisten_pelatih":"Ilham","team_medis":"Ilham","kordinator_supporter":"Ilham","0":true}]}""";
@@ -271,7 +269,6 @@ void main() {
         .thenAnswer((_) async => http.Response(httpResponse, 200));
 
     final result = await apiServices.getIDTim(idUser: "1", idSekolah: "1");
-
 
     expect(result, isA<ApiReturnValue>());
     expect(result.data, isA<List<Tim>>());

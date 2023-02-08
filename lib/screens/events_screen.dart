@@ -1,19 +1,19 @@
+import 'package:cyphercity/core/network/network.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
-import '../services/api_services.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/cc_material_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final apiServices = ApiServices(http.Client());
+    final apiServices = EventServices();
     return Stack(
       children: [
         const BackgroundGradient(),
@@ -136,7 +136,7 @@ class EventsScreen extends StatelessWidget {
                                     ])),
                             BlocBuilder<SchoolBloc, SchoolState>(
                               builder: (context, state) {
-                                if(state is SchoolLoaded) {
+                                if (state is SchoolLoaded) {
                                   return CCMaterialRedButton(
                                     onPressed: () {
                                       Navigator.pushNamed(
@@ -147,7 +147,6 @@ class EventsScreen extends StatelessWidget {
                                     text: "REG",
                                   );
                                 }
-
 
                                 return const SizedBox();
                               },

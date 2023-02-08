@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
 class BrandLogo extends StatelessWidget {
-  const BrandLogo({
-    Key? key, this.isDark = false, required this.width, required this.height, this.logoUrl
-  }) : super(key: key);
+  const BrandLogo(
+      {Key? key,
+      this.isDark = false,
+      required this.width,
+      required this.height,
+      this.logoUrl})
+      : super(key: key);
 
   final bool isDark;
   final double width;
@@ -16,9 +20,12 @@ class BrandLogo extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        shape: (logoUrl != null) ? BoxShape.circle : BoxShape.rectangle,
-        image: (logoUrl != null && logoUrl!.isNotEmpty) ? DecorationImage(image: NetworkImage("$logoUrl"), fit: BoxFit.cover) : const DecorationImage(image: AssetImage("assets/images/cc_logo.png"))
-      ),
+          shape: (logoUrl != null) ? BoxShape.circle : BoxShape.rectangle,
+          image: (logoUrl != null && logoUrl!.isNotEmpty)
+              ? DecorationImage(
+                  image: NetworkImage("$logoUrl"), fit: BoxFit.cover)
+              : const DecorationImage(
+                  image: AssetImage("assets/images/cc_logo.png"))),
     );
   }
 }

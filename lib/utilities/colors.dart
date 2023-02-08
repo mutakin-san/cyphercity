@@ -1,4 +1,4 @@
- import 'package:supercharged/supercharged.dart';
+import 'package:supercharged/supercharged.dart';
 
 class Color {
   static final redPurple = "#6F233F".toColor();
@@ -7,6 +7,4 @@ class Color {
   static final red = "#E5322C".toColor();
   static final yellow = "#FFEF11".toColor();
   static final gray = "#DEDDDD".toColor();
-  
-  
 }

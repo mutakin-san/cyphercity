@@ -18,12 +18,10 @@ class UserRepository {
       return false;
     }
   }
-  
-  Future<ApiReturnValue<User?>> getDetailUser(
-      {required String userId}) async {
 
+  Future<ApiReturnValue<User?>> getDetailUser({required String userId}) async {
     final result = await _network.getDetailUser(
-      userId : userId,
+      userId: userId,
     );
 
     return result;

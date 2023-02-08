@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:form_validator/form_validator.dart';
+
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/cc_dropdown_form_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:form_validator/form_validator.dart';
-
 import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
@@ -45,8 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         if (state is UserAuthenticated) {
           context.read<SchoolBloc>().add(LoadSchool(state.user.userId));
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);        }
-
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+        }
       },
       child: Scaffold(
         body: Stack(
@@ -168,8 +168,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     return Center(
                                         child: CircularProgressIndicator(
                                             color: Color.yellow));
-                                  } else if (state is UserError) {
-                                    return buildButton(context);
                                   } else {
                                     return buildButton(context);
                                   }
@@ -227,14 +225,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _formKey.currentState!.save();
 
           context.read<UserBloc>().add(UserRegister(
-            email: emailCtrl.text,
-            username: usernameCtrl.text,
-            name: nameCtrl.text,
-            password: passwordCtrl.text,
-            confirmPassword: confirmPasswordCtrl.text,
-            noHp: noHpCtrl.text,
-            statusSekolah: _selectedUserType,
-          ));
+                email: emailCtrl.text,
+                username: usernameCtrl.text,
+                name: nameCtrl.text,
+                password: passwordCtrl.text,
+                confirmPassword: confirmPasswordCtrl.text,
+                noHp: noHpCtrl.text,
+                statusSekolah: _selectedUserType,
+              ));
         }
       },
     );

@@ -1,23 +1,59 @@
 import 'package:bloc/bloc.dart';
 import 'package:cyphercity/core/repos/repositories.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
+
 import '../models/tim.dart';
 
-part 'tim_state.dart';
 part 'tim_event.dart';
+part 'tim_state.dart';
 
 class TimBloc extends Bloc<TimEvent, TimState> {
   final TeamRepository _teamRepository;
-  TimBloc(this._teamRepository) : super(TimInitial()) {
 
+  TimBloc(this._teamRepository) : super(TimInitial()) {
     on<LoadTim>((event, emit) async {
-      final result =
-          await _teamRepository.getListTim(idUser: event.idUser, idSekolah: event.idSchool);
+      final result = await _teamRepository.getListTim(
+          idUser: event.idUser, idSekolah: event.idSchool, idCabor: event.idCabor);
       if (result.data != null) {
         emit(TimLoaded(result.data!));
       } else {
         emit(TimFailed(result.message ?? "Something error"));
       }
     });
+
+    on<AddNewTeam>((event, emit) async {
+      emit(TimLoading());
+      final result = await _teamRepository.createTeam(
+          idUser: event.idUser,
+          idSchool: event.idSchool,
+          idCabor: event.idCabor,
+          namaTeam: event.namaTeam,
+          pembina: event.pembina,
+          pelatih: event.pelatih,
+          asistenPelatih: event.asistenPelatih,
+          teamMedis: event.teamMedis,
+          kordinatorSupporter: event.kordinatorSupporter,
+          teamType: event.teamType,
+          skkpImage: event.skkpImage);
+
+      if (result.data != null) {
+        emit(TimCreated(result.data!));
+      } else {
+        emit(TimFailed(result.message ?? "Something error"));
+      }
+    });
+  }
+
+  List<Tim> getTeamByCabor(String idCabor) {
+    if (state is TimLoaded) {
+      final filteredData = (state as TimLoaded)
+          .data
+          .where((element) => element.idCabor == idCabor)
+          .toList();
+      return filteredData;
+    } else {
+      return [];
+    }
   }
 }

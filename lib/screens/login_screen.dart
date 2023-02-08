@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
 
+import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
-import '../bloc/bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,7 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
           context.read<SchoolBloc>().add(LoadSchool(state.user.userId));
           Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
         }
-
       },
       child: Scaffold(
         body: Stack(
@@ -97,8 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       return Center(
                                           child: CircularProgressIndicator(
                                               color: Color.yellow));
-                                    } else if (state is UserError) {
-                                      return buildButton(context);
                                     } else {
                                       return buildButton(context);
                                     }
@@ -156,7 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
 
-          context.read<UserBloc>().add(UserLogin(usernameCtrl.text, passwordCtrl.text));
+          context
+              .read<UserBloc>()
+              .add(UserLogin(usernameCtrl.text, passwordCtrl.text));
         }
       },
     );

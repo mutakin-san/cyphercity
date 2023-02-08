@@ -1,8 +1,6 @@
 part of 'auth.dart';
 
-
 class AuthServices {
-  
   static final Client _client = Client();
 
   Future<ApiReturnValue<User?>> register(
@@ -13,10 +11,7 @@ class AuthServices {
       required String password,
       required String confirmPassword,
       int? statusSekolah = 0}) async {
-        
     late ApiReturnValue<User?> returnValue;
-
-
 
     try {
       final body = {
@@ -32,15 +27,17 @@ class AuthServices {
       final result = await _client.post(Uri.parse(registerUrl), body: body);
 
       if (result.statusCode == 200) {
-
-        final Map<String, dynamic> response = jsonDecode(utf8.decode(result.bodyBytes));
+        final Map<String, dynamic> response =
+            jsonDecode(utf8.decode(result.bodyBytes));
 
         final apiResponse = ApiResponse.fromJson(response);
 
-        if (apiResponse.status == 'success' && apiResponse.code == 200 && apiResponse.response != null) {
+        if (apiResponse.status == 'success' &&
+            apiResponse.code == 200 &&
+            apiResponse.response != null) {
           returnValue = ApiReturnValue(
-              data: User.fromJson(apiResponse.response as Map<String, dynamic>),
-              message: apiResponse.message,
+            data: User.fromJson(apiResponse.response as Map<String, dynamic>),
+            message: apiResponse.message,
           );
         } else {
           returnValue = ApiReturnValue(message: apiResponse.message);
@@ -57,24 +54,23 @@ class AuthServices {
 
   Future<ApiReturnValue<User?>> login(
       {required String username, required String password}) async {
-
     late ApiReturnValue<User?> returnValue;
 
     try {
-
       final body = {
-      'username': username.trim(),
-      'password': password.trim(),
+        'username': username.trim(),
+        'password': password.trim(),
       };
 
-      final result =
-          await _client.post(Uri.parse(loginUrl), body: body);
+      final result = await _client.post(Uri.parse(loginUrl), body: body);
 
       if (result.statusCode == 200) {
         final Map<String, dynamic> response = jsonDecode(result.body);
         final apiResponse = ApiResponse.fromJson(response);
 
-        if (apiResponse.status == 'success' && apiResponse.code == 200 && apiResponse.response != null) {
+        if (apiResponse.status == 'success' &&
+            apiResponse.code == 200 &&
+            apiResponse.response != null) {
           returnValue = ApiReturnValue(
               data: User.fromJson(apiResponse.response as Map<String, dynamic>),
               message: apiResponse.message);
@@ -86,32 +82,26 @@ class AuthServices {
       }
 
       return returnValue;
-      
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
   }
 
-
-  
-  Future<ApiReturnValue<User?>> getDetailUser(
-      {required String userId}) async {
-
+  Future<ApiReturnValue<User?>> getDetailUser({required String userId}) async {
     late ApiReturnValue<User?> returnValue;
 
     try {
-
-      final result =
-          await _client.get(Uri.parse("$getUserIdUrl/$userId"));
+      final result = await _client.get(Uri.parse("$getUserIdUrl/$userId"));
 
       if (result.statusCode == 200) {
         final Map<String, dynamic> response = jsonDecode(result.body);
         final apiResponse = ApiResponse.fromJson(response);
 
         if (apiResponse.status == 'success' && apiResponse.code == 200) {
-          if(apiResponse.response != null) {
+          if (apiResponse.response != null) {
             returnValue = ApiReturnValue(
-                data: User.fromJson(apiResponse.response as Map<String, dynamic>),
+                data:
+                    User.fromJson(apiResponse.response as Map<String, dynamic>),
                 message: apiResponse.message);
           } else {
             returnValue = const ApiReturnValue(message: "Data Not Found");
@@ -124,10 +114,8 @@ class AuthServices {
       }
 
       return returnValue;
-      
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
   }
-
 }

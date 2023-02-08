@@ -21,7 +21,7 @@ class AuthLocalPreferences {
         return Future.value(null);
       }
     } catch (e) {
-        return Future.value(null);
+      return Future.value(null);
     }
   }
 

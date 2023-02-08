@@ -9,9 +9,9 @@ import 'package:image_picker/image_picker.dart';
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
-import '../widgets/cc_text_form_field.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/cc_material_button.dart';
+import '../widgets/cc_text_form_field.dart';
 
 class EditSchoolBiodataScreen extends StatefulWidget {
   const EditSchoolBiodataScreen({super.key});
@@ -44,13 +44,15 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
     }
   }
 
-  Future<void> getLogoImage(String? kode, String userId) async {
+  Future<void> getLogoImage(
+      String? kode, String userId, BuildContext context) async {
+    final schoolBloc = context.read<SchoolBloc>();
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       if (kode != null && userId.isNotEmpty) {
-        context.read<SchoolBloc>().add(EditSchoolLogo(kode, userId, image));
+        schoolBloc.add(EditSchoolLogo(kode, userId, image));
       }
       setState(() {
         _logoImage = image;
@@ -228,10 +230,6 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                           CircularProgressIndicator(
                                                               color: Color
                                                                   .yellow));
-                                                } else if (state
-                                                    is SchoolFailed) {
-                                                  return buildButton(
-                                                      context, kode);
                                                 } else {
                                                   return buildButton(
                                                       context, kode);
@@ -329,8 +327,11 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                             );
                                           }
 
-                                          return Icon(Icons.image_not_supported_outlined,
-                                          color: Color.purple, size: 45);
+                                          return Icon(
+                                              Icons
+                                                  .image_not_supported_outlined,
+                                              color: Color.purple,
+                                              size: 45);
                                         },
                                       )
                                     : BlocSelector<UserBloc, UserState, String>(
@@ -361,8 +362,8 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                 child: IconButton(
                                                     color: Color.yellow,
                                                     onPressed: () =>
-                                                        getLogoImage(
-                                                            kode, userId),
+                                                        getLogoImage(kode,
+                                                            userId, context),
                                                     icon: Container(
                                                       padding:
                                                           const EdgeInsets.all(
@@ -385,8 +386,8 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                               );
                                             } else {
                                               return GestureDetector(
-                                                onTap: () =>
-                                                    getLogoImage(kode, userId),
+                                                onTap: () => getLogoImage(
+                                                    kode, userId, context),
                                                 child: Text(
                                                   "Upload\nLogo Team",
                                                   textAlign: TextAlign.center,

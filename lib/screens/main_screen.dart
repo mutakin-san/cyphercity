@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/bloc.dart';
 import '../models/user.dart';
 import '../screens/events_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/school_information_screen.dart';
-import '../bloc/bloc.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -37,13 +37,13 @@ class _MainScreenState extends State<MainScreen> {
                 },
                 onCreateTeamClicked: user?.level == "1"
                     ? () {
-                      setState(() {
-                        _selectedMenuIndex = 2;
-                      });
-                    }
+                        setState(() {
+                          _selectedMenuIndex = 2;
+                        });
+                      }
                     : null,
               ),
-              if(user?.level == "1") const SchoolInformationScreen(),
+              if (user?.level == "1") const SchoolInformationScreen(),
             ]),
           ),
           bottomNavigationBar: BottomNavigationBar(
@@ -67,14 +67,13 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Future<void> _refreshBloc(String? userId) async{
-    if(userId != null) {
+  Future<void> _refreshBloc(String? userId) async {
+    if (userId != null) {
       context.read<SchoolBloc>().add(LoadSchool(userId));
     } else {
       context.read<UserBloc>().add(LoadUser());
     }
 
     await Future.delayed(const Duration(seconds: 1));
-    
   }
 }

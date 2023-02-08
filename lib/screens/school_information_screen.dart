@@ -1,21 +1,19 @@
-import '../bloc/bloc.dart';
-import '../utilities/colors.dart';
-import '../utilities/config.dart';
-import '../services/api_services.dart';
-import '../widgets/background_gradient.dart';
-import '../widgets/brand_logo.dart';
+import 'package:cyphercity/core/repos/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
+import '../bloc/bloc.dart';
 import '../models/school.dart';
+import '../utilities/colors.dart';
+import '../utilities/config.dart';
+import '../widgets/background_gradient.dart';
+import '../widgets/brand_logo.dart';
 
 class SchoolInformationScreen extends StatelessWidget {
   const SchoolInformationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final apiService = ApiServices(http.Client());
 
     return Stack(
       children: [
@@ -33,9 +31,7 @@ class SchoolInformationScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 16),
-                        const BrandLogo(
-                            width: 50,
-                            height: 50),
+                        const BrandLogo(width: 50, height: 50),
                         Text(
                           data?.namaSekolah ?? "",
                           textAlign: TextAlign.center,
@@ -114,11 +110,11 @@ class SchoolInformationScreen extends StatelessWidget {
                                                   borderRadius:
                                                       BorderRadius.circular(8)),
                                               child: const Text(
-                                                  "Edit Your Biodata Team"),
+                                                  "Edit Biodata Sekolah"),
                                             ),
                                             const SizedBox(height: 8.0),
                                             Text(
-                                              "Achievement : ",
+                                              "Daftar Tim : ",
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)
                                                   .textTheme
@@ -131,7 +127,9 @@ class SchoolInformationScreen extends StatelessWidget {
                                             ),
                                             const SizedBox(height: 16),
                                             FutureBuilder(
-                                              future: apiService.getAllCabor(),
+                                              future: context
+                                                  .read<CaborRepository>()
+                                                  .getAllCabor(),
                                               builder: (context, snapshot) {
                                                 if (snapshot.connectionState ==
                                                     ConnectionState.waiting) {

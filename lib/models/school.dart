@@ -45,7 +45,8 @@ class School extends Equatable {
       "status": status,
     };
   }
-  
+
   @override
-  List<Object?> get props => [id, idUser, namaSekolah, npsn, biodata, logo, gambar, status];
+  List<Object?> get props =>
+      [id, idUser, namaSekolah, npsn, biodata, logo, gambar, status];
 }

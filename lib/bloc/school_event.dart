@@ -12,7 +12,6 @@ class LoadSchool extends SchoolEvent {
 
   const LoadSchool(this.userId);
 
-
   @override
   List<Object> get props => [userId];
 }
@@ -25,9 +24,14 @@ class EditSchoolBiodata extends SchoolEvent {
   final String biodata;
   final XFile? image;
 
-  const EditSchoolBiodata({this.kode, required this.idUser, required this.namaSekolah, required this.npsn, required this.biodata, this.image});
+  const EditSchoolBiodata(
+      {this.kode,
+      required this.idUser,
+      required this.namaSekolah,
+      required this.npsn,
+      required this.biodata,
+      this.image});
 }
-
 
 class EditSchoolLogo extends SchoolEvent {
   final String schoolId;

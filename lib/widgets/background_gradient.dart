@@ -1,5 +1,6 @@
-import '../utilities/colors.dart';
 import 'package:flutter/widgets.dart';
+
+import '../utilities/colors.dart';
 
 class BackgroundGradient extends StatelessWidget {
   const BackgroundGradient({super.key});

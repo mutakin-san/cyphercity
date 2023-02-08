@@ -18,6 +18,15 @@ class TimLoaded extends TimState {
   List<Object> get props => [data];
 }
 
+class TimCreated extends TimState {
+  final Tim tim;
+
+  const TimCreated(this.tim);
+
+  @override
+  List<Object> get props => [tim];
+}
+
 class TimFailed extends TimState {
   final String message;
 
@@ -26,3 +35,5 @@ class TimFailed extends TimState {
   @override
   List<Object> get props => [message];
 }
+
+class TimLoading extends TimState {}

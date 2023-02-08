@@ -7,14 +7,12 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
-
 class UserLogin extends UserEvent {
   final String username;
   final String password;
 
   const UserLogin(this.username, this.password);
 }
-
 
 class UserRegister extends UserEvent {
   final String email;
@@ -25,7 +23,14 @@ class UserRegister extends UserEvent {
   final String confirmPassword;
   final int? statusSekolah;
 
-  const UserRegister({required this.email, required this.name, required this.username, required this.noHp, required this.password, required this.confirmPassword, this.statusSekolah});
+  const UserRegister(
+      {required this.email,
+      required this.name,
+      required this.username,
+      required this.noHp,
+      required this.password,
+      required this.confirmPassword,
+      this.statusSekolah});
 }
 
 class LoadUser extends UserEvent {}

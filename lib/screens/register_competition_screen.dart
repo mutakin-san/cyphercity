@@ -1,15 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../bloc/bloc.dart';
+import '../core/repos/repositories.dart';
 import '../models/event.dart';
-import '../services/api_services.dart';
+import '../models/tim.dart';
 import '../utilities/colors.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/cc_dropdown_form_field.dart';
 import '../widgets/cc_material_button.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-import '../models/tim.dart';
 
 class RegisterCompetitionScreen extends StatefulWidget {
   const RegisterCompetitionScreen({super.key});
@@ -21,7 +20,8 @@ class RegisterCompetitionScreen extends StatefulWidget {
 
 class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
   int _numberOfTeam = 1;
-  late String _selectedTeam;
+  List<int> _selectedTeams = [];
+  late int _selectedTeam;
 
   late String userId;
   late String schoolId;
@@ -51,9 +51,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 16),
-                      const BrandLogo(
-                          width: 50,
-                          height: 50),
+                      const BrandLogo(width: 50, height: 50),
                       const SizedBox(height: 16),
                       Text(
                         event.namaEvent,
@@ -69,7 +67,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                             if (userId.isNotEmpty && schoolId.isNotEmpty) {
                               context
                                   .read<TimBloc>()
-                                  .add(LoadTim(userId, schoolId));
+                                  .add(LoadTim(userId, schoolId, event.idCabor));
                             }
 
                             return Column(
@@ -129,24 +127,42 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                 const SizedBox(height: 16),
                                 Center(
                                   child: CCMaterialRedButton(
-                                      onPressed: _numberOfTeam > 0 ? () async {
-                                        if (userId.isNotEmpty &&
-                                            schoolId.isNotEmpty) {
-                                          final result =
-                                              await ApiServices(http.Client())
-                                                  .registerEvent(
-                                                      idEvent: event.id,
-                                                      idUser: userId,
-                                                      idSekolah: schoolId,
-                                                      idTim: _selectedTeam);
+                                      onPressed: _numberOfTeam > 0
+                                          ? () async {
+                                              if (userId.isNotEmpty &&
+                                                  schoolId.isNotEmpty) {
+                                                print(_selectedTeams);
 
-                                          // ignore: use_build_context_synchronously
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      "${result.message}")));
-                                        }
-                                      } : null,
+                                                return;
+
+                                                for (var idTeam
+                                                    in _selectedTeams) {
+                                                  final result =
+                                                      await RepositoryProvider
+                                                              .of<EventRepository>(
+                                                                  context)
+                                                          .registerEvent(
+                                                              idEvent: event.id,
+                                                              idUser: userId,
+                                                              idSekolah:
+                                                                  schoolId,
+                                                              idTim: idTeam
+                                                                  .toString());
+
+                                                  if (result.data != null &&
+                                                      result.data!.status ==
+                                                          'success') {
+                                                    // ignore: use_build_context_synchronously
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(SnackBar(
+                                                            content: Text(
+                                                                "${result.message}")));
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          : null,
                                       text: "REG"),
                                 ),
                               ],
@@ -170,24 +186,32 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
   }
 
   List<Widget> buildTeamSelection(int numberOfTeam, List<Tim> teams) {
-    return List.generate(numberOfTeam, (index) {
-      _selectedTeam = teams.first.id;
-      return CCDropdownFormField<String>(
-        items: teams
-            .map((e) => DropdownMenuItem(
-                  value: e.id,
-                  child: Text(e.namaTeam),
-                ))
-            .toList(),
-        selectedValue: _selectedTeam,
-        onChanged: (value) {
-          setState(() {
-            _selectedTeam = value ?? _selectedTeam;
-          });
-        },
-        label: "Select Team",
-        labelColor: Colors.black,
-      );
-    });
+    if(teams.isNotEmpty) {
+      _selectedTeams = List.generate(numberOfTeam, (index) => int.parse(teams.first.id));
+
+      _selectedTeam = int.parse(teams.first.id);
+      return List.generate(numberOfTeam, (index) {
+        return CCDropdownFormField<int>(
+          items: teams
+              .map((e) => DropdownMenuItem(
+            value: int.parse(e.id),
+            child: Text(e.namaTeam),
+          ))
+              .toList(),
+          selectedValue: _selectedTeams[index],
+          onChanged: (value) {
+            setState(() {
+              final List<int> newList = [..._selectedTeams];
+              newList[index] = value!;
+              _selectedTeams = newList;
+            });
+          },
+          label: "Select Team",
+          labelColor: Colors.black,
+        );
+      });
+    } else {
+      return [];
+    }
   }
 }

@@ -1,4 +1,6 @@
-import '../utilities/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../screens/add_team_players_screen.dart';
 import '../screens/add_team_screen.dart';
 import '../screens/edit_school_biodata_screen.dart';
@@ -9,9 +11,7 @@ import '../screens/login_screen.dart';
 import '../screens/register_competition_screen.dart';
 import '../screens/register_screen.dart';
 import '../screens/splash_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../utilities/colors.dart';
 import 'bloc/bloc.dart';
 import 'core/repos/repositories.dart';
 import 'screens/main_screen.dart';
@@ -27,6 +27,12 @@ void main() {
       ),
       RepositoryProvider(
         create: (_) => TeamRepository(),
+      ),
+      RepositoryProvider(
+        create: (_) => EventRepository(),
+      ),
+      RepositoryProvider(
+        create: (_) => CaborRepository(),
       ),
     ],
     child: const MyApp(),
@@ -53,10 +59,15 @@ class MyApp extends StatelessWidget {
           },
         ),
         BlocProvider(
-          
           create: (_) {
             final teamRepo = RepositoryProvider.of<TeamRepository>(context);
             return TimBloc(teamRepo);
+          },
+        ),
+        BlocProvider(
+          create: (_) {
+            final teamRepo = RepositoryProvider.of<TeamRepository>(context);
+            return PlayerBloc(teamRepo);
           },
         )
       ],
@@ -80,8 +91,8 @@ class MyApp extends StatelessWidget {
           '/main': (context) => const MainScreen(),
           '/edit-biodata': (context) => const EditSchoolBiodataScreen(),
           '/add-team': (context) => const AddTeamScreen(),
-          '/submit-team': (context) => FormAddTeamScreen(),
-          '/submit-player': (context) => FormAddPlayerScreen(),
+          '/submit-team': (context) => const FormAddTeamScreen(),
+          '/submit-player': (context) => const FormAddPlayerScreen(),
           '/add-players': (context) => const AddTeamPlayersScreen(),
           '/register-competition': (context) =>
               const RegisterCompetitionScreen(),

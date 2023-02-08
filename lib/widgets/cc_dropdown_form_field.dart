@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CCDropdownFormField<T> extends StatelessWidget {
-
-  const CCDropdownFormField({super.key, required this.label, this.labelColor = Colors.white, required this.items, required this.selectedValue, required this.onChanged, this.validator});
+  const CCDropdownFormField(
+      {super.key,
+      required this.label,
+      this.labelColor = Colors.white,
+      required this.items,
+      required this.selectedValue,
+      required this.onChanged,
+      this.validator});
 
   final String label;
   final Color? labelColor;
@@ -14,12 +20,16 @@ class CCDropdownFormField<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-          Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: labelColor)),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<T>(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Text(label,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: labelColor)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<T>(
             items: items,
             isDense: true,
             isExpanded: true,
@@ -34,9 +44,8 @@ class CCDropdownFormField<T> extends StatelessWidget {
                 ),
                 filled: true,
                 fillColor: Colors.white),
-            onChanged: onChanged
-          ),
-        ],
-      );
+            onChanged: onChanged),
+      ],
+    );
   }
 }

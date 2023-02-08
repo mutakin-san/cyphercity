@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
-import 'package:flutter/material.dart';
 
 class InformationScreen extends StatelessWidget {
   const InformationScreen({super.key});

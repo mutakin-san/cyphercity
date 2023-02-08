@@ -5,8 +5,8 @@ class Cabor extends Equatable {
   final String namaCabor;
   final String gambar;
 
-  const Cabor({required this.id, required this.namaCabor,required  this.gambar});
-
+  const Cabor(
+      {required this.id, required this.namaCabor, required this.gambar});
 
   factory Cabor.fromMap(Map<String, dynamic> map) {
     return Cabor(
@@ -15,8 +15,7 @@ class Cabor extends Equatable {
       gambar: map['gambar'],
     );
   }
-  
+
   @override
   List<Object?> get props => [id, namaCabor, gambar];
 }
-

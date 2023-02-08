@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:cyphercity/utilities/config.dart';
 import 'package:http/http.dart';
 
 import '../../../models/api_response.dart';
-import '../../../models/user.dart';
-import '../../../utilities/config.dart';
+import '../../../models/cabor.dart';
 import '../network.dart';
 
-part 'auth_services.dart';
+part 'cabor_services.dart';

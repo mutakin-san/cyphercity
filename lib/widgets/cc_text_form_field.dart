@@ -1,21 +1,19 @@
-
 import 'package:flutter/material.dart';
 
 class CCTextFormField extends StatelessWidget {
-
-  const CCTextFormField({
-    Key? key,
-    required this.controller,
-    this.label,
-    this.hintText,
-    this.textInputAction,
-    this.isObsecure = false,
-    this.icon,
-    this.validator,
-    this.textColor = Colors.white,
-    this.maxLines,
-    this.inputType = TextInputType.text
-  }) : super(key: key);
+  const CCTextFormField(
+      {Key? key,
+      required this.controller,
+      this.label,
+      this.hintText,
+      this.textInputAction,
+      this.isObsecure = false,
+      this.icon,
+      this.validator,
+      this.textColor = Colors.white,
+      this.maxLines,
+      this.inputType = TextInputType.text})
+      : super(key: key);
 
   final TextEditingController controller;
   final String? label;
@@ -51,7 +49,9 @@ class CCTextFormField extends StatelessWidget {
           validator: validator,
           maxLines: maxLines ?? 1,
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+            border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(8)),
             fillColor: Colors.white,
             filled: true,
             prefixIcon: icon,

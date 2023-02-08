@@ -1,18 +1,36 @@
-import '../utilities/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/bloc.dart';
 import '../models/cabor.dart';
+import '../models/team.dart';
+import '../utilities/colors.dart';
+import '../utilities/config.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
-import 'package:flutter/material.dart';
 
-import '../models/team.dart';
-
-class AddTeamScreen extends StatelessWidget {
+class AddTeamScreen extends StatefulWidget {
   const AddTeamScreen({super.key});
+
+  @override
+  State<AddTeamScreen> createState() => _AddTeamScreenState();
+}
+
+class _AddTeamScreenState extends State<AddTeamScreen> {
+  late String userId;
+  late String schoolId;
+
+  @override
+  void initState() {
+    userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
+    schoolId = (context.read<SchoolBloc>().state as SchoolLoaded).data.id;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final cabor = ModalRoute.of(context)?.settings.arguments as Cabor;
-
+    context.read<TimBloc>().add(LoadTim(userId, schoolId, cabor.id));
     return Scaffold(
       body: Stack(
         children: [
@@ -27,14 +45,19 @@ class AddTeamScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: 16),
                       const BrandLogo(width: 50, height: 50),
-                      Text(
-                        "SMPN 2 CIAMIS",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: Colors.white),
-                      ),
+                      BlocSelector<UserBloc, UserState, String>(
+                          selector: (state) =>
+                              state is UserAuthenticated ? state.user.nama : "",
+                          builder: (context, name) {
+                            return Text(
+                              name,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(color: Colors.white),
+                            );
+                          }),
                       const SizedBox(height: 16),
                       Expanded(
                         child: Stack(
@@ -52,42 +75,87 @@ class AddTeamScreen extends StatelessWidget {
                                 ),
                                 child: Column(
                                   children: [
-                                    Container(
-                                      height: 200,
-                                      decoration: BoxDecoration(
-                                        color: Color.purple,
-                                        image: const DecorationImage(
-                                            image: NetworkImage(
-                                                "https://th.bing.com/th/id/OIP.Y_6f7ZGEjjN9CDqfSQTRXQHaEK?pid=ImgDet&rs=1"),
-                                            fit: BoxFit.cover),
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          topRight: Radius.circular(30),
-                                        ),
-                                      ),
-                                    ),
+                                    BlocSelector<SchoolBloc, SchoolState,
+                                            String>(
+                                        selector: (state) =>
+                                            state is SchoolLoaded
+                                                ? state.data.gambar
+                                                : "",
+                                        builder: (context, gambar) {
+                                          return Container(
+                                            height: 200,
+                                            decoration: BoxDecoration(
+                                              color: Color.purple,
+                                              image: DecorationImage(
+                                                  image: NetworkImage((gambar
+                                                          .isNotEmpty)
+                                                      ? "$baseImageUrlTim/$gambar"
+                                                      : "https://via.placeholder.com/480x300"),
+                                                  fit: BoxFit.cover),
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                topLeft: Radius.circular(30),
+                                                topRight: Radius.circular(30),
+                                              ),
+                                            ),
+                                          );
+                                        }),
                                     Padding(
                                       padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          AddTeamList(
-                                            title: "${cabor.namaCabor} (PA)",
-                                            createNewPressed: () {
-                                              Navigator.pushNamed(context, '/submit-team', arguments: TeamType.Man);
-                                            },
-                                            teams: dummyTeamPA,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          AddTeamList(
-                                            title: "${cabor.namaCabor} (PI)",
-                                            createNewPressed: () {
-                                              Navigator.pushNamed(context, '/submit-team', arguments: TeamType.Woman);
-                                            },
-                                            teams: dummyTeamPI,
-                                          ),
-                                        ],
+                                      child: BlocBuilder<TimBloc, TimState>(
+                                        builder: (context, state) {
+                                          if (state is TimLoaded) {
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                AddTeamList(
+                                                    title: cabor.namaCabor,
+                                                    createNewPressed: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/submit-team',
+                                                          arguments: {
+                                                            'id_cabor':
+                                                                cabor.id,
+                                                            'team_type':
+                                                                TeamType.PA.name
+                                                          });
+                                                    },
+                                                    teams: state.data
+                                                        .map((tim) => Team(
+                                                            id: tim.id,
+                                                            name: tim.namaTeam,
+                                                            type: TeamType.PA,
+                                                            logo: Container(
+                                                              width: 50,
+                                                              height: 50,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image: NetworkImage(
+                                                                      "$baseImageUrlCabor/${cabor.gambar}"),
+                                                                ),
+                                                              ),
+                                                            )))
+                                                        .toList()),
+                                              ],
+                                            );
+                                          }
+
+                                          if (state is TimFailed) {
+                                            Center(
+                                                child: Text(state.message,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleLarge));
+                                          }
+
+                                          return Center(
+                                              child: CircularProgressIndicator(
+                                                  color: Color.yellow));
+                                        },
                                       ),
                                     ),
                                   ],
@@ -99,12 +167,18 @@ class AddTeamScreen extends StatelessWidget {
                               left: 0,
                               right: 0,
                               child: CircleAvatar(
-                                radius: 60,
-                                backgroundColor: Colors.white,
-                                child: Image.asset(
-                                    "assets/images/cc_logo_futsal.png",
-                                    width: 80),
-                              ),
+                                  radius: 60,
+                                  backgroundColor: Colors.white,
+                                  child: Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            "$baseImageUrlCabor/${cabor.gambar}"),
+                                      ),
+                                    ),
+                                  )),
                             )
                           ],
                         ),
@@ -136,7 +210,7 @@ class AddTeamList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -149,7 +223,8 @@ class AddTeamList extends StatelessWidget {
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           alignment: WrapAlignment.center,
-          spacing: 6,
+          runAlignment: WrapAlignment.center,
+          spacing: 8,
           runSpacing: 8,
           children: [
             ...teams.map(
@@ -158,7 +233,8 @@ class AddTeamList extends StatelessWidget {
                   name: team.name,
                   logo: team.logo,
                   onPressed: () {
-                    Navigator.pushNamed(context, '/add-players', arguments: team);
+                    Navigator.pushNamed(context, '/add-players',
+                        arguments: team);
                   },
                 );
               },
@@ -176,7 +252,7 @@ class AddTeamList extends StatelessWidget {
                     child: const Icon(Icons.add, size: 45),
                   ),
                   const SizedBox(height: 8),
-                  Text("Tambah\nTim",
+                  Text("Tambah Tim",
                       textAlign: TextAlign.center,
                       style:
                           Theme.of(context).textTheme.bodyMedium?.copyWith()),
@@ -191,10 +267,11 @@ class AddTeamList extends StatelessWidget {
 }
 
 // ignore: constant_identifier_names
-enum TeamType { Man, Woman }
+enum TeamType { PA, PI }
 
 class TeamItem extends StatelessWidget {
-  const TeamItem({Key? key, required this.name, required this.logo, this.onPressed})
+  const TeamItem(
+      {Key? key, required this.name, required this.logo, this.onPressed})
       : super(key: key);
   final String name;
   final Widget logo;
@@ -204,21 +281,26 @@ class TeamItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width / 3.5,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: logo,
             ),
-            child: logo,
-          ),
-          const SizedBox(height: 8),
-          Text(name,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith()),
-        ],
+            const SizedBox(height: 8),
+            FittedBox(
+              child: Text(name,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith()),
+            ),
+          ],
+        ),
       ),
     );
   }

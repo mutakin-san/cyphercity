@@ -1,11 +1,11 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
-
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key, this.onCreateTeamClicked, this.onEventsClicked});
@@ -19,8 +19,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
-        if(state is UserNotAuthenticated) {
-          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+        if (state is UserNotAuthenticated) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/login', (route) => false);
         }
       },
       child: Stack(
@@ -48,11 +49,11 @@ class HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         BlocSelector<UserBloc, UserState, String>(
-                          selector: (state) => state is UserAuthenticated ? state.user.nama : "",
+                          selector: (state) =>
+                              state is UserAuthenticated ? state.user.nama : "",
                           builder: (context, name) {
-                              return Text("Hi,\n$name",
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge);
+                            return Text("Hi,\n$name",
+                                style: Theme.of(context).textTheme.titleLarge);
                           },
                         ),
                         Container(
@@ -105,38 +106,41 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     BlocSelector<UserBloc, UserState, bool>(
-                      selector: (state) => state is UserAuthenticated && state.user.level == "1",
-                      builder: (context, isSchoolAccess) {
-                        return isSchoolAccess
-                          ? GestureDetector(
-                              onTap: onCreateTeamClicked,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Color.gray,
-                                        borderRadius:
-                                            BorderRadius.circular(10),
-                                      ),
-                                      child: const Icon(
-                                          Icons.group_add_rounded,
-                                          size: 45),
+                        selector: (state) =>
+                            state is UserAuthenticated &&
+                            state.user.level == "1",
+                        builder: (context, isSchoolAccess) {
+                          return isSchoolAccess
+                              ? GestureDetector(
+                                  onTap: onCreateTeamClicked,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Color.gray,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: const Icon(
+                                              Icons.group_add_rounded,
+                                              size: 45),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text("Create Team",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    color: Colors.white)),
+                                      ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text("Create Team",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(color: Colors.white)),
-                                  ],
-                                ),
-                              ),
-                            )
-                          : const SizedBox();
+                                  ),
+                                )
+                              : const SizedBox();
                         }),
                     GestureDetector(
                       onTap: () {
