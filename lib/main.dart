@@ -1,3 +1,4 @@
+import 'package:cyphercity/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,6 +37,9 @@ void main() {
       ),
       RepositoryProvider(
         create: (_) => CaborRepository(),
+      ),
+      RepositoryProvider(
+        create: (_) => NewsRepository(),
       ),
     ],
     child: const MyApp(),
@@ -105,16 +109,20 @@ class MyApp extends StatelessWidget {
                   builder: (context) => const MainScreen());
             case '/edit-biodata':
               return MaterialPageRoute(
-                  builder: (context) => EditSchoolBiodataScreen(kode: args as String?,));
+                  builder: (context) => EditSchoolBiodataScreen(
+                        kode: args as String?,
+                      ));
             case '/add-team':
               return MaterialPageRoute(
                   builder: (context) => AddTeamScreen(cabor: args as Cabor));
             case '/submit-team':
               return MaterialPageRoute(
-                  builder: (context) => FormAddTeamScreen(caborId: args as String));
+                  builder: (context) =>
+                      FormAddTeamScreen(caborId: args as String));
             case '/submit-player':
               return MaterialPageRoute(
-                builder: (context) => FormAddPlayerScreen(teamId: args as String),
+                builder: (context) =>
+                    FormAddPlayerScreen(teamId: args as String),
               );
             case '/add-players':
               return MaterialPageRoute(
@@ -122,10 +130,14 @@ class MyApp extends StatelessWidget {
               );
             case '/register-competition':
               return MaterialPageRoute(
-                  builder: (context) => RegisterCompetitionScreen(event: args as Event));
+                  builder: (context) =>
+                      RegisterCompetitionScreen(event: args as Event));
             case '/information':
               return MaterialPageRoute(
                   builder: (context) => const InformationScreen());
+            case '/profile':
+              return MaterialPageRoute(
+                  builder: (context) => ProfileScreen(userId: args as String));
             default:
               return MaterialPageRoute(
                   builder: (context) => const Scaffold(

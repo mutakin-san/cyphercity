@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cyphercity/utilities/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/bloc.dart';
+import '../core/repos/repositories.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
@@ -45,33 +47,37 @@ class HomeScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const BrandLogo(width: 50, height: 50, isDark: true),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        BlocSelector<UserBloc, UserState, String>(
-                          selector: (state) =>
-                              state is UserAuthenticated ? state.user.nama : "",
-                          builder: (context, name) {
-                            return Text("Hi,\n$name",
-                                style: Theme.of(context).textTheme.titleLarge);
-                          },
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.black,
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              context.read<UserBloc>().add(UserLogout());
-                            },
-                            color: Colors.white,
-                            icon: const Icon(
-                              Icons.account_circle_outlined,
-                            ),
-                          ),
-                        )
-                      ],
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                        if (state is UserAuthenticated) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Hi,\n${state.user.nama}",
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.black,
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/profile',
+                                        arguments: state.user.userId);
+                                  },
+                                  color: Colors.white,
+                                  icon: const Icon(
+                                    Icons.account_circle_outlined,
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        }
+
+                        return const SizedBox();
+                      },
                     )
                   ],
                 ),
@@ -181,30 +187,70 @@ class HomeScreen extends StatelessWidget {
                             .titleMedium
                             ?.copyWith(color: Colors.white)),
                     const SizedBox(height: 8),
-                    CarouselSlider.builder(
-                      carouselController: _controller,
-                      itemCount: 15,
-                      itemBuilder: (BuildContext context, int itemIndex,
-                              int pageViewIndex) =>
-                          Container(
-                        margin: const EdgeInsets.only(left: 8, right: 8),
-                        decoration: BoxDecoration(
-                            color: Color.gray,
-                            borderRadius: BorderRadius.circular(10)),
-                        height: 100,
-                        child: const Center(child: Text("Content ")),
-                      ),
-                      options: CarouselOptions(viewportFraction: 0.9),
-                    ),
+                    FutureBuilder(
+                        future: RepositoryProvider.of<NewsRepository>(context)
+                            .getAllNews(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                                    color: Color.yellow));
+                          }
+
+                          if (snapshot.hasData && snapshot.data?.data != null) {
+                            final data = snapshot.data!.data!;
+                            return CarouselSlider.builder(
+                              carouselController: _controller,
+                              itemCount: data.length,
+                              itemBuilder: (BuildContext context, int itemIndex,
+                                  int pageViewIndex) {
+                                final news = data.elementAt(itemIndex);
+                                return Container(
+                                  margin:
+                                      const EdgeInsets.only(left: 8, right: 8),
+                                  decoration: BoxDecoration(
+                                      color: Color.redPurple,
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            "$baseImageUrlNews/${news.gambar}"),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  height: 100,
+                                  width: double.infinity,
+                                  child: Center(
+                                    child: Text(
+                                      news.judul,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                              color: Colors.white,
+                                              shadows: [
+                                            const Shadow(
+                                                color: Colors.white54,
+                                                blurRadius: 10)
+                                          ]),
+                                    ),
+                                  ),
+                                );
+                              },
+                              options: CarouselOptions(viewportFraction: 0.9),
+                            );
+                          }
+
+                          return Center(
+                              child: Text(
+                            "${snapshot.data?.message}",
+                            style: TextStyle(
+                              color: Color.yellow,
+                            ),
+                          ));
+                        }),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Placeholder(
-                  color: Color.yellow,
-                ),
-              )
             ],
           ),
         ],

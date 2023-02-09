@@ -54,7 +54,14 @@ class EventsScreen extends StatelessWidget {
                           color: Colors.black,
                         ),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            final userId = (context.read<UserBloc>().state
+                                    as UserAuthenticated)
+                                .user
+                                .userId;
+                            Navigator.pushNamed(context, '/profile',
+                                arguments: userId);
+                          },
                           color: Colors.white,
                           icon: const Icon(
                             Icons.account_circle_outlined,
@@ -76,7 +83,8 @@ class EventsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             FutureBuilder(
-              future: RepositoryProvider.of<EventRepository>(context).getAllEvents(),
+              future: RepositoryProvider.of<EventRepository>(context)
+                  .getAllEvents(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(

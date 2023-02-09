@@ -87,8 +87,9 @@ class AuthServices {
     }
   }
 
-  Future<ApiReturnValue<User?>> getDetailUser({required String userId}) async {
-    late ApiReturnValue<User?> returnValue;
+  Future<ApiReturnValue<UserProfile>> getDetailUser(
+      {required String userId}) async {
+    late ApiReturnValue<UserProfile> returnValue;
 
     try {
       final result = await _client.get(Uri.parse("$getUserIdUrl/$userId"));
@@ -100,14 +101,14 @@ class AuthServices {
         if (apiResponse.status == 'success' && apiResponse.code == 200) {
           if (apiResponse.response != null) {
             returnValue = ApiReturnValue(
-                data:
-                    User.fromJson(apiResponse.response as Map<String, dynamic>),
+                data: UserProfile.fromMap(
+                    apiResponse.response as Map<String, dynamic>),
                 message: apiResponse.message);
           } else {
             returnValue = const ApiReturnValue(message: "Data Not Found");
           }
         } else {
-          returnValue = const ApiReturnValue(message: "Unexpected Error");
+          returnValue = ApiReturnValue(message: result.reasonPhrase);
         }
       } else {
         returnValue = ApiReturnValue(message: result.reasonPhrase);
