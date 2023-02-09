@@ -1,6 +1,8 @@
 import 'package:cyphercity/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 import '../models/event.dart';
 import '../models/team.dart';
@@ -21,6 +23,9 @@ import 'models/cabor.dart';
 import 'screens/main_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Intl.defaultLocale = "ID";
+  initializeDateFormatting("ID");
   runApp(MultiRepositoryProvider(
     providers: [
       RepositoryProvider(

@@ -71,7 +71,9 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Tim berhasil dibuat!")));
 
-          // context.read<TimBloc>().add(LoadTim(userId, schoolId, widget.caborId));
+          context
+              .read<TimBloc>()
+              .add(LoadTim(userId, schoolId, widget.caborId));
 
           Future.delayed(const Duration(seconds: 2))
               .then((value) => Navigator.pop(context));
@@ -96,9 +98,9 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                       children: [
                         const SizedBox(height: 16),
                         const BrandLogo(width: 50, height: 50),
-                        BlocSelector<UserBloc, UserState, String>(
-                            selector: (state) => state is UserAuthenticated
-                                ? state.user.nama
+                        BlocSelector<SchoolBloc, SchoolState, String>(
+                            selector: (state) => state is SchoolLoaded
+                                ? state.data.namaSekolah
                                 : "",
                             builder: (context, name) {
                               return Text(
@@ -117,7 +119,7 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                               Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Container(
-                                  margin: const EdgeInsets.only(top: 50),
+                                  margin: const EdgeInsets.only(top: 16),
                                   decoration: BoxDecoration(
                                     color: Color.gray,
                                     borderRadius: const BorderRadius.only(
@@ -142,11 +144,21 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                                   .build(),
                                               textColor: Colors.black),
                                           const SizedBox(height: 8),
-                                          CCDropdownFormField(label: 'Tipe Team', labelColor: Colors.black, items: TeamType.values.map((e) => DropdownMenuItem(value: e.name,child: Text(e.name))).toList(), selectedValue: teamType, onChanged: (value) {
-                                            setState(() {
-                                              teamType = value!;
-                                            });
-                                          },),
+                                          CCDropdownFormField(
+                                            label: 'Tipe Team',
+                                            labelColor: Colors.black,
+                                            items: TeamType.values
+                                                .map((e) => DropdownMenuItem(
+                                                    value: e.name,
+                                                    child: Text(e.name)))
+                                                .toList(),
+                                            selectedValue: teamType,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                teamType = value!;
+                                              });
+                                            },
+                                          ),
                                           const SizedBox(height: 8),
                                           CCTextFormField(
                                               controller: pembinaCtrl,
@@ -263,8 +275,8 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                                       color: Color.yellow);
                                                 }
 
-                                                return buildButton(
-                                                    context, widget.caborId, teamType);
+                                                return buildButton(context,
+                                                    widget.caborId, teamType);
                                               },
                                             ),
                                           ),

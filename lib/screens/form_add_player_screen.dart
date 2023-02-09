@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
+
 import '../bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,9 +34,25 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
 
   final TextEditingController nomorPunggungCtrl = TextEditingController();
 
+  DateTime selectedDate = DateTime.now();
+
   XFile? _fotoPlayer;
   XFile? _aktaPlayer;
   XFile? _kkPlayer;
+
+  Future<String> pickDate(BuildContext context) async {
+    final selected = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(1980),
+        lastDate: DateTime(2025));
+
+    if (selected != null && selected != selectedDate) {
+      selectedDate = selected;
+    }
+
+    return DateFormat.yMd().format(selectedDate);
+  }
 
   Future<void> getFotoPlayer() async {
     final picker = ImagePicker();
@@ -71,14 +89,14 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return BlocListener<PlayerBloc, PlayerState>(
       listener: (_, state) {
         if (state is PlayerCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Pemain berhasil dibuat!")));
-
-          // context.read<PlayerBloc>().add(LoadPlayer(userId, teamId));
+          final userId =
+              (context.read<UserBloc>().state as UserAuthenticated).user.userId;
+          context.read<PlayerBloc>().add(LoadPlayer(userId, widget.teamId));
 
           Future.delayed(const Duration(seconds: 2))
               .then((value) => Navigator.pop(context));
@@ -119,13 +137,21 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                     ValidationBuilder().required().build(),
                                 textInputAction: TextInputAction.next),
                             const SizedBox(height: 8),
-                            CCTextFormField(
-                                controller: tanggalLahirCtrl,
-                                label: "Tanggal Lahir",
-                                textColor: Colors.black,
-                                validator:
-                                    ValidationBuilder().required().build(),
-                                textInputAction: TextInputAction.next),
+                            GestureDetector(
+                              onTap: () async {
+                                final date = await pickDate(context);
+                                tanggalLahirCtrl.text = date;
+                              },
+                              child: CCTextFormField(
+                                  controller: tanggalLahirCtrl,
+                                  label: "Tanggal Lahir",
+                                  enabled: false,
+                                  hintText: "Pilih Tanggal Lahir",
+                                  textColor: Colors.black,
+                                  validator:
+                                      ValidationBuilder().required().build(),
+                                  textInputAction: TextInputAction.next),
+                            ),
                             const SizedBox(height: 8),
                             CCTextFormField(
                                 controller: nisnCtrl,
@@ -160,7 +186,8 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                             const SizedBox(height: 8),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 24, horizontal: 16),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 color: Colors.white,
@@ -214,7 +241,8 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                             const SizedBox(height: 8),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 24, horizontal: 16),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 color: Colors.white,
@@ -268,7 +296,8 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                             const SizedBox(height: 8),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 24, horizontal: 16),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 color: Colors.white,
@@ -383,9 +412,8 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
     );
   }
 
-  CCMaterialRedButton buildButton(
-      BuildContext context) {
-        final userId =
+  CCMaterialRedButton buildButton(BuildContext context) {
+    final userId =
         (context.read<UserBloc>().state as UserAuthenticated).user.userId;
 
     return CCMaterialRedButton(

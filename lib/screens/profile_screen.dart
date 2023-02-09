@@ -35,10 +35,9 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       Container(
                         width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.3,
                         padding: EdgeInsets.only(
                             top: MediaQuery.of(context).viewPadding.top,
-                            bottom: 48,
+                            bottom: 32,
                             left: 16,
                             right: 16),
                         decoration: BoxDecoration(
@@ -62,6 +61,7 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

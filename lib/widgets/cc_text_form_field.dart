@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
 class CCTextFormField extends StatelessWidget {
-  const CCTextFormField(
-      {Key? key,
-      required this.controller,
-      this.label,
-      this.hintText,
-      this.textInputAction,
-      this.isObsecure = false,
-      this.icon,
-      this.validator,
-      this.textColor = Colors.white,
-      this.maxLines,
-      this.inputType = TextInputType.text})
-      : super(key: key);
+  const CCTextFormField({
+    Key? key,
+    required this.controller,
+    this.label,
+    this.hintText,
+    this.textInputAction,
+    this.isObsecure = false,
+    this.icon,
+    this.validator,
+    this.textColor = Colors.white,
+    this.maxLines,
+    this.inputType = TextInputType.text,
+    this.enabled = true,
+  }) : super(key: key);
 
   final TextEditingController controller;
   final String? label;
@@ -25,6 +26,7 @@ class CCTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final int? maxLines;
   final TextInputType? inputType;
+  final bool? enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class CCTextFormField extends StatelessWidget {
           controller: controller,
           obscureText: isObsecure,
           keyboardType: inputType,
+          enabled: enabled,
           textInputAction: TextInputAction.next,
           validator: validator,
           maxLines: maxLines ?? 1,

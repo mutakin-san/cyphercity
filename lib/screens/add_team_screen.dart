@@ -46,9 +46,10 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                     children: [
                       const SizedBox(height: 16),
                       const BrandLogo(width: 50, height: 50),
-                      BlocSelector<UserBloc, UserState, String>(
-                          selector: (state) =>
-                              state is UserAuthenticated ? state.user.nama : "",
+                      BlocSelector<SchoolBloc, SchoolState, String>(
+                          selector: (state) => state is SchoolLoaded
+                              ? state.data.namaSekolah
+                              : "",
                           builder: (context, name) {
                             return Text(
                               name,
@@ -111,12 +112,14 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                                   CrossAxisAlignment.stretch,
                                               children: [
                                                 AddTeamList(
-                                                    title: widget.cabor.namaCabor,
+                                                    title:
+                                                        widget.cabor.namaCabor,
                                                     createNewPressed: () {
                                                       Navigator.pushNamed(
                                                           context,
                                                           '/submit-team',
-                                                          arguments: widget.cabor.id);
+                                                          arguments:
+                                                              widget.cabor.id);
                                                     },
                                                     teams: state.data
                                                         .map((tim) => Team(

@@ -108,8 +108,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 icon: const Icon(Icons.person_outline),
                                 hintText: "Username",
                                 label: "Username",
-                                validator:
-                                    ValidationBuilder().required().build(),
+                                validator: ValidationBuilder()
+                                    .required()
+                                    .add((value) => value?.contains(" ") == true
+                                        ? "Username tidak boleh menggunakan spasi"
+                                        : null)
+                                    .build(),
                               ),
                               const SizedBox(height: 16),
                               CCTextFormField(
