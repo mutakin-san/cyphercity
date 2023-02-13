@@ -50,177 +50,217 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.gray,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Stack(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 16),
-                      const BrandLogo(width: 50, height: 50),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.event.namaEvent,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 16),
-                      Form(
-                        key: _formKey,
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Column(
-                              children: [
-                                BlocBuilder<TimBloc, TimState>(
-                                  builder: (context, state) {
-                                    if (state is TimLoaded) {
-                                      return Column(
-                                        children: [
-                                          CCDropdownFormField<int>(
-                                            items: List.generate(
-                                                state.data.length, (index) {
-                                              return DropdownMenuItem(
-                                                value: index + 1,
-                                                child: Text("${index + 1}"),
-                                              );
-                                            }).toList(),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _numberOfTeam = value!;
-                                                if (_selectedTeams.length <
-                                                    _numberOfTeam) {
-                                                  _selectedTeams.addAll(
-                                                      List.generate(
-                                                          _numberOfTeam -
-                                                              _selectedTeams
-                                                                  .length,
-                                                          (index) => int.parse(
-                                                              state.data.first
-                                                                  .id)));
-                                                } else {
-                                                  _selectedTeams.removeRange(
-                                                      _numberOfTeam,
-                                                      _selectedTeams.length);
-                                                }
-                                              });
-                                            },
-                                            label: "Number of Teams",
-                                            labelColor: Colors.black,
-                                            selectedValue: _numberOfTeam,
-                                          ),
-                                          ...buildTeamSelection(
-                                              _numberOfTeam, state.data)
-                                        ],
-                                      );
-                                    }
+    return RefreshIndicator(
+      onRefresh: () async {
+        if (userId.isNotEmpty && schoolId.isNotEmpty) {
+          timBloc.add(LoadTim(userId, schoolId, widget.event.idCabor));
+        }
 
-                                    if (state is TimFailed) {
-                                      return Center(child: Text(state.message));
-                                    }
-
-                                    return Center(
-                                        child: CircularProgressIndicator(
-                                            color: Color.yellow));
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                        "If you haven't created a team yet, "),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                            context, '/submit-team',
-                                            arguments: widget.event.idCabor);
-                                      },
-                                      child: Text(
-                                        "Click Here",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(color: Color.red),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Center(
-                                  child: isLoading
-                                      ? Center(
-                                          child: CircularProgressIndicator(
-                                              color: Color.yellow))
-                                      : CCMaterialRedButton(
-                                          onPressed: _numberOfTeam > 0
-                                              ? () async {
-                                                  setState(() {
-                                                    isLoading = true;
-                                                  });
-                                                  if (userId.isNotEmpty &&
-                                                      schoolId.isNotEmpty) {
-                                                    for (var idTeam
-                                                        in _selectedTeams) {
-                                                      final result =
-                                                          await RepositoryProvider
-                                                                  .of<EventRepository>(
-                                                                      context)
-                                                              .registerEvent(
-                                                                  idEvent:
-                                                                      widget.event
-                                                                          .id,
-                                                                  idUser:
-                                                                      userId,
-                                                                  idSekolah:
-                                                                      schoolId,
-                                                                  idTim: idTeam
-                                                                      .toString());
-
-                                                      if (result.data != null &&
-                                                          result.data!.status ==
-                                                              'success') {
-                                                        // ignore: use_build_context_synchronously
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(SnackBar(
-                                                                content: Text(
-                                                                    "${result.message}")));
+        await Future.delayed(const Duration(seconds: 1));
+      },
+      child: Scaffold(
+        backgroundColor: Color.gray,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildListDelegate.fixed(
+                  [
+                    Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 16),
+                            const BrandLogo(width: 50, height: 50),
+                            const SizedBox(height: 16),
+                            Text(
+                              widget.event.namaEvent,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 16),
+                            Form(
+                              key: _formKey,
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24),
+                                  child: Column(
+                                    children: [
+                                      BlocBuilder<TimBloc, TimState>(
+                                        builder: (context, state) {
+                                          if (state is TimLoaded) {
+                                            return Column(
+                                              children: [
+                                                CCDropdownFormField<int>(
+                                                  items: List.generate(
+                                                      state.data.length,
+                                                      (index) {
+                                                    return DropdownMenuItem(
+                                                      value: index + 1,
+                                                      child:
+                                                          Text("${index + 1}"),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      _numberOfTeam = value!;
+                                                      if (_selectedTeams
+                                                              .length <
+                                                          _numberOfTeam) {
+                                                        _selectedTeams.addAll(
+                                                            List.generate(
+                                                                _numberOfTeam -
+                                                                    _selectedTeams
+                                                                        .length,
+                                                                (index) => int
+                                                                    .parse(state
+                                                                        .data
+                                                                        .first
+                                                                        .id)));
                                                       } else {
-                                                        // ignore: use_build_context_synchronously
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(SnackBar(
-                                                                content: Text(
-                                                                    "${result.message}")));
+                                                        _selectedTeams
+                                                            .removeRange(
+                                                                _numberOfTeam,
+                                                                _selectedTeams
+                                                                    .length);
                                                       }
-                                                    }
-                                                  }
-                                                  setState(() {
-                                                    isLoading = false;
-                                                  });
-                                                }
-                                              : null,
-                                          text: "REG"),
-                                ),
-                              ],
-                            )),
-                      )
-                    ],
-                  ),
-                  IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      iconSize: 35,
-                      icon: const Icon(Icons.arrow_back))
-                ],
+                                                    });
+                                                  },
+                                                  label: "Number of Teams",
+                                                  labelColor: Colors.black,
+                                                  selectedValue: _numberOfTeam,
+                                                ),
+                                                ...buildTeamSelection(
+                                                    _numberOfTeam, state.data)
+                                              ],
+                                            );
+                                          }
+
+                                          if (state is TimFailed) {
+                                            return Center(
+                                                child: Text(state.message));
+                                          }
+
+                                          return Center(
+                                              child: CircularProgressIndicator(
+                                                  color: Color.yellow));
+                                        },
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Text(
+                                              "If you haven't created a team yet, "),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context, '/submit-team',
+                                                  arguments:
+                                                      widget.event.idCabor);
+                                            },
+                                            child: Text(
+                                              "Click Here",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(color: Color.red),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Center(
+                                        child: isLoading
+                                            ? Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        color: Color.yellow))
+                                            : CCMaterialRedButton(
+                                                onPressed: _numberOfTeam > 0
+                                                    ? () async {
+                                                        setState(() {
+                                                          isLoading = true;
+                                                        });
+                                                        if (userId.isNotEmpty &&
+                                                            schoolId
+                                                                .isNotEmpty) {
+                                                          for (var idTeam
+                                                              in _selectedTeams) {
+                                                            final result = await RepositoryProvider
+                                                                    .of<EventRepository>(
+                                                                        context)
+                                                                .registerEvent(
+                                                                    idEvent:
+                                                                        widget
+                                                                            .event
+                                                                            .id,
+                                                                    idUser:
+                                                                        userId,
+                                                                    idSekolah:
+                                                                        schoolId,
+                                                                    idTim: idTeam
+                                                                        .toString());
+
+                                                            if (result.data !=
+                                                                    null &&
+                                                                result.data!
+                                                                        .status ==
+                                                                    'success') {
+                                                              // ignore: use_build_context_synchronously
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                          content:
+                                                                              Text("${result.message}")));
+                                                            } else {
+                                                              // ignore: use_build_context_synchronously
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      SnackBar(
+                                                                          content:
+                                                                              Text("${result.message}")));
+                                                            }
+                                                          }
+                                                        }
+                                                        setState(() {
+                                                          isLoading = false;
+                                                        });
+                                                      }
+                                                    : null,
+                                                text: "REG"),
+                                      ),
+                                    ],
+                                  )),
+                            )
+                          ],
+                        ),
+                        IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            iconSize: 35,
+                            icon: const Icon(Icons.arrow_back))
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: DataTable(
+                    columns: const [DataColumn(label: Text(""))],
+                    rows: const [],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

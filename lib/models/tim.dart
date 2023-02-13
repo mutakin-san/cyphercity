@@ -37,14 +37,15 @@ class Tim extends Equatable {
       namaTeam: map['nama_team'],
       pembina: map['pembina'],
       pelatih: map['pelatih'],
-      asistenPelatih: map['ass_pelatih'],
+      asistenPelatih: map['asisten_pelatih'] ?? map['ass_pelatih'],
       teamMedis: map['team_medis'],
-      kordinatorSupporter: map['kor_suporter'],
+      kordinatorSupporter: map['kordinator_supporter'] ?? map['kor_suporter'],
     );
   }
 
   @override
   List<Object?> get props => [
+        id,
         idUser,
         idSekolah,
         idCabor,
