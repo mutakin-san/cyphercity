@@ -24,11 +24,9 @@ class PlayerServices {
 
           returnValue =
               ApiReturnValue(data: data, message: apiResponse.message);
-        } else if(apiResponse.status == 'failed' && apiResponse.code == 201) {
-          returnValue =
-              ApiReturnValue(data: [], message: apiResponse.status);
-        }
-        else {
+        } else if (apiResponse.status == 'failed' && apiResponse.code == 201) {
+          returnValue = ApiReturnValue(data: [], message: apiResponse.status);
+        } else {
           returnValue = ApiReturnValue(message: apiResponse.message);
         }
       } else {
@@ -49,9 +47,9 @@ class PlayerServices {
     required String nisn,
     required String posisi,
     required String noPunggung,
-    required XFile foto,
-    required XFile aktaLahir,
-    required XFile kk,
+    XFile? foto,
+    XFile? aktaLahir,
+    XFile? kk,
   }) async {
     late ApiReturnValue<Player> returnValue;
 
@@ -60,11 +58,16 @@ class PlayerServices {
 
       request.headers['content-type'] = 'multipart/form-data';
 
-      request.files.addAll([
-        await MultipartFile.fromPath('file1', foto.path),
-        await MultipartFile.fromPath('file2', aktaLahir.path),
-        await MultipartFile.fromPath('file3', kk.path)
-      ]);
+      if (foto != null) {
+        request.files.add(await MultipartFile.fromPath('file1', foto.path));
+      }
+      if (aktaLahir != null) {
+        request.files
+            .add(await MultipartFile.fromPath('file2', aktaLahir.path));
+      }
+      if (kk != null) {
+        request.files.add(await MultipartFile.fromPath('file3', kk.path));
+      }
 
       request.fields['id_user'] = idUser;
       request.fields['id_tim'] = idTim;
@@ -83,7 +86,8 @@ class PlayerServices {
 
         if (apiResponse.status == 'success' && apiResponse.code == 200) {
           returnValue = ApiReturnValue(
-              data: Player.fromMap(apiResponse.response as Map<String, dynamic>),
+              data:
+                  Player.fromMap(apiResponse.response as Map<String, dynamic>),
               message: apiResponse.message);
         } else {
           returnValue = ApiReturnValue(message: apiResponse.message);

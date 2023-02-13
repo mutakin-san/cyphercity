@@ -54,9 +54,40 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
     return DateFormat.yMd().format(selectedDate);
   }
 
-  Future<void> getFotoPlayer() async {
+  Future<ImageSource?> getImageSource(BuildContext context) async {
+    return await showDialog<ImageSource>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text(
+          "Upload Gambar Dari",
+          textAlign: TextAlign.center,
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context, ImageSource.gallery);
+            },
+            icon: const Icon(Icons.drive_folder_upload),
+            label: const Text("Gallery"),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context, ImageSource.camera);
+            },
+            icon: const Icon(Icons.camera_alt_outlined),
+            label: const Text("Camera"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> getFotoPlayer(ImageSource? source) async {
     final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image =
+        await picker.pickImage(source: source ?? ImageSource.gallery);
 
     if (image != null) {
       setState(() {
@@ -65,9 +96,10 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
     }
   }
 
-  Future<void> getAktaPlayer() async {
+  Future<void> getAktaPlayer(ImageSource? source) async {
     final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image =
+        await picker.pickImage(source: source ?? ImageSource.gallery);
 
     if (image != null) {
       setState(() {
@@ -76,9 +108,10 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
     }
   }
 
-  Future<void> getKkPlayer() async {
+  Future<void> getKkPlayer(ImageSource? source) async {
     final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image =
+        await picker.pickImage(source: source ?? ImageSource.gallery);
 
     if (image != null) {
       setState(() {
@@ -220,7 +253,13 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                       ],
                                     )
                                   : GestureDetector(
-                                      onTap: getFotoPlayer,
+                                      onTap: () async {
+                                        final source =
+                                            await getImageSource(context);
+                                        if (source != null) {
+                                          getFotoPlayer(source);
+                                        }
+                                      },
                                       child: Column(
                                         children: [
                                           const Icon(Icons.description_rounded),
@@ -229,7 +268,7 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                             "Upload Disini",
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .caption
+                                                .bodySmall
                                                 ?.copyWith(
                                                     fontStyle: FontStyle.italic,
                                                     color: Color.red),
@@ -275,7 +314,13 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                       ],
                                     )
                                   : GestureDetector(
-                                      onTap: getAktaPlayer,
+                                      onTap: () async {
+                                        final source =
+                                            await getImageSource(context);
+                                        if (source != null) {
+                                          getAktaPlayer(source);
+                                        }
+                                      },
                                       child: Column(
                                         children: [
                                           const Icon(Icons.description_rounded),
@@ -284,7 +329,7 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                             "Upload Disini",
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .caption
+                                                .bodySmall
                                                 ?.copyWith(
                                                     fontStyle: FontStyle.italic,
                                                     color: Color.red),
@@ -330,7 +375,13 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                       ],
                                     )
                                   : GestureDetector(
-                                      onTap: getKkPlayer,
+                                      onTap: () async {
+                                        final source =
+                                            await getImageSource(context);
+                                        if (source != null) {
+                                          getKkPlayer(source);
+                                        }
+                                      },
                                       child: Column(
                                         children: [
                                           const Icon(Icons.description_rounded),
@@ -339,7 +390,7 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                             "Upload Disini",
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .caption
+                                                .bodySmall
                                                 ?.copyWith(
                                                     fontStyle: FontStyle.italic,
                                                     color: Color.red),
@@ -424,12 +475,6 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
 
-          if (_fotoPlayer == null || _aktaPlayer == null || _kkPlayer == null) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Silahkan upload dokumen terlebih dahulu!")));
-            return;
-          }
-
           if (userId.isNotEmpty && widget.teamId.isNotEmpty) {
             context.read<PlayerBloc>().add(AddNewPlayer(
                 idUser: userId,
@@ -439,9 +484,9 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                 nisn: nisnCtrl.text,
                 posisi: posisiCtrl.text,
                 noPunggung: nomorPunggungCtrl.text,
-                foto: _fotoPlayer!,
-                aktaLahir: _aktaPlayer!,
-                kk: _kkPlayer!));
+                foto: _fotoPlayer,
+                aktaLahir: _aktaPlayer,
+                kk: _kkPlayer));
           }
         }
       },

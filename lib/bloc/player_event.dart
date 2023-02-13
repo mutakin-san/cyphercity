@@ -23,9 +23,9 @@ class AddNewPlayer extends PlayerEvent {
   final String nisn;
   final String posisi;
   final String noPunggung;
-  final XFile foto;
-  final XFile aktaLahir;
-  final XFile kk;
+  final XFile? foto;
+  final XFile? aktaLahir;
+  final XFile? kk;
 
   AddNewPlayer({
     required this.idUser,
@@ -35,9 +35,9 @@ class AddNewPlayer extends PlayerEvent {
     required this.nisn,
     required this.posisi,
     required this.noPunggung,
-    required this.foto,
-    required this.aktaLahir,
-    required this.kk,
+    this.foto,
+    this.aktaLahir,
+    this.kk,
   });
 
   @override

@@ -54,9 +54,9 @@ class TeamRepository {
     required String nisn,
     required String posisi,
     required String noPunggung,
-    required XFile foto,
-    required XFile aktaLahir,
-    required XFile kk,
+    XFile? foto,
+    XFile? aktaLahir,
+    XFile? kk,
   }) =>
       _playerServices.createPlayer(
           idUser: idUser,
