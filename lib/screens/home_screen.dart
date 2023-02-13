@@ -1,21 +1,31 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cyphercity/utilities/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../utilities/config.dart';
 import '../bloc/bloc.dart';
-import '../core/repos/repositories.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key, this.onCreateTeamClicked, this.onEventsClicked});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key, this.onCreateTeamClicked, this.onEventsClicked});
 
   final VoidCallback? onCreateTeamClicked;
   final VoidCallback? onEventsClicked;
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final CarouselController _controller = CarouselController();
+
+  @override
+  void initState() {
+    context.read<NewsBloc>().add(LoadNews());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +98,7 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: onEventsClicked,
+                      onTap: widget.onEventsClicked,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
@@ -99,7 +109,7 @@ class HomeScreen extends StatelessWidget {
                                 color: Color.gray,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(Icons.event, size: 45),
+                              child: const Icon(Icons.emoji_events, size: 35),
                             ),
                             const SizedBox(height: 8),
                             Text("Event",
@@ -114,11 +124,11 @@ class HomeScreen extends StatelessWidget {
                     BlocSelector<UserBloc, UserState, bool>(
                         selector: (state) =>
                             state is UserAuthenticated &&
-                            state.user.level == "1",
+                            state.user.level != "0",
                         builder: (context, isSchoolAccess) {
                           return isSchoolAccess
                               ? GestureDetector(
-                                  onTap: onCreateTeamClicked,
+                                  onTap: widget.onCreateTeamClicked,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8.0),
@@ -133,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                                           ),
                                           child: const Icon(
                                               Icons.group_add_rounded,
-                                              size: 45),
+                                              size: 35),
                                         ),
                                         const SizedBox(height: 8),
                                         Text("Create Team",
@@ -162,7 +172,7 @@ class HomeScreen extends StatelessWidget {
                                 color: Color.gray,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(Icons.info_outlined, size: 45),
+                              child: const Icon(Icons.info_outlined, size: 35),
                             ),
                             const SizedBox(height: 8),
                             Text("Information",
@@ -181,26 +191,25 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Text("News Update",
+                    Text("Hightlights",
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
                             ?.copyWith(color: Colors.white)),
                     const SizedBox(height: 8),
-                    FutureBuilder(
-                        future: RepositoryProvider.of<NewsRepository>(context)
-                            .getAllNews(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                                child: CircularProgressIndicator(
-                                    color: Color.yellow));
-                          }
+                    BlocBuilder<NewsBloc, NewsState>(builder: (context, state) {
+                      if (state is NewsLoading) {
+                        return Center(
+                            child:
+                                CircularProgressIndicator(color: Color.yellow));
+                      }
 
-                          if (snapshot.hasData && snapshot.data?.data != null) {
-                            final data = snapshot.data!.data!;
-                            return CarouselSlider.builder(
+                      if (state is NewsLoaded && state.data.isNotEmpty) {
+                        final data = state.data;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CarouselSlider.builder(
                               carouselController: _controller,
                               itemCount: data.length,
                               itemBuilder: (BuildContext context, int itemIndex,
@@ -219,35 +228,66 @@ class HomeScreen extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(10)),
                                   height: 100,
                                   width: double.infinity,
-                                  child: Center(
-                                    child: Text(
-                                      news.judul,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(
-                                              color: Colors.white,
-                                              shadows: [
-                                            const Shadow(
-                                                color: Colors.white54,
-                                                blurRadius: 10)
-                                          ]),
-                                    ),
-                                  ),
                                 );
                               },
                               options: CarouselOptions(viewportFraction: 0.9),
-                            );
-                          }
-
-                          return Center(
-                              child: Text(
-                            "${snapshot.data?.message}",
-                            style: TextStyle(
-                              color: Color.yellow,
                             ),
-                          ));
-                        }),
+                            const SizedBox(height: 24),
+                            ...data.map((news) => Card(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  color: Color.redPurple,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(8),
+                                    title: Text(
+                                      news.judul,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(color: Colors.white),
+                                    ),
+                                    subtitle: Text(
+                                      news.deskripsi,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: Colors.white54),
+                                    ),
+                                    enabled: false,
+                                    leading: Container(
+                                      decoration: BoxDecoration(
+                                          color: Color.redPurple,
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                                "$baseImageUrlNews/${news.gambar}"),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      height: 60,
+                                      width: 60,
+                                    ),
+                                  ),
+                                )),
+                          ],
+                        );
+                      }
+
+                      if (state is NewsFailed) {
+                        return Center(
+                            child: Text(
+                          state.error,
+                          style: TextStyle(
+                            color: Color.yellow,
+                          ),
+                        ));
+                      }
+
+                      return const SizedBox();
+                    }),
                   ],
                 ),
               ),

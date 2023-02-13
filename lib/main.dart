@@ -81,6 +81,12 @@ class MyApp extends StatelessWidget {
             final teamRepo = RepositoryProvider.of<TeamRepository>(context);
             return PlayerBloc(teamRepo);
           },
+        ),
+        BlocProvider(
+          create: (_) {
+            final newsRepo = RepositoryProvider.of<NewsRepository>(context);
+            return NewsBloc(newsRepo);
+          },
         )
       ],
       child: MaterialApp(
