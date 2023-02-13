@@ -6,6 +6,7 @@ class Tim extends Equatable {
     required this.idUser,
     required this.idSekolah,
     required this.idCabor,
+    required this.logoTeam,
     required this.namaTeam,
     required this.pembina,
     required this.pelatih,
@@ -18,6 +19,7 @@ class Tim extends Equatable {
   final String idUser;
   final String idSekolah;
   final String idCabor;
+  final String? logoTeam;
   final String namaTeam;
   final String pembina;
   final String pelatih;
@@ -31,6 +33,7 @@ class Tim extends Equatable {
       idUser: map['id_user'],
       idSekolah: map['id_sekolah'],
       idCabor: map['id_cabor'],
+      logoTeam: map['logo'],
       namaTeam: map['nama_team'],
       pembina: map['pembina'],
       pelatih: map['pelatih'],
@@ -46,6 +49,7 @@ class Tim extends Equatable {
       'id_user': idUser,
       'id_sekolah': idSekolah,
       'id_cabor': idCabor,
+      'logo': logoTeam,
       'nama_team': namaTeam,
       'pembina': pembina,
       'pelatih': pelatih,
@@ -60,6 +64,7 @@ class Tim extends Equatable {
         idUser,
         idSekolah,
         idCabor,
+        logoTeam,
         namaTeam,
         pembina,
         pelatih,

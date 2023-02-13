@@ -27,6 +27,16 @@ class TimCreated extends TimState {
   List<Object> get props => [tim];
 }
 
+class TimLogoUpdated extends TimState {
+  final String message;
+  final String logoUrl;
+
+  const TimLogoUpdated(this.logoUrl, this.message);
+
+  @override
+  List<Object> get props => [logoUrl, message];
+}
+
 class TimFailed extends TimState {
   final String message;
 

@@ -17,6 +17,10 @@ class TeamRepository {
         idUser: idUser, idSekolah: idSekolah, idCabor: idCabor);
   }
 
+  Future<ApiReturnValue<String>> updateLogoTeam(
+          String teamId, XFile image) async =>
+      _teamServices.updateLogoTim(teamId, image);
+
   Future<ApiReturnValue<Tim>> createTeam(
           {required String idUser,
           required String idSchool,

@@ -15,7 +15,9 @@ class TimBloc extends Bloc<TimEvent, TimState> {
     on<LoadTim>((event, emit) async {
       emit(TimLoading());
       final result = await _teamRepository.getListTim(
-          idUser: event.idUser, idSekolah: event.idSchool, idCabor: event.idCabor);
+          idUser: event.idUser,
+          idSekolah: event.idSchool,
+          idCabor: event.idCabor);
       if (result.data != null) {
         emit(TimLoaded(result.data!));
       } else {
@@ -40,6 +42,23 @@ class TimBloc extends Bloc<TimEvent, TimState> {
 
       if (result.data != null) {
         emit(TimCreated(result.data!));
+      } else {
+        emit(TimFailed(result.message ?? "Something error"));
+      }
+    });
+
+    on<UpdateLogo>((event, emit) async {
+      final previousState = (state as TimLoaded)
+          .data
+          .singleWhere((element) => element.id == event.teamId);
+      emit(TimLoading());
+      final result =
+          await _teamRepository.updateLogoTeam(event.teamId, event.image);
+
+      if (result.data != null) {
+        emit(TimLogoUpdated(result.data!, result.message ?? ""));
+        add(LoadTim(previousState.idUser, previousState.idSekolah,
+            previousState.idCabor));
       } else {
         emit(TimFailed(result.message ?? "Something error"));
       }

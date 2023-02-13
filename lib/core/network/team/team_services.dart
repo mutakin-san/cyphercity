@@ -3,8 +3,43 @@ part of 'team.dart';
 class TeamServices {
   static final Client _client = Client();
 
+  Future<ApiReturnValue<String>> updateLogoTim(
+      String teamId, XFile image) async {
+    try {
+      final request = MultipartRequest("POST", Uri.parse(updateLogoTeamUrl));
+
+      request.headers['content-type'] = 'multipart/form-data';
+
+      request.files.add(await MultipartFile.fromPath('file', image.path));
+
+      request.fields['id_tim'] = teamId;
+
+      final result = await request.send();
+
+      if (result.statusCode == 200) {
+        final Map<String, dynamic> response =
+            jsonDecode(await result.stream.bytesToString());
+        final apiResponse = ApiResponse.fromJson(response);
+
+        if (apiResponse.status == 'success' && apiResponse.code == 200) {
+          return ApiReturnValue(
+              data: (apiResponse.response as Map<String, dynamic>)['logo'],
+              message: apiResponse.message);
+        } else {
+          return ApiReturnValue(message: apiResponse.message);
+        }
+      } else {
+        return ApiReturnValue(message: result.reasonPhrase);
+      }
+    } catch (e) {
+      return ApiReturnValue(message: e.toString());
+    }
+  }
+
   Future<ApiReturnValue<List<Tim>>> getListTim(
-      {required String idUser, required String idSekolah, required String idCabor}) async {
+      {required String idUser,
+      required String idSekolah,
+      required String idCabor}) async {
     late ApiReturnValue<List<Tim>> returnValue;
 
     try {

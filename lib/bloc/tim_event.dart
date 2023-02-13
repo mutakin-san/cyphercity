@@ -57,3 +57,13 @@ class AddNewTeam extends TimEvent {
         skkpImage
       ];
 }
+
+class UpdateLogo extends TimEvent {
+  final String teamId;
+  final XFile image;
+
+  UpdateLogo(this.teamId, this.image);
+
+  @override
+  List<Object?> get props => [teamId, image];
+}
