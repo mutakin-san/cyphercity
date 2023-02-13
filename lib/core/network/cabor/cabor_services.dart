@@ -7,8 +7,7 @@ class CaborServices {
     late ApiReturnValue<List<Cabor>> returnValue;
 
     try {
-      final result =
-          await _client.get(Uri.parse("$baseUrl/api/ws/getListCabor"));
+      final result = await _client.get(Uri.parse(getCaborIdUrl));
 
       if (result.statusCode == 200) {
         final Map<String, dynamic> response = jsonDecode(result.body);
