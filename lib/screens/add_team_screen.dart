@@ -156,7 +156,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                             }
 
                                             if (state is TimFailed) {
-                                              Center(
+                                              return Center(
                                                   child: Text(state.message,
                                                       style: Theme.of(context)
                                                           .textTheme

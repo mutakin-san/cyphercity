@@ -37,26 +37,10 @@ class Tim extends Equatable {
       namaTeam: map['nama_team'],
       pembina: map['pembina'],
       pelatih: map['pelatih'],
-      asistenPelatih: map['asisten_pelatih'],
+      asistenPelatih: map['ass_pelatih'],
       teamMedis: map['team_medis'],
-      kordinatorSupporter: map['kordinator_supporter'],
+      kordinatorSupporter: map['kor_suporter'],
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'id_user': idUser,
-      'id_sekolah': idSekolah,
-      'id_cabor': idCabor,
-      'logo': logoTeam,
-      'nama_team': namaTeam,
-      'pembina': pembina,
-      'pelatih': pelatih,
-      'asisten_pelatih': asistenPelatih,
-      'team_medis': teamMedis,
-      'kordinator_supporter': kordinatorSupporter,
-    };
   }
 
   @override
