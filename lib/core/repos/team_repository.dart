@@ -13,7 +13,7 @@ class TeamRepository {
       {required String idUser,
       required String idSekolah,
       required String idCabor}) async {
-    return await _teamServices.getListTim(
+    return _teamServices.getListTim(
         idUser: idUser, idSekolah: idSekolah, idCabor: idCabor);
   }
 

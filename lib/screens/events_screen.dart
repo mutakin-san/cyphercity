@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../utilities/config.dart';
 import '../bloc/bloc.dart';
 import '../core/repos/repositories.dart';
 import '../utilities/colors.dart';
@@ -53,19 +54,26 @@ class EventsScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.black,
                         ),
-                        child: IconButton(
-                          onPressed: () {
-                            final userId = (context.read<UserBloc>().state
-                                    as UserAuthenticated)
-                                .user
-                                .userId;
-                            Navigator.pushNamed(context, '/profile',
-                                arguments: userId);
+                        child: BlocSelector<UserBloc, UserState, String?>(
+                          selector: (state) {
+                            return state is UserAuthenticated
+                                ? state.user.userId
+                                : null;
                           },
-                          color: Colors.white,
-                          icon: const Icon(
-                            Icons.account_circle_outlined,
-                          ),
+                          builder: (context, userId) {
+                            return IconButton(
+                              onPressed: userId != null
+                                  ? () {
+                                      Navigator.pushNamed(context, '/profile',
+                                          arguments: userId);
+                                    }
+                                  : null,
+                              color: Colors.white,
+                              icon: const Icon(
+                                Icons.account_circle_outlined,
+                              ),
+                            );
+                          },
                         ),
                       )
                     ],
@@ -82,89 +90,139 @@ class EventsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            FutureBuilder(
-              future: RepositoryProvider.of<EventRepository>(context)
-                  .getAllEvents(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                    color: Color.yellow,
-                  ));
-                }
-
-                final listEvent = snapshot.data?.data;
-
-                return Expanded(
-                  child: ListView.builder(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                    itemCount: listEvent?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final event = listEvent?.elementAt(index);
-                      return Container(
-                        height: 150,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            image: DecorationImage(
-                                image: NetworkImage(event != null &&
-                                        event.gambar.isNotEmpty
-                                    ? "https://sfc.webseitama.com/upload/event/${event.gambar}"
-                                    : "https://via.placeholder.com/480x300"),
-                                fit: BoxFit.cover),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: const [
-                              BoxShadow(
-                                  offset: Offset(0, 3),
-                                  color: Colors.black54,
-                                  blurRadius: 10)
-                            ]),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text(listEvent?.elementAt(index).namaEvent ?? "",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        shadows: const [
-                                      Shadow(
-                                          color: Colors.black,
-                                          blurRadius: 8,
-                                          offset: Offset(0.0, 2)),
-                                      Shadow(
-                                          color: Colors.black,
-                                          blurRadius: 8,
-                                          offset: Offset(0.0, 3))
-                                    ])),
-                            BlocBuilder<SchoolBloc, SchoolState>(
-                              builder: (context, state) {
-                                if (state is SchoolLoaded) {
-                                  return CCMaterialRedButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, '/register-competition',
-                                          arguments:
-                                              listEvent?.elementAt(index));
-                                    },
-                                    text: "REG",
-                                  );
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BlocSelector<UserBloc, UserState, String?>(
+                    selector: (state) {
+                      return state is UserAuthenticated
+                          ? state.user.userId
+                          : null;
+                    },
+                    builder: (context, userId) {
+                      return userId != null
+                          ? FutureBuilder(
+                              future: RepositoryProvider.of<EventRepository>(
+                                      context)
+                                  .getAllEvents(userId),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator(
+                                    color: Color.yellow,
+                                  ));
                                 }
 
-                                return const SizedBox();
+                                final listEvent = snapshot.data?.data;
+
+                                if (listEvent != null && listEvent.isNotEmpty) {
+                                  return Expanded(
+                                    child: ListView.builder(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      itemCount: listEvent.length,
+                                      itemBuilder: (context, index) {
+                                        final event =
+                                            listEvent.elementAt(index);
+                                        return Container(
+                                          height: 150,
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 8),
+                                          padding: const EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              image: DecorationImage(
+                                                  image: NetworkImage(event
+                                                          .gambar.isNotEmpty
+                                                      ? "$baseImageUrlEvent/${event.gambar}"
+                                                      : "https://via.placeholder.com/480x300"),
+                                                  fit: BoxFit.cover),
+                                              borderRadius: BorderRadius.circular(16),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                    offset: Offset(0, 3),
+                                                    color: Colors.black54,
+                                                    blurRadius: 10)
+                                              ]),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                  listEvent
+                                                      .elementAt(index)
+                                                      .namaEvent,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleLarge
+                                                      ?.copyWith(
+                                                          color: Colors.white,
+                                                          fontSize: 24,
+                                                          shadows: const [
+                                                        Shadow(
+                                                            color: Colors.black,
+                                                            blurRadius: 8,
+                                                            offset:
+                                                                Offset(0.0, 2)),
+                                                        Shadow(
+                                                            color: Colors.black,
+                                                            blurRadius: 8,
+                                                            offset:
+                                                                Offset(0.0, 3))
+                                                      ])),
+                                              BlocBuilder<SchoolBloc,
+                                                  SchoolState>(
+                                                builder: (context, state) {
+                                                  if (state is SchoolLoaded) {
+                                                    return CCMaterialRedButton(
+                                                      onPressed: () {
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            '/register-competition',
+                                                            arguments: listEvent
+                                                                .elementAt(
+                                                                    index));
+                                                      },
+                                                      text: "REG",
+                                                    );
+                                                  }
+
+                                                  return const SizedBox();
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  return Center(
+                                      child: Column(
+                                    children: [
+                                      Image.network(
+                                          "https://img.icons8.com/office/80/null/empty-box.png",
+                                          width: 80,
+                                          height: 80),
+                                      Text(
+                                        "Data Kosong!!!",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(color: Color.gray),
+                                      )
+                                    ],
+                                  ));
+                                }
                               },
-                            ),
-                          ],
-                        ),
-                      );
+                            )
+                          : const SizedBox();
                     },
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ],
         ),

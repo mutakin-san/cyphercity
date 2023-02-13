@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
                     _selectedMenuIndex = 0;
                   });
                 },
-                onCreateTeamClicked: user?.level == "1"
+                onCreateTeamClicked: user?.level != "0"
                     ? () {
                         setState(() {
                           _selectedMenuIndex = 2;
@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
                       }
                     : null,
               ),
-              if (user?.level == "1") const SchoolInformationScreen(),
+              if (user?.level != "0") const SchoolInformationScreen(),
             ]),
           ),
           bottomNavigationBar: BottomNavigationBar(
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
                     label: "", icon: Icon(Icons.emoji_events)),
                 const BottomNavigationBarItem(
                     label: "", icon: Icon(Icons.home)),
-                if (user?.level == "1")
+                if (user?.level != "0")
                   const BottomNavigationBarItem(
                       label: "", icon: Icon(Icons.account_circle)),
               ]),
@@ -70,6 +70,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _refreshBloc(String? userId) async {
     if (userId != null) {
       context.read<SchoolBloc>().add(LoadSchool(userId));
+      context.read<NewsBloc>().add(LoadNews());
     } else {
       context.read<UserBloc>().add(LoadUser());
     }

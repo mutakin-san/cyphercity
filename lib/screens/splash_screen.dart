@@ -42,14 +42,13 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ],
       child: Material(
-        textStyle: const TextStyle(color: Colors.white, height: 1.5),
         child: Stack(
           children: const [
             BackgroundGradient(),
             Center(
               child: BrandLogo(
-                width: 150,
-                height: 150,
+                width: 100,
+                height: 100,
               ),
             )
           ],

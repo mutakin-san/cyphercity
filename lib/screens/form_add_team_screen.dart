@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import '../screens/add_team_screen.dart';
 import '../widgets/cc_dropdown_form_field.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +140,7 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                         children: [
                                           CCTextFormField(
                                               controller: teamNameCtrl,
-                                              label: "Team Name",
+                                              label: "Nama Team",
                                               validator: ValidationBuilder()
                                                   .required()
                                                   .build(),
@@ -154,9 +156,10 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                                 .toList(),
                                             selectedValue: teamType,
                                             onChanged: (value) {
-                                              setState(() {
-                                                teamType = value!;
-                                              });
+                                              teamType = value!;
+                                              if (kDebugMode) {
+                                                print(teamType);
+                                              }
                                             },
                                           ),
                                           const SizedBox(height: 8),
@@ -253,7 +256,7 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
                                                           style: Theme.of(
                                                                   context)
                                                               .textTheme
-                                                              .caption
+                                                              .bodySmall
                                                               ?.copyWith(
                                                                   fontStyle:
                                                                       FontStyle

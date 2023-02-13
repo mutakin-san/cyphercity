@@ -1,6 +1,7 @@
 import 'package:cyphercity/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
@@ -46,6 +47,9 @@ void main() {
       RepositoryProvider(
         create: (_) => NewsRepository(),
       ),
+      RepositoryProvider(
+        create: (_) => RegionRepository(),
+      ),
     ],
     child: const MyApp(),
   ));
@@ -90,17 +94,19 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
-        title: 'Manajemen Team',
+        title: 'CYPHERCITY',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.light().copyWith(
-            primaryColor: Color.redPurple,
-            colorScheme: const ColorScheme.light().copyWith(
-              primary: Color.redPurple,
-              onPrimary: Colors.white,
-              onBackground: Colors.white,
-              secondary: Color.red,
-              onSecondary: Colors.white,
-            )),
+        theme: ThemeData(
+          primaryColor: Color.redPurple,
+          textTheme: GoogleFonts.karlaTextTheme(),
+          colorScheme: const ColorScheme.light().copyWith(
+            primary: Color.redPurple,
+            onPrimary: Colors.white,
+            onBackground: Colors.white,
+            secondary: Color.red,
+            onSecondary: Colors.white,
+          ),
+        ),
         initialRoute: '/',
         onGenerateRoute: (settings) {
           final args = settings.arguments;

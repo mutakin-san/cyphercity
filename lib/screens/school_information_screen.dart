@@ -14,7 +14,6 @@ class SchoolInformationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Stack(
       children: [
         const BackgroundGradient(),
@@ -110,7 +109,7 @@ class SchoolInformationScreen extends StatelessWidget {
                                                   borderRadius:
                                                       BorderRadius.circular(8)),
                                               child: const Text(
-                                                  "Edit Biodata Sekolah"),
+                                                  "Edit Biodata Sekolah/Tim"),
                                             ),
                                             const SizedBox(height: 8.0),
                                             Text(

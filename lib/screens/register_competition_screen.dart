@@ -34,13 +34,10 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
 
   @override
   void initState() {
-
     userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
     schoolId = (context.read<SchoolBloc>().state as SchoolLoaded).data.id;
-    timBloc = context
-        .read<TimBloc>();
+    timBloc = context.read<TimBloc>();
     if (userId.isNotEmpty && schoolId.isNotEmpty) {
-          
       timBloc.add(LoadTim(userId, schoolId, widget.event.idCabor));
     }
     super.initState();
@@ -77,8 +74,8 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                       Form(
                         key: _formKey,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Column(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
                               children: [
                                 BlocBuilder<TimBloc, TimState>(
                                   builder: (context, state) {
@@ -96,12 +93,21 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                             onChanged: (value) {
                                               setState(() {
                                                 _numberOfTeam = value!;
-                                                if(_selectedTeams.length < _numberOfTeam) {
-                                                  _selectedTeams.addAll(List.generate(_numberOfTeam - _selectedTeams.length, (index) => int.parse(state.data.first.id)));
+                                                if (_selectedTeams.length <
+                                                    _numberOfTeam) {
+                                                  _selectedTeams.addAll(
+                                                      List.generate(
+                                                          _numberOfTeam -
+                                                              _selectedTeams
+                                                                  .length,
+                                                          (index) => int.parse(
+                                                              state.data.first
+                                                                  .id)));
                                                 } else {
-                                                  _selectedTeams.removeRange(_numberOfTeam, _selectedTeams.length);
+                                                  _selectedTeams.removeRange(
+                                                      _numberOfTeam,
+                                                      _selectedTeams.length);
                                                 }
-
                                               });
                                             },
                                             label: "Number of Teams",
@@ -114,11 +120,13 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                       );
                                     }
 
-                                    if(state is TimFailed) {
+                                    if (state is TimFailed) {
                                       return Center(child: Text(state.message));
                                     }
 
-                                    return Center(child: CircularProgressIndicator(color: Color.yellow));
+                                    return Center(
+                                        child: CircularProgressIndicator(
+                                            color: Color.yellow));
                                   },
                                 ),
                                 const SizedBox(height: 8),
@@ -130,7 +138,8 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(
-                                            context, '/submit-team', arguments: widget.event.idCabor);
+                                            context, '/submit-team',
+                                            arguments: widget.event.idCabor);
                                       },
                                       child: Text(
                                         "Click Here",
@@ -144,58 +153,63 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Center(
-                                  child: isLoading ? Center(child: CircularProgressIndicator(color: Color.yellow)): CCMaterialRedButton(
-                                      onPressed: _numberOfTeam > 0
-                                          ? () async {
-                                              setState(() {
-                                                isLoading = true;
-                                              });
-                                              if (userId.isNotEmpty &&
-                                                  schoolId.isNotEmpty) {
+                                  child: isLoading
+                                      ? Center(
+                                          child: CircularProgressIndicator(
+                                              color: Color.yellow))
+                                      : CCMaterialRedButton(
+                                          onPressed: _numberOfTeam > 0
+                                              ? () async {
+                                                  setState(() {
+                                                    isLoading = true;
+                                                  });
+                                                  if (userId.isNotEmpty &&
+                                                      schoolId.isNotEmpty) {
+                                                    for (var idTeam
+                                                        in _selectedTeams) {
+                                                      final result =
+                                                          await RepositoryProvider
+                                                                  .of<EventRepository>(
+                                                                      context)
+                                                              .registerEvent(
+                                                                  idEvent:
+                                                                      widget.event
+                                                                          .id,
+                                                                  idUser:
+                                                                      userId,
+                                                                  idSekolah:
+                                                                      schoolId,
+                                                                  idTim: idTeam
+                                                                      .toString());
 
-                                                for (var idTeam
-                                                    in _selectedTeams) {
-                                                  final result =
-                                                      await RepositoryProvider
-                                                              .of<EventRepository>(
-                                                                  context)
-                                                          .registerEvent(
-                                                              idEvent: widget.event.id,
-                                                              idUser: userId,
-                                                              idSekolah:
-                                                                  schoolId,
-                                                              idTim: idTeam
-                                                                  .toString());
-
-                                                  if (result.data != null &&
-                                                      result.data!.status ==
-                                                          'success') {
-                                                    // ignore: use_build_context_synchronously
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(SnackBar(
-                                                            content: Text(
-                                                                "${result.message}")));
-                                                  } else {
-                                                    // ignore: use_build_context_synchronously
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(SnackBar(
-                                                            content: Text(
-                                                                "${result.message}")));
+                                                      if (result.data != null &&
+                                                          result.data!.status ==
+                                                              'success') {
+                                                        // ignore: use_build_context_synchronously
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                content: Text(
+                                                                    "${result.message}")));
+                                                      } else {
+                                                        // ignore: use_build_context_synchronously
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(SnackBar(
+                                                                content: Text(
+                                                                    "${result.message}")));
+                                                      }
+                                                    }
                                                   }
+                                                  setState(() {
+                                                    isLoading = false;
+                                                  });
                                                 }
-                                              }
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-                                            }
-                                          : null,
-                                      text: "REG"),
+                                              : null,
+                                          text: "REG"),
                                 ),
-                            ],
-                          )
-                        ),
+                              ],
+                            )),
                       )
                     ],
                   ),
@@ -213,25 +227,24 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
   }
 
   List<Widget> buildTeamSelection(int numberOfTeam, List<Tim> teams) {
-    if(teams.isNotEmpty) {
-      if(_selectedTeams.isEmpty){
-        _selectedTeams = List.generate(_numberOfTeam, (index) => int.parse(teams.first.id));
-      } 
+    if (teams.isNotEmpty) {
+      if (_selectedTeams.isEmpty) {
+        _selectedTeams =
+            List.generate(_numberOfTeam, (index) => int.parse(teams.first.id));
+      }
       return List.generate(numberOfTeam, (index) {
         int selectedTeam = int.parse(teams.first.id);
         return CCDropdownFormField<int>(
           items: teams
               .map((e) => DropdownMenuItem(
-            value: int.parse(e.id),
-            child: Text(e.namaTeam),
-          ))
+                    value: int.parse(e.id),
+                    child: Text(e.namaTeam),
+                  ))
               .toList(),
           selectedValue: selectedTeam,
           onChanged: (value) {
-              selectedTeam = value!;
-              _selectedTeams[index] = selectedTeam;
-            // setState(() {
-            // });
+            selectedTeam = value!;
+            _selectedTeams[index] = selectedTeam;
           },
           label: "Select Team",
           labelColor: Colors.black,

@@ -17,13 +17,11 @@ class AddTeamPlayersScreen extends StatefulWidget {
 
 class _AddTeamPlayersScreenState extends State<AddTeamPlayersScreen> {
   int numberOfPlayer = 1;
-
+  late String userId;
 
   @override
   void initState() {
-    final userId = (context.read<UserBloc>().state as UserAuthenticated)
-        .user
-        .userId;
+    userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
     context.read<PlayerBloc>().add(LoadPlayer(userId, widget.team.id));
     super.initState();
   }
@@ -32,95 +30,102 @@ class _AddTeamPlayersScreenState extends State<AddTeamPlayersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.gray,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16),
-                child: Column(
-                  children: [
-                    Center(
-                      child: CircleAvatar(
-                        radius: 45,
-                        backgroundColor: Colors.white,
-                        child: widget.team.logo,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(widget.team.name,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 16),
-                    Form(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Pemain ${widget.team.name}"),
-                          const SizedBox(height: 30),
-                          BlocBuilder<PlayerBloc, PlayerState>(
-                              builder: (context, state) {
-                            if (state is PlayerLoading) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                    color: Color.yellow),
-                              );
-                            }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<PlayerBloc>().add(LoadPlayer(userId, widget.team.id));
 
-                            if (state is PlayerLoaded) {
-                              return Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.stretch,
-                                children: [
-                                  ...state.data.map(
-                                    (player) => buildPlayerInput(
-                                      context,
-                                      playerName: player.namaPemain,
+          await Future.delayed(const Duration(seconds: 1));
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.white,
+                          child: widget.team.logo,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(widget.team.name,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 16),
+                      Form(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Pemain ${widget.team.name}"),
+                            const SizedBox(height: 30),
+                            BlocBuilder<PlayerBloc, PlayerState>(
+                                builder: (context, state) {
+                              if (state is PlayerLoading) {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                      color: Color.yellow),
+                                );
+                              }
+
+                              if (state is PlayerLoaded) {
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    ...state.data.map(
+                                      (player) => buildPlayerInput(
+                                        context,
+                                        playerName: player.namaPemain,
+                                      ),
                                     ),
-                                  ),
-                                  ...List.generate(
-                                      numberOfPlayer,
-                                      (index) => buildPlayerInput(context,
-                                              onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, '/submit-player',
-                                                arguments: widget.team.id);
-                                          })),
-                                ],
-                              );
-                            }
+                                    ...List.generate(
+                                        numberOfPlayer,
+                                        (index) => buildPlayerInput(context,
+                                                onPressed: () {
+                                              Navigator.pushNamed(
+                                                  context, '/submit-player',
+                                                  arguments: widget.team.id);
+                                            })),
+                                  ],
+                                );
+                              }
 
-                            if (state is PlayerFailed) {
-                              return Center(child: Text(state.message));
-                            }
+                              if (state is PlayerFailed) {
+                                return Center(child: Text(state.message));
+                              }
 
-                            return const SizedBox();
-                          }),
-                          const SizedBox(height: 24),
-                          Center(
-                            child: CCMaterialRedButton(
-                              text: "Tambah Pemain",
-                              onPressed: () {
-                                setState(() {
-                                  numberOfPlayer++;
-                                });
-                              },
+                              return const SizedBox();
+                            }),
+                            const SizedBox(height: 24),
+                            Center(
+                              child: CCMaterialRedButton(
+                                text: "Tambah Pemain",
+                                onPressed: () {
+                                  setState(() {
+                                    numberOfPlayer++;
+                                  });
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  iconSize: 35,
-                  icon: const Icon(Icons.arrow_back))
-            ],
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    iconSize: 35,
+                    icon: const Icon(Icons.arrow_back))
+              ],
+            ),
           ),
         ),
       ),
