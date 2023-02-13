@@ -47,6 +47,7 @@ dependencies:
   image_picker: ^0.8.6+1
   path: ^1.8.2
   intl: ^0.18.0
+  google_fonts: ^4.0.3
 
 dev_dependencies:
   flutter_test:
@@ -108,6 +109,6 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/images/cc_logo.png"
+  image_path: "assets/images/cc_logo_no_text.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   
