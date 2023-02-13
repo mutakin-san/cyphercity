@@ -33,6 +33,7 @@ class UserRepository {
       required String name,
       required String username,
       required String noHp,
+      required String idRegion,
       required String password,
       required String confirmPassword,
       int? statusSekolah = 0}) async {
@@ -41,6 +42,7 @@ class UserRepository {
       name: name,
       username: username,
       noHp: noHp,
+      idRegion: idRegion,
       password: password,
       confirmPassword: confirmPassword,
       statusSekolah: statusSekolah,

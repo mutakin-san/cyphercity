@@ -43,6 +43,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           name: event.name,
           username: event.username,
           noHp: event.noHp,
+          idRegion: event.idRegion ?? "0",
           password: event.password,
           confirmPassword: event.confirmPassword,
           statusSekolah: event.statusSekolah);

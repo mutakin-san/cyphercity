@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
+import '../core/repos/repositories.dart';
 import '../utilities/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +13,7 @@ import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
+import '../widgets/cc_dropdown_form_field.dart';
 import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
@@ -34,6 +38,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
 
   XFile? _schoolimage;
   XFile? _logoImage;
+  String? _selectedRegion;
 
   Future<void> getSchoolImage() async {
     final picker = ImagePicker();
@@ -118,6 +123,10 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                         npsnCtrl.text = state.data.npsn;
                                         biodataTimCtrl.text =
                                             state.data.biodata;
+                                        _selectedRegion =
+                                            state.data.idRegion == "0"
+                                                ? null
+                                                : state.data.idRegion;
                                       }
                                       return Form(
                                         key: _formKey,
@@ -127,7 +136,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                           children: [
                                             CCTextFormField(
                                               controller: schoolNameCtrl,
-                                              label: "Nama Sekolah",
+                                              label: "Nama Sekolah/Tim",
                                               textColor: Colors.black,
                                               validator: ValidationBuilder()
                                                   .required()
@@ -144,9 +153,53 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                   .build(),
                                             ),
                                             const SizedBox(height: 8),
+                                            FutureBuilder(
+                                                future: RepositoryProvider.of<
+                                                            RegionRepository>(
+                                                        context)
+                                                    .getAllRegional(),
+                                                builder: (_, snapshot) {
+                                                  return CCDropdownFormField(
+                                                      label: 'Regional',
+                                                      hint: snapshot.connectionState ==
+                                                              ConnectionState
+                                                                  .waiting
+                                                          ? "Loading..."
+                                                          : "Pilih Region",
+                                                      labelColor: Colors.black,
+                                                      items: (snapshot.hasData &&
+                                                              snapshot.data
+                                                                      ?.data !=
+                                                                  null)
+                                                          ? snapshot.data!.data!
+                                                              .map((region) => DropdownMenuItem<
+                                                                      String>(
+                                                                  value: region
+                                                                      .idRegion,
+                                                                  child: Text(
+                                                                      region.nama)))
+                                                              .toList()
+                                                          : <DropdownMenuItem<String>>[],
+                                                      selectedValue: _selectedRegion,
+                                                      validator: (value) {
+                                                        return value != null &&
+                                                                value.isNotEmpty
+                                                            ? null
+                                                            : "Region Required";
+                                                      },
+                                                      onChanged: (value) {
+                                                        _selectedRegion = value;
+
+                                                        if (kDebugMode) {
+                                                          print(
+                                                              _selectedRegion);
+                                                        }
+                                                      });
+                                                }),
+                                            const SizedBox(height: 8),
                                             CCTextFormField(
                                                 controller: biodataTimCtrl,
-                                                label: "Biodata Tim",
+                                                label: "Biodata Sekolah/Tim",
                                                 textColor: Colors.black,
                                                 validator: ValidationBuilder()
                                                     .required()
@@ -209,7 +262,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                             style: Theme.of(
                                                                     context)
                                                                 .textTheme
-                                                                .caption
+                                                                .bodySmall
                                                                 ?.copyWith(
                                                                     fontStyle:
                                                                         FontStyle
@@ -363,8 +416,10 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                 child: IconButton(
                                                     color: Color.yellow,
                                                     onPressed: () =>
-                                                        getLogoImage(widget.kode,
-                                                            userId, context),
+                                                        getLogoImage(
+                                                            widget.kode,
+                                                            userId,
+                                                            context),
                                                     icon: Container(
                                                       padding:
                                                           const EdgeInsets.all(
@@ -388,7 +443,9 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                             } else {
                                               return GestureDetector(
                                                 onTap: () => getLogoImage(
-                                                    widget.kode, userId, context),
+                                                    widget.kode,
+                                                    userId,
+                                                    context),
                                                 child: Text(
                                                   "Upload\nLogo Team",
                                                   textAlign: TextAlign.center,
@@ -434,10 +491,11 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
 
-                if (userId != null) {
+                if (userId != null && _selectedRegion != null) {
                   context.read<SchoolBloc>().add(EditSchoolBiodata(
                       kode: kode,
                       idUser: userId,
+                      idRegion: _selectedRegion!,
                       namaSekolah: schoolNameCtrl.text,
                       npsn: npsnCtrl.text,
                       biodata: biodataTimCtrl.text,

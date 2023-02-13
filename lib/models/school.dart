@@ -4,6 +4,7 @@ class School extends Equatable {
   const School({
     required this.id,
     required this.idUser,
+    required this.idRegion,
     required this.namaSekolah,
     required this.npsn,
     required this.biodata,
@@ -14,6 +15,7 @@ class School extends Equatable {
 
   final String id;
   final String idUser;
+  final String idRegion;
   final String namaSekolah;
   final String npsn;
   final String biodata;
@@ -25,6 +27,7 @@ class School extends Equatable {
     return School(
         id: map['id'] ?? map['id_sekolah'],
         idUser: map['id_user'],
+        idRegion: map['id_region'],
         namaSekolah: map['nama_sekolah'],
         npsn: map['npsn'],
         biodata: map['biodata'],
@@ -37,6 +40,7 @@ class School extends Equatable {
     return {
       "id": id,
       "id_user": idUser,
+      "id_region": idRegion,
       "nama_sekolah": namaSekolah,
       "npsn": npsn,
       "biodata": biodata,
@@ -48,5 +52,5 @@ class School extends Equatable {
 
   @override
   List<Object?> get props =>
-      [id, idUser, namaSekolah, npsn, biodata, logo, gambar, status];
+      [id, idUser, idRegion, namaSekolah, npsn, biodata, logo, gambar, status];
 }

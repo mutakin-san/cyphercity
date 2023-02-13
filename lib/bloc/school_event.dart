@@ -19,6 +19,7 @@ class LoadSchool extends SchoolEvent {
 class EditSchoolBiodata extends SchoolEvent {
   final String? kode;
   final String idUser;
+  final String idRegion;
   final String namaSekolah;
   final String npsn;
   final String biodata;
@@ -27,6 +28,7 @@ class EditSchoolBiodata extends SchoolEvent {
   const EditSchoolBiodata(
       {this.kode,
       required this.idUser,
+      required this.idRegion,
       required this.namaSekolah,
       required this.npsn,
       required this.biodata,

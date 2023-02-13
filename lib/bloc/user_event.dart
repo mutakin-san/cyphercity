@@ -19,6 +19,7 @@ class UserRegister extends UserEvent {
   final String name;
   final String username;
   final String noHp;
+  final String? idRegion;
   final String password;
   final String confirmPassword;
   final int? statusSekolah;
@@ -28,6 +29,7 @@ class UserRegister extends UserEvent {
       required this.name,
       required this.username,
       required this.noHp,
+      this.idRegion = "0",
       required this.password,
       required this.confirmPassword,
       this.statusSekolah});

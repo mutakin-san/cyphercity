@@ -7,8 +7,8 @@ class EventRepository {
     _eventServices = EventServices();
   }
 
-  Future<ApiReturnValue<List<Event>>> getAllEvents() async {
-    return await _eventServices.getAllEvents();
+  Future<ApiReturnValue<List<Event>>> getAllEvents(String userId) {
+    return _eventServices.getAllEvents(userId);
   }
 
   Future<ApiReturnValue<ApiResponse>> registerEvent(

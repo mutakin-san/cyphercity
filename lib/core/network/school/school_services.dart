@@ -38,6 +38,7 @@ class SchoolServices {
   Future<ApiReturnValue<bool>> editSchoolBiodata(
       {required String? kode,
       required String idUser,
+      required String idRegion,
       required String namaSekolah,
       required String npsn,
       required String biodata,
@@ -58,6 +59,7 @@ class SchoolServices {
       }
 
       request.fields['id_user'] = idUser;
+      request.fields['id_region'] = idRegion;
       request.fields['nama_sekolah'] = namaSekolah;
       request.fields['npsn'] = npsn;
       request.fields['biodata'] = biodata;
@@ -78,6 +80,9 @@ class SchoolServices {
         }
       } else {
         returnValue = ApiReturnValue(data: false, message: result.reasonPhrase);
+        if (kDebugMode) {
+          print(await result.stream.bytesToString());
+        }
       }
 
       return returnValue;

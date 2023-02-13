@@ -3,11 +3,12 @@ part of 'event.dart';
 class EventServices {
   static final Client _client = Client();
 
-  Future<ApiReturnValue<List<Event>>> getAllEvents() async {
+  Future<ApiReturnValue<List<Event>>> getAllEvents(String userId) async {
     late ApiReturnValue<List<Event>> returnValue;
 
     try {
-      final result = await _client.get(Uri.parse(getListEventUrl));
+      final result = await _client.get(Uri.https(
+          "sfc.webseitama.com", "/api/ws/getListEvent", {"id_user": userId}));
 
       if (result.statusCode == 200) {
         final Map<String, dynamic> response = jsonDecode(result.body);
@@ -41,8 +42,7 @@ class EventServices {
     late ApiReturnValue<ApiResponse> returnValue;
 
     try {
-      final result =
-          await _client.post(Uri.parse(registerEventUrl), body: {
+      final result = await _client.post(Uri.parse(registerEventUrl), body: {
         'id_event': idEvent.trim(),
         'id_user': idUser.trim(),
         'id_sekolah': idSekolah.trim(),

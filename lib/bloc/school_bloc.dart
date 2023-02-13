@@ -31,6 +31,7 @@ class SchoolBloc extends Bloc<SchoolEvent, SchoolState> {
         final result = await _repository.editBiodata(
             kode: event.kode,
             idUser: event.idUser,
+            idRegion: event.idRegion,
             namaSekolah: event.namaSekolah,
             npsn: event.npsn,
             biodata: event.biodata,

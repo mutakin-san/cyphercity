@@ -4,6 +4,7 @@ class CCDropdownFormField<T> extends StatelessWidget {
   const CCDropdownFormField(
       {super.key,
       required this.label,
+      this.hint,
       this.labelColor = Colors.white,
       required this.items,
       required this.selectedValue,
@@ -11,6 +12,7 @@ class CCDropdownFormField<T> extends StatelessWidget {
       this.validator});
 
   final String label;
+  final String? hint;
   final Color? labelColor;
   final List<DropdownMenuItem<T>> items;
   final T selectedValue;
@@ -33,6 +35,7 @@ class CCDropdownFormField<T> extends StatelessWidget {
             items: items,
             isDense: true,
             isExpanded: true,
+            hint: hint != null ? Text("$hint") : null,
             validator: validator,
             style: const TextStyle(color: Colors.black87),
             value: selectedValue,

@@ -8,6 +8,7 @@ class AuthServices {
       required String name,
       required String username,
       required String noHp,
+      required String idRegion,
       required String password,
       required String confirmPassword,
       int? statusSekolah = 0}) async {
@@ -19,6 +20,7 @@ class AuthServices {
         'username': username.trim(),
         'nama': name.trim(),
         'no_hp': noHp.trim(),
+        'id_region': idRegion.trim(),
         'password': password.trim(),
         'password_ulang': confirmPassword.trim(),
         'status_sekolah': statusSekolah.toString(),

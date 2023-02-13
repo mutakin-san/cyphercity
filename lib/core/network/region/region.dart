@@ -1,13 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 import '../../../../utilities/config.dart';
 import 'package:http/http.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../models/api_response.dart';
-import '../../../models/school.dart';
+import '../../../models/regional.dart';
 import '../network.dart';
 
-part 'school_services.dart';
+part 'region_services.dart';

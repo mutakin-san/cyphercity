@@ -10,6 +10,7 @@ const getListEventUrl = "$baseUrl/api/ws/getListEvent";
 const getTeamUrl = "$baseUrl/api/ws/getListTim";
 const getPlayersUrl = "$baseUrl/api/ws/getListPemain";
 const getUserIdUrl = "$baseUrl/api/ws/getIdUser";
+const getRegionIdUrl = "$baseUrl/api/ws/getListRegional";
 const editBiodataUrl = "$baseUrl/api/ws/EditSekolah";
 const createTeamUrl = "$baseUrl/api/ws/CreateTim";
 const createPlayerUrl = "$baseUrl/api/ws/CreatePemain";

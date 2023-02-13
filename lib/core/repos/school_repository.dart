@@ -10,6 +10,7 @@ class SchoolRepository {
   Future<bool> editBiodata(
       {required String? kode,
       required String idUser,
+      required String idRegion,
       required String namaSekolah,
       required String npsn,
       required String biodata,
@@ -17,6 +18,7 @@ class SchoolRepository {
     final result = await _network.editSchoolBiodata(
         kode: kode,
         idUser: idUser,
+        idRegion: idRegion,
         namaSekolah: namaSekolah,
         npsn: npsn,
         biodata: biodata,

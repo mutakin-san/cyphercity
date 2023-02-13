@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
 
 import '../bloc/bloc.dart';
+import '../core/repos/repositories.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
@@ -33,6 +35,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
   int _selectedUserType = 0;
+
+  String? _selectedRegion;
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +80,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               CCDropdownFormField(
                                   label: 'Tipe Akun',
-                                  items: [0, 1]
+                                  items: [0, 1, 2]
                                       .map((e) => DropdownMenuItem(
                                           value: e,
-                                          child: Text(
-                                              e == 0 ? "Pribadi" : "Sekolah")))
+                                          child: Text(e == 0
+                                              ? "Pribadi"
+                                              : e == 1
+                                                  ? "Official Sekolah"
+                                                  : "Official Umum")))
                                       .toList(),
                                   selectedValue: _selectedUserType,
                                   onChanged: (value) {
@@ -88,6 +95,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       _selectedUserType = value!;
                                     });
                                   }),
+                              Visibility(
+                                visible: _selectedUserType == 1,
+                                child: FutureBuilder(
+                                    future:
+                                        RepositoryProvider.of<RegionRepository>(
+                                                context)
+                                            .getAllRegional(),
+                                    builder: (_, snapshot) {
+                                      return CCDropdownFormField(
+                                          label: 'Regional',
+                                          hint: snapshot.connectionState ==
+                                                  ConnectionState.waiting
+                                              ? "Loading..."
+                                              : "Pilih Region",
+                                          items: (snapshot.hasData &&
+                                                  snapshot.data?.data != null)
+                                              ? snapshot.data!.data!
+                                                  .map((region) =>
+                                                      DropdownMenuItem<String>(
+                                                          value:
+                                                              region.idRegion,
+                                                          child: Text(
+                                                              region.nama)))
+                                                  .toList()
+                                              : <DropdownMenuItem<String>>[],
+                                          selectedValue: _selectedRegion,
+                                          validator: (value) {
+                                            return value != null &&
+                                                    value.isNotEmpty
+                                                ? null
+                                                : "Region Required";
+                                          },
+                                          onChanged: (value) {
+                                            _selectedRegion = value;
+
+                                            if (kDebugMode) {
+                                              print(_selectedRegion);
+                                            }
+                                          });
+                                    }),
+                              ),
                               const SizedBox(height: 16),
                               CCTextFormField(
                                 controller: emailCtrl,
@@ -228,15 +276,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
 
-          context.read<UserBloc>().add(UserRegister(
-                email: emailCtrl.text,
-                username: usernameCtrl.text,
-                name: nameCtrl.text,
-                password: passwordCtrl.text,
-                confirmPassword: confirmPasswordCtrl.text,
-                noHp: noHpCtrl.text,
-                statusSekolah: _selectedUserType,
-              ));
+          if (_selectedRegion != null) {
+            context.read<UserBloc>().add(UserRegister(
+                  email: emailCtrl.text,
+                  username: usernameCtrl.text,
+                  name: nameCtrl.text,
+                  noHp: noHpCtrl.text,
+                  idRegion: _selectedRegion,
+                  password: passwordCtrl.text,
+                  confirmPassword: confirmPasswordCtrl.text,
+                  statusSekolah: _selectedUserType,
+                ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Pilih Region Terlebih Dahulu")));
+          }
         }
       },
     );

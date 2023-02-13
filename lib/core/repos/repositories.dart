@@ -1,3 +1,5 @@
+import 'package:cyphercity/core/network/region/region.dart';
+
 import '../../../../core/local/local.dart';
 import '../../../../core/network/network.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import '../../models/cabor.dart';
 import '../../models/event.dart';
 import '../../models/news.dart';
 import '../../models/player.dart';
+import '../../models/regional.dart';
 import '../../models/school.dart';
 import '../../models/tim.dart';
 import '../../models/user.dart';
@@ -21,3 +24,4 @@ part 'school_repository.dart';
 part 'team_repository.dart';
 part 'user_repository.dart';
 part 'news_repository.dart';
+part 'region_repository.dart';
