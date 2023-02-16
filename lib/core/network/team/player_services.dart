@@ -34,12 +34,15 @@ class PlayerServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
   }
 
   Future<ApiReturnValue<Player>> createPlayer({
+    String? idPlayer,
     required String idUser,
     required String idTim,
     required String playerName,
@@ -54,19 +57,24 @@ class PlayerServices {
     late ApiReturnValue<Player> returnValue;
 
     try {
-      final request = MultipartRequest("POST", Uri.parse(createPlayerUrl));
+      final request = MultipartRequest("POST",
+          Uri.parse(idPlayer != null ? updatePlayerUrl : createPlayerUrl));
 
       request.headers['content-type'] = 'multipart/form-data';
 
       if (foto != null) {
-        request.files.add(await MultipartFile.fromPath('file1', foto.path));
+        request.files.add(await MultipartFile.fromPath('file[]', foto.path));
       }
       if (aktaLahir != null) {
         request.files
-            .add(await MultipartFile.fromPath('file2', aktaLahir.path));
+            .add(await MultipartFile.fromPath('file[]', aktaLahir.path));
       }
       if (kk != null) {
-        request.files.add(await MultipartFile.fromPath('file3', kk.path));
+        request.files.add(await MultipartFile.fromPath('file[]', kk.path));
+      }
+
+      if (idPlayer != null) {
+        request.fields['id'] = idPlayer;
       }
 
       request.fields['id_user'] = idUser;
@@ -82,6 +90,9 @@ class PlayerServices {
       if (result.statusCode == 200) {
         final Map<String, dynamic> response =
             jsonDecode(await result.stream.bytesToString());
+        if (kDebugMode) {
+          print(response);
+        }
         final apiResponse = ApiResponse.fromJson(response);
 
         if (apiResponse.status == 'success' && apiResponse.code == 200) {
@@ -97,6 +108,34 @@ class PlayerServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return ApiReturnValue(message: e.toString());
+    }
+  }
+
+  Future<ApiReturnValue<bool>> deletePlayer({
+    required String playerId,
+  }) async {
+    late ApiReturnValue<bool> returnValue;
+
+    try {
+      final result = await _client
+          .post(Uri.parse(deletePlayerUrl), body: {"id": playerId});
+
+      if (result.statusCode == 200) {
+        returnValue = const ApiReturnValue(data: true);
+      } else {
+        returnValue = ApiReturnValue(message: result.reasonPhrase);
+      }
+
+      return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }

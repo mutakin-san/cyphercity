@@ -30,6 +30,8 @@ class SchoolServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
@@ -86,6 +88,8 @@ class SchoolServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(data: false, message: e.toString());
     }
@@ -120,6 +124,8 @@ class SchoolServices {
       } else {
         return ApiReturnValue(data: false, message: result.reasonPhrase);
       }
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(data: false, message: e.toString());
     }

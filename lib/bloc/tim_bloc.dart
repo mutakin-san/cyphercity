@@ -47,6 +47,29 @@ class TimBloc extends Bloc<TimEvent, TimState> {
       }
     });
 
+    on<UpdateTeam>((event, emit) async {
+      emit(TimLoading());
+      final result = await _teamRepository.createTeam(
+          idTim: event.idTim,
+          idUser: event.idUser,
+          idSchool: event.idSchool,
+          idCabor: event.idCabor,
+          namaTeam: event.namaTeam,
+          pembina: event.pembina,
+          pelatih: event.pelatih,
+          asistenPelatih: event.asistenPelatih,
+          teamMedis: event.teamMedis,
+          kordinatorSupporter: event.kordinatorSupporter,
+          teamType: event.teamType,
+          skkpImage: event.skkpImage);
+
+      if (result.data != null) {
+        emit(TimCreated(result.data!));
+      } else {
+        emit(TimFailed(result.message ?? "Something error"));
+      }
+    });
+
     on<UpdateLogo>((event, emit) async {
       final previousState = (state as TimLoaded)
           .data

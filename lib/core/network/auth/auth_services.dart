@@ -49,6 +49,8 @@ class AuthServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
@@ -84,6 +86,8 @@ class AuthServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
@@ -117,6 +121,8 @@ class AuthServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }

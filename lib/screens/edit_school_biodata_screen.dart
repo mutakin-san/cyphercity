@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
+import '../utilities/helper.dart';
 import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/cc_dropdown_form_field.dart';
@@ -42,29 +43,39 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
   String? _selectedRegion;
 
   Future<void> getSchoolImage() async {
-    final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _schoolimage = image;
-      });
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      await pickImage(
+        source: source,
+        onChoosed: (image) {
+          if (image != null) {
+            setState(() {
+              _schoolimage = image;
+            });
+          }
+        },
+      );
     }
   }
 
   Future<void> getLogoImage(
       String? kode, String userId, BuildContext context) async {
     final schoolBloc = context.read<SchoolBloc>();
-    final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      if (kode != null && userId.isNotEmpty) {
-        schoolBloc.add(EditSchoolLogo(kode, userId, image));
-      }
-      setState(() {
-        _logoImage = image;
-      });
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      await pickImage(
+        source: source,
+        onChoosed: (image) {
+          if (image != null) {
+            if (kode != null && userId.isNotEmpty) {
+              schoolBloc.add(EditSchoolLogo(kode, userId, image));
+            }
+            setState(() {
+              _logoImage = image;
+            });
+          }
+        },
+      );
     }
   }
 

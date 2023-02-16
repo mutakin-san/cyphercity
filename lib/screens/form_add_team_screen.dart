@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../screens/add_team_screen.dart';
+import '../utilities/helper.dart';
 import '../widgets/cc_dropdown_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,9 +18,10 @@ import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class FormAddTeamScreen extends StatefulWidget {
-  const FormAddTeamScreen({super.key, required this.caborId});
+  const FormAddTeamScreen({super.key, required this.caborId, this.teamId});
 
   final String caborId;
+  final String? teamId;
 
   @override
   State<FormAddTeamScreen> createState() => _FormAddTeamScreenState();
@@ -49,19 +51,37 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
   void initState() {
     userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
     schoolId = (context.read<SchoolBloc>().state as SchoolLoaded).data.id;
+
+    if (widget.teamId != null && widget.teamId!.isNotEmpty) {
+      final dataTim = (context.read<TimBloc>().state as TimLoaded)
+          .data
+          .singleWhere((element) => element.id == widget.teamId);
+
+      teamNameCtrl.text = dataTim.namaTeam;
+      pembinaCtrl.text = dataTim.pembina;
+      pelatihCtrl.text = dataTim.pelatih;
+      asistenPelatihCtrl.text = dataTim.asistenPelatih;
+      medisTeamCtrl.text = dataTim.teamMedis;
+      koordinatorSupporterCtrl.text = dataTim.kordinatorSupporter;
+    }
     super.initState();
   }
 
   XFile? _skkpImage;
 
   Future<void> getSkkpImage() async {
-    final picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _skkpImage = image;
-      });
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      await pickImage(
+        source: source,
+        onChoosed: (image) {
+          if (image != null) {
+            setState(() {
+              _skkpImage = image;
+            });
+          }
+        },
+      );
     }
   }
 
@@ -340,22 +360,44 @@ class _FormAddTeamScreenState extends State<FormAddTeamScreen> {
           if (userId.isNotEmpty &&
               schoolId.isNotEmpty &&
               idCabor.isNotEmpty &&
-              teamType.isNotEmpty &&
-              _skkpImage != null) {
-            context.read<TimBloc>().add(
-                  AddNewTeam(
-                      idUser: userId,
-                      idSchool: schoolId,
-                      idCabor: idCabor,
-                      namaTeam: teamNameCtrl.text,
-                      pembina: pembinaCtrl.text,
-                      pelatih: pelatihCtrl.text,
-                      asistenPelatih: asistenPelatihCtrl.text,
-                      teamMedis: medisTeamCtrl.text,
-                      kordinatorSupporter: koordinatorSupporterCtrl.text,
-                      teamType: teamType,
-                      skkpImage: _skkpImage!),
-                );
+              teamType.isNotEmpty) {
+            if (widget.teamId != null) {
+              context.read<TimBloc>().add(
+                    UpdateTeam(
+                        idTim: widget.teamId!,
+                        idUser: userId,
+                        idSchool: schoolId,
+                        idCabor: idCabor,
+                        namaTeam: teamNameCtrl.text,
+                        pembina: pembinaCtrl.text,
+                        pelatih: pelatihCtrl.text,
+                        asistenPelatih: asistenPelatihCtrl.text,
+                        teamMedis: medisTeamCtrl.text,
+                        kordinatorSupporter: koordinatorSupporterCtrl.text,
+                        teamType: teamType,
+                        skkpImage: _skkpImage),
+                  );
+            } else {
+              if (_skkpImage != null) {
+                context.read<TimBloc>().add(
+                      AddNewTeam(
+                          idUser: userId,
+                          idSchool: schoolId,
+                          idCabor: idCabor,
+                          namaTeam: teamNameCtrl.text,
+                          pembina: pembinaCtrl.text,
+                          pelatih: pelatihCtrl.text,
+                          asistenPelatih: asistenPelatihCtrl.text,
+                          teamMedis: medisTeamCtrl.text,
+                          kordinatorSupporter: koordinatorSupporterCtrl.text,
+                          teamType: teamType,
+                          skkpImage: _skkpImage!),
+                    );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("SKKP Tidak boleh kosong!")));
+              }
+            }
           }
         }
       },

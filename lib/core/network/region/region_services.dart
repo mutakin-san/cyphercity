@@ -26,6 +26,8 @@ class RegionServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }

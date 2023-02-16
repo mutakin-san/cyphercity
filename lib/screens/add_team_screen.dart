@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cyphercity/utilities/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,6 +27,27 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   late String userId;
   late String schoolId;
 
+  bool showAppbar = false;
+  String teamId = "";
+
+  XFile? newLogo;
+
+  Future<XFile?> pickTeamLogo(BuildContext context) async {
+    final imagePicker = ImagePicker();
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      return await imagePicker.pickImage(source: source);
+    } else {
+      return null;
+    }
+  }
+
+  updateNewLogo(XFile? image, setState) {
+    setState(() {
+      newLogo = image;
+    });
+  }
+
   @override
   void initState() {
     userId = (context.read<UserBloc>().state as UserAuthenticated).user.userId;
@@ -42,6 +64,41 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         await Future.delayed(const Duration(seconds: 1));
       },
       child: Scaffold(
+        appBar: showAppbar
+            ? AppBar(
+                leading: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      showAppbar = false;
+                    });
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+                actions: [
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/submit-team', arguments: {
+                        "caborId": widget.cabor.id,
+                        "teamId": teamId
+                      });
+                    },
+                    icon: const Icon(Icons.edit_document, color: Colors.white),
+                    label: const Text(
+                      "Edit Biodata",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      updateLogoTim(context, teamId);
+                    },
+                    icon: const Icon(Icons.image_outlined, color: Colors.white),
+                    label: const Text("Ubah Logo",
+                        style: TextStyle(color: Colors.white)),
+                  )
+                ],
+              )
+            : null,
         body: Stack(
           children: [
             const BackgroundGradient(),
@@ -125,10 +182,20 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                                           .cabor.namaCabor,
                                                       createNewPressed: () {
                                                         Navigator.pushNamed(
-                                                            context,
-                                                            '/submit-team',
-                                                            arguments: widget
-                                                                .cabor.id);
+                                                          context,
+                                                          '/submit-team',
+                                                          arguments: {
+                                                            "caborId":
+                                                                widget.cabor.id,
+                                                            "teamId": null,
+                                                          },
+                                                        );
+                                                      },
+                                                      onLongPressed: (id) {
+                                                        setState(() {
+                                                          showAppbar = true;
+                                                          teamId = id;
+                                                        });
                                                       },
                                                       teams: state.data
                                                           .map((tim) => Team(
@@ -207,50 +274,150 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
       ),
     );
   }
+
+  Future<dynamic> updateLogoTim(BuildContext context, String teamId) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            actions: [
+              BlocConsumer<TimBloc, TimState>(
+                listener: (context, state) {
+                  if (state is TimLoaded) {
+                    newLogo = null;
+                    Future.delayed(const Duration(seconds: 1)).then((value) {
+                      setState(() {
+                        showAppbar = false;
+                      });
+                      Navigator.pop(context);
+                    });
+                  }
+
+                  if (state is TimFailed) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(state.message)));
+
+                    Navigator.pop(context);
+                  }
+                },
+                builder: (context, state) {
+                  final timBloc = context.read<TimBloc>();
+
+                  if (state is TimLoading) {
+                    return CircularProgressIndicator(color: Color.yellow);
+                  }
+
+                  return ElevatedButton.icon(
+                    onPressed: () {
+                      if (newLogo != null && teamId.isNotEmpty) {
+                        timBloc.add(UpdateLogo(teamId, newLogo!));
+                      }
+                    },
+                    icon: const Icon(Icons.check),
+                    label: const Text("Simpan"),
+                  );
+                },
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.clear),
+                label: const Text("Cancel"),
+              ),
+            ],
+            title: const Text(
+              "Update Logo Team",
+              textAlign: TextAlign.center,
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  StatefulBuilder(builder: (context, setState) {
+                    return GestureDetector(
+                      onTap: () async {
+                        final pickedImage = await pickTeamLogo(context);
+
+                        if (pickedImage != null) {
+                          updateNewLogo(pickedImage, setState);
+                        }
+                      },
+                      child: newLogo != null
+                          ? Stack(
+                              children: [
+                                Container(
+                                  width: 80,
+                                  height: 80,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Color.redPurple,
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                        image: FileImage(
+                                          File(newLogo!.path),
+                                        ),
+                                        fit: BoxFit.cover),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  left: 0,
+                                  child: IconButton(
+                                    color: Color.yellow,
+                                    onPressed: () {
+                                      updateNewLogo(null, setState);
+                                    },
+                                    icon: const Icon(Icons.clear),
+                                  ),
+                                )
+                              ],
+                            )
+                          : Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Color.redPurple,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.file_upload_outlined,
+                                color: Colors.white,
+                              ),
+                            ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 }
 
-class AddTeamList extends StatefulWidget {
+class AddTeamList extends StatelessWidget {
   const AddTeamList({
     Key? key,
     required this.title,
     required this.createNewPressed,
+    required this.onLongPressed,
     required this.teams,
   }) : super(key: key);
 
   final String title;
   final List<Team> teams;
   final VoidCallback createNewPressed;
-
-  @override
-  State<AddTeamList> createState() => _AddTeamListState();
-}
-
-class _AddTeamListState extends State<AddTeamList> {
-  XFile? newLogo;
-
-  Future<XFile?> pickTeamLogo() async {
-    final imagePicker = ImagePicker();
-
-    final image = await imagePicker.pickImage(source: ImageSource.gallery);
-
-    return image;
-  }
-
-  updateNewLogo(XFile? image, setState) {
-    setState(() {
-      newLogo = image;
-    });
-  }
+  final Function(String) onLongPressed;
 
   @override
   Widget build(BuildContext context) {
-    final timBloc = context.read<TimBloc>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(widget.title,
+          child: Text(title,
               style: Theme.of(context)
                   .textTheme
                   .bodyLarge
@@ -263,7 +430,7 @@ class _AddTeamListState extends State<AddTeamList> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            ...widget.teams.map(
+            ...teams.map(
               (team) {
                 return TeamItem(
                   name: team.name,
@@ -273,133 +440,13 @@ class _AddTeamListState extends State<AddTeamList> {
                         arguments: team);
                   },
                   onLongPress: () {
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return AlertDialog(
-                            actions: [
-                              BlocConsumer<TimBloc, TimState>(
-                                listener: (context, state) {
-                                  if (state is TimLoaded) {
-                                    newLogo = null;
-                                    Future.delayed(const Duration(seconds: 1))
-                                        .then((value) {
-                                      Navigator.pop(context);
-                                    });
-                                  }
-
-                                  if (state is TimFailed) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(state.message)));
-
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                builder: (_, state) {
-                                  if (state is TimLoading) {
-                                    return CircularProgressIndicator(
-                                        color: Color.yellow);
-                                  }
-                                  return ElevatedButton.icon(
-                                    onPressed: () {
-                                      if (newLogo != null) {
-                                        timBloc
-                                            .add(UpdateLogo(team.id, newLogo!));
-                                      }
-                                    },
-                                    icon: const Icon(Icons.check),
-                                    label: const Text("Simpan"),
-                                  );
-                                },
-                              ),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.clear),
-                                label: const Text("Cancel"),
-                              ),
-                            ],
-                            title: const Text(
-                              "Update Logo Team",
-                              textAlign: TextAlign.center,
-                            ),
-                            content: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  StatefulBuilder(builder: (context, setState) {
-                                    return GestureDetector(
-                                      onTap: () async {
-                                        final pickedImage =
-                                            await pickTeamLogo();
-
-                                        if (pickedImage != null) {
-                                          updateNewLogo(pickedImage, setState);
-                                        }
-                                      },
-                                      child: newLogo != null
-                                          ? Stack(
-                                              children: [
-                                                Container(
-                                                  width: 80,
-                                                  height: 80,
-                                                  padding:
-                                                      const EdgeInsets.all(16),
-                                                  decoration: BoxDecoration(
-                                                    color: Color.redPurple,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    image: DecorationImage(
-                                                        image: FileImage(
-                                                          File(newLogo!.path),
-                                                        ),
-                                                        fit: BoxFit.cover),
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                  right: 0,
-                                                  top: 0,
-                                                  bottom: 0,
-                                                  left: 0,
-                                                  child: IconButton(
-                                                    color: Color.yellow,
-                                                    onPressed: () {
-                                                      updateNewLogo(
-                                                          null, setState);
-                                                    },
-                                                    icon:
-                                                        const Icon(Icons.clear),
-                                                  ),
-                                                )
-                                              ],
-                                            )
-                                          : Container(
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                color: Color.redPurple,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: const Icon(
-                                                Icons.file_upload_outlined,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ),
-                          );
-                        });
+                    onLongPressed(team.id);
                   },
                 );
               },
             ),
             GestureDetector(
-              onTap: widget.createNewPressed,
+              onTap: createNewPressed,
               child: Column(
                 children: [
                   Container(

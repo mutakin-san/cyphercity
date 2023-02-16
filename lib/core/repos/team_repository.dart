@@ -22,7 +22,8 @@ class TeamRepository {
       _teamServices.updateLogoTim(teamId, image);
 
   Future<ApiReturnValue<Tim>> createTeam(
-          {required String idUser,
+          {String? idTim,
+          required String idUser,
           required String idSchool,
           required String idCabor,
           required String namaTeam,
@@ -32,8 +33,9 @@ class TeamRepository {
           required String teamMedis,
           required String kordinatorSupporter,
           required String teamType,
-          required XFile skkpImage}) =>
+          XFile? skkpImage}) =>
       _teamServices.createTeam(
+          idTim: idTim,
           idUser: idUser,
           idSchool: idSchool,
           idCabor: idCabor,
@@ -51,6 +53,7 @@ class TeamRepository {
       _playerServices.getListPlayer(idUser: idUser, idTim: idTim);
 
   Future<ApiReturnValue<Player>> createPlayer({
+    String? idPlayer,
     required String idUser,
     required String idTim,
     required String playerName,
@@ -63,6 +66,7 @@ class TeamRepository {
     XFile? kk,
   }) =>
       _playerServices.createPlayer(
+          idPlayer: idPlayer,
           idUser: idUser,
           idTim: idTim,
           playerName: playerName,
@@ -73,4 +77,8 @@ class TeamRepository {
           foto: foto,
           aktaLahir: aktaLahir,
           kk: kk);
+
+  Future<ApiReturnValue<bool>> deletePlayer({required String playerId}) {
+    return _playerServices.deletePlayer(playerId: playerId);
+  }
 }

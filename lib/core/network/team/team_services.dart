@@ -31,6 +31,8 @@ class TeamServices {
       } else {
         return ApiReturnValue(message: result.reasonPhrase);
       }
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
@@ -68,13 +70,16 @@ class TeamServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
   }
 
   Future<ApiReturnValue<Tim>> createTeam(
-      {required String idUser,
+      {String? idTim,
+      required String idUser,
       required String idSchool,
       required String idCabor,
       required String namaTeam,
@@ -84,15 +89,22 @@ class TeamServices {
       required String teamMedis,
       required String kordinatorSupporter,
       required String teamType,
-      required XFile skkpImage}) async {
+      XFile? skkpImage}) async {
     late ApiReturnValue<Tim> returnValue;
 
     try {
-      final request = MultipartRequest("POST", Uri.parse(createTeamUrl));
+      final request = MultipartRequest(
+          "POST", Uri.parse(idTim != null ? updateTeamUrl : createTeamUrl));
 
       request.headers['content-type'] = 'multipart/form-data';
 
-      request.files.add(await MultipartFile.fromPath('file', skkpImage.path));
+      if (skkpImage != null) {
+        request.files.add(await MultipartFile.fromPath('file', skkpImage.path));
+      }
+
+      if (idTim != null) {
+        request.fields['id_tim'] = idTim;
+      }
 
       request.fields['id_user'] = idUser;
       request.fields['id_sekolah'] = idSchool;
@@ -124,6 +136,8 @@ class TeamServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }
@@ -161,6 +175,8 @@ class TeamServices {
       }
 
       return returnValue;
+    } on SocketException {
+      return const ApiReturnValue(message: "Tidak Ada Koneksi!");
     } catch (e) {
       return ApiReturnValue(message: e.toString());
     }

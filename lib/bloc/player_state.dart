@@ -20,8 +20,9 @@ class PlayerLoaded extends PlayerState {
 
 class PlayerCreated extends PlayerState {
   final Player player;
+  final String? message;
 
-  const PlayerCreated(this.player);
+  const PlayerCreated({required this.player, this.message});
 
   @override
   List<Object> get props => [player];

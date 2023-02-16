@@ -1,5 +1,9 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cyphercity/utilities/config.dart';
+import 'package:cyphercity/utilities/helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import '../bloc/bloc.dart';
@@ -13,9 +17,10 @@ import '../widgets/cc_material_button.dart';
 import '../widgets/cc_text_form_field.dart';
 
 class FormAddPlayerScreen extends StatefulWidget {
-  const FormAddPlayerScreen({super.key, required this.teamId});
+  const FormAddPlayerScreen({super.key, required this.teamId, this.playerId});
 
   final String teamId;
+  final String? playerId;
 
   @override
   State<FormAddPlayerScreen> createState() => _FormAddPlayerScreenState();
@@ -40,6 +45,10 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
   XFile? _aktaPlayer;
   XFile? _kkPlayer;
 
+  String? fotoPlayerUrl;
+  String? aktaPlayerUrl;
+  String? kkPlayerUrl;
+
   Future<String> pickDate(BuildContext context) async {
     final selected = await showDatePicker(
         context: context,
@@ -51,73 +60,81 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
       selectedDate = selected;
     }
 
-    return DateFormat.yMd().format(selectedDate);
+    return DateFormat("yyyy-MM-dd").format(selectedDate);
   }
 
-  Future<ImageSource?> getImageSource(BuildContext context) async {
-    return await showDialog<ImageSource>(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: const Text(
-          "Upload Gambar Dari",
-          textAlign: TextAlign.center,
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context, ImageSource.gallery);
-            },
-            icon: const Icon(Icons.drive_folder_upload),
-            label: const Text("Gallery"),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context, ImageSource.camera);
-            },
-            icon: const Icon(Icons.camera_alt_outlined),
-            label: const Text("Camera"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> getFotoPlayer(ImageSource? source) async {
-    final picker = ImagePicker();
-    final XFile? image =
-        await picker.pickImage(source: source ?? ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _fotoPlayer = image;
-      });
+  Future<void> getFotoPlayer(BuildContext context) async {
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      await pickImage(
+        source: source,
+        onChoosed: (image) {
+          if (image != null) {
+            setState(() {
+              _fotoPlayer = image;
+            });
+          }
+        },
+      );
     }
   }
 
-  Future<void> getAktaPlayer(ImageSource? source) async {
-    final picker = ImagePicker();
-    final XFile? image =
-        await picker.pickImage(source: source ?? ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _aktaPlayer = image;
-      });
+  Future<void> getAktaPlayer(BuildContext context) async {
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      await pickImage(
+        source: source,
+        onChoosed: (image) {
+          if (image != null) {
+            setState(() {
+              _aktaPlayer = image;
+            });
+          }
+        },
+      );
     }
   }
 
-  Future<void> getKkPlayer(ImageSource? source) async {
-    final picker = ImagePicker();
-    final XFile? image =
-        await picker.pickImage(source: source ?? ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _kkPlayer = image;
-      });
+  Future<void> getKkPlayer(BuildContext context) async {
+    final source = await chooseImageSource(context);
+    if (source != null) {
+      await pickImage(
+        source: source,
+        onChoosed: (image) {
+          if (image != null) {
+            setState(() {
+              _kkPlayer = image;
+            });
+          }
+        },
+      );
     }
+  }
+
+  @override
+  void initState() {
+    if (widget.playerId != null) {
+      try {
+        final player = (context.read<PlayerBloc>().state as PlayerLoaded)
+            .data
+            .singleWhere((element) => element.id == widget.playerId);
+        playerNameCtrl.text = player.namaPemain;
+        tanggalLahirCtrl.text = player.tglLahir;
+        nisnCtrl.text = player.nisn;
+        posisiCtrl.text = player.posisi;
+        nomorPunggungCtrl.text = player.noPunggung;
+
+        fotoPlayerUrl = "$baseImageUrlPlayer/${player.foto}";
+        kkPlayerUrl = "$baseImageUrlPlayer/${player.kk}";
+        aktaPlayerUrl = "$baseImageUrlPlayer/${player.aktaLahir}";
+      } catch (e) {
+        if (kDebugMode) {
+          print(e.toString());
+        }
+      }
+    }
+
+    super.initState();
   }
 
   @override
@@ -125,8 +142,10 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
     return BlocListener<PlayerBloc, PlayerState>(
       listener: (_, state) {
         if (state is PlayerCreated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Pemain berhasil dibuat!")));
+          if (state.message != null) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message!)));
+          }
           final userId =
               (context.read<UserBloc>().state as UserAuthenticated).user.userId;
           context.read<PlayerBloc>().add(LoadPlayer(userId, widget.teamId));
@@ -207,6 +226,7 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                 controller: nomorPunggungCtrl,
                                 label: "Nomor Punggung",
                                 textColor: Colors.black,
+                                inputType: TextInputType.number,
                                 validator:
                                     ValidationBuilder().required().build(),
                                 textInputAction: TextInputAction.done),
@@ -252,30 +272,59 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                         ),
                                       ],
                                     )
-                                  : GestureDetector(
-                                      onTap: () async {
-                                        final source =
-                                            await getImageSource(context);
-                                        if (source != null) {
-                                          getFotoPlayer(source);
-                                        }
-                                      },
-                                      child: Column(
-                                        children: [
-                                          const Icon(Icons.description_rounded),
-                                          const Text("Foto Pemain"),
-                                          Text(
-                                            "Upload Disini",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.copyWith(
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Color.red),
+                                  : fotoPlayerUrl != null
+                                      ? Container(
+                                          width: double.infinity,
+                                          height: 150,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                        fotoPlayerUrl!),
+                                                fit: BoxFit.cover),
                                           ),
-                                        ],
-                                      ),
-                                    ),
+                                          child: IconButton(
+                                              color: Color.yellow,
+                                              onPressed: () =>
+                                                  getFotoPlayer(context),
+                                              icon: Container(
+                                                padding:
+                                                    const EdgeInsets.all(4),
+                                                decoration: const BoxDecoration(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.black45,
+                                                        blurRadius: 10,
+                                                        spreadRadius: 4)
+                                                  ],
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(Icons.edit),
+                                              )),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            getFotoPlayer(context);
+                                          },
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                  Icons.description_rounded),
+                                              const Text("Foto Pemain"),
+                                              Text(
+                                                "Upload Disini",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        color: Color.red),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                             ),
                             const SizedBox(height: 8),
                             Container(
@@ -313,30 +362,59 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                         ),
                                       ],
                                     )
-                                  : GestureDetector(
-                                      onTap: () async {
-                                        final source =
-                                            await getImageSource(context);
-                                        if (source != null) {
-                                          getAktaPlayer(source);
-                                        }
-                                      },
-                                      child: Column(
-                                        children: [
-                                          const Icon(Icons.description_rounded),
-                                          const Text("Akta Kelahiran"),
-                                          Text(
-                                            "Upload Disini",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.copyWith(
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Color.red),
+                                  : aktaPlayerUrl != null
+                                      ? Container(
+                                          width: double.infinity,
+                                          height: 150,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                        aktaPlayerUrl!),
+                                                fit: BoxFit.cover),
                                           ),
-                                        ],
-                                      ),
-                                    ),
+                                          child: IconButton(
+                                              color: Color.yellow,
+                                              onPressed: () =>
+                                                  getAktaPlayer(context),
+                                              icon: Container(
+                                                padding:
+                                                    const EdgeInsets.all(4),
+                                                decoration: const BoxDecoration(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.black45,
+                                                        blurRadius: 10,
+                                                        spreadRadius: 4)
+                                                  ],
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(Icons.edit),
+                                              )),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            await getAktaPlayer(context);
+                                          },
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                  Icons.description_rounded),
+                                              const Text("Akta Kelahiran"),
+                                              Text(
+                                                "Upload Disini",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        color: Color.red),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                             ),
                             const SizedBox(height: 8),
                             Container(
@@ -374,30 +452,59 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
                                         ),
                                       ],
                                     )
-                                  : GestureDetector(
-                                      onTap: () async {
-                                        final source =
-                                            await getImageSource(context);
-                                        if (source != null) {
-                                          getKkPlayer(source);
-                                        }
-                                      },
-                                      child: Column(
-                                        children: [
-                                          const Icon(Icons.description_rounded),
-                                          const Text("Kartu Keluarga"),
-                                          Text(
-                                            "Upload Disini",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.copyWith(
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Color.red),
+                                  : kkPlayerUrl != null
+                                      ? Container(
+                                          width: double.infinity,
+                                          height: 150,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                        kkPlayerUrl!),
+                                                fit: BoxFit.cover),
                                           ),
-                                        ],
-                                      ),
-                                    ),
+                                          child: IconButton(
+                                              color: Color.yellow,
+                                              onPressed: () =>
+                                                  getKkPlayer(context),
+                                              icon: Container(
+                                                padding:
+                                                    const EdgeInsets.all(4),
+                                                decoration: const BoxDecoration(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.black45,
+                                                        blurRadius: 10,
+                                                        spreadRadius: 4)
+                                                  ],
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(Icons.edit),
+                                              )),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            await getKkPlayer(context);
+                                          },
+                                          child: Column(
+                                            children: [
+                                              const Icon(
+                                                  Icons.description_rounded),
+                                              const Text("Kartu Keluarga"),
+                                              Text(
+                                                "Upload Disini",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                        fontStyle:
+                                                            FontStyle.italic,
+                                                        color: Color.red),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                             ),
                             const SizedBox(height: 24),
                             Center(
@@ -476,17 +583,32 @@ class _FormAddPlayerScreenState extends State<FormAddPlayerScreen> {
           _formKey.currentState!.save();
 
           if (userId.isNotEmpty && widget.teamId.isNotEmpty) {
-            context.read<PlayerBloc>().add(AddNewPlayer(
-                idUser: userId,
-                idTim: widget.teamId,
-                playerName: playerNameCtrl.text,
-                tglLahir: tanggalLahirCtrl.text,
-                nisn: nisnCtrl.text,
-                posisi: posisiCtrl.text,
-                noPunggung: nomorPunggungCtrl.text,
-                foto: _fotoPlayer,
-                aktaLahir: _aktaPlayer,
-                kk: _kkPlayer));
+            if (widget.playerId != null) {
+              context.read<PlayerBloc>().add(UpdatePlayer(
+                  idPlayer: widget.playerId!,
+                  idUser: userId,
+                  idTim: widget.teamId,
+                  playerName: playerNameCtrl.text,
+                  tglLahir: tanggalLahirCtrl.text,
+                  nisn: nisnCtrl.text,
+                  posisi: posisiCtrl.text,
+                  noPunggung: nomorPunggungCtrl.text,
+                  foto: _fotoPlayer,
+                  aktaLahir: _aktaPlayer,
+                  kk: _kkPlayer));
+            } else {
+              context.read<PlayerBloc>().add(AddNewPlayer(
+                  idUser: userId,
+                  idTim: widget.teamId,
+                  playerName: playerNameCtrl.text,
+                  tglLahir: tanggalLahirCtrl.text,
+                  nisn: nisnCtrl.text,
+                  posisi: posisiCtrl.text,
+                  noPunggung: nomorPunggungCtrl.text,
+                  foto: _fotoPlayer,
+                  aktaLahir: _aktaPlayer,
+                  kk: _kkPlayer));
+            }
           }
         }
       },
