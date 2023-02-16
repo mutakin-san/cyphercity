@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 
 import '../core/repos/repositories.dart';
@@ -409,7 +410,7 @@ class _EditSchoolBiodataScreenState extends State<EditSchoolBiodataScreen> {
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
                                                   image: DecorationImage(
-                                                      image: NetworkImage(
+                                                      image: CachedNetworkImageProvider(
                                                           "$baseImageUrlLogo/$logo"),
                                                       fit: BoxFit.cover),
                                                 ),

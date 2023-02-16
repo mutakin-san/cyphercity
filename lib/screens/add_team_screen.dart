@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -97,7 +98,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                               decoration: BoxDecoration(
                                                 color: Color.purple,
                                                 image: DecorationImage(
-                                                    image: NetworkImage((gambar
+                                                    image: CachedNetworkImageProvider((gambar
                                                             .isNotEmpty)
                                                         ? "$baseImageUrlTim/$gambar"
                                                         : "https://via.placeholder.com/480x300"),
@@ -142,7 +143,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                                                     BoxDecoration(
                                                                   image:
                                                                       DecorationImage(
-                                                                    image: NetworkImage(tim.logoTeam !=
+                                                                    image: CachedNetworkImageProvider(tim.logoTeam !=
                                                                                 null &&
                                                                             tim.logoTeam!.isNotEmpty
                                                                         ? "$baseImageUrlTim/${tim.logoTeam}"
@@ -186,7 +187,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                                       height: 80,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
-                                          image: NetworkImage(
+                                          image: CachedNetworkImageProvider(
                                               "$baseImageUrlCabor/${widget.cabor.gambar}"),
                                         ),
                                       ),

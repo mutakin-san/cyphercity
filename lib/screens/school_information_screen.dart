@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../core/repos/repositories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -170,15 +172,19 @@ class SchoolInformationScreen extends StatelessWidget {
                                                                               BorderRadius.circular(10),
                                                                         ),
                                                                         child:
-                                                                            Container(
+                                                                            SizedBox(
                                                                           width:
                                                                               50,
                                                                           height:
                                                                               50,
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            image:
-                                                                                DecorationImage(image: NetworkImage("$baseImageUrlCabor/${cabor.gambar}")),
+                                                                          child:
+                                                                              CachedNetworkImage(
+                                                                            imageUrl:
+                                                                                "$baseImageUrlCabor/${cabor.gambar}",
+                                                                            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                                                                                CircularProgressIndicator(value: downloadProgress.progress),
+                                                                            errorWidget: (context, url, error) =>
+                                                                                const Icon(Icons.error),
                                                                           ),
                                                                         ),
                                                                       ),

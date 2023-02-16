@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -134,7 +135,7 @@ class EventsScreen extends StatelessWidget {
                                           decoration: BoxDecoration(
                                               color: Colors.white,
                                               image: DecorationImage(
-                                                  image: NetworkImage(event
+                                              image: CachedNetworkImageProvider(event
                                                           .gambar.isNotEmpty
                                                       ? "$baseImageUrlEvent/${event.gambar}"
                                                       : "https://via.placeholder.com/480x300"),
@@ -202,7 +203,8 @@ class EventsScreen extends StatelessWidget {
                                   return Center(
                                       child: Column(
                                     children: [
-                                      Image.network(
+                                  CachedNetworkImage(
+                                      imageUrl:
                                           "https://img.icons8.com/office/80/null/empty-box.png",
                                           width: 80,
                                           height: 80),

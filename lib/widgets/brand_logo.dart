@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BrandLogo extends StatelessWidget {
@@ -23,7 +24,8 @@ class BrandLogo extends StatelessWidget {
           shape: (logoUrl != null) ? BoxShape.circle : BoxShape.rectangle,
           image: (logoUrl != null && logoUrl!.isNotEmpty)
               ? DecorationImage(
-                  image: NetworkImage("$logoUrl"), fit: BoxFit.cover)
+                  image: CachedNetworkImageProvider("$logoUrl"),
+                  fit: BoxFit.cover)
               : const DecorationImage(
                   image: AssetImage("assets/images/cc_logo.png"))),
     );
