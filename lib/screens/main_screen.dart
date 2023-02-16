@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _refreshBloc(String? userId) async {
     if (userId != null) {
       context.read<SchoolBloc>().add(LoadSchool(userId));
-      context.read<NewsBloc>().add(LoadNews());
+      context.read<EventBloc>().add(GetAllEvent(userId));
     } else {
       context.read<UserBloc>().add(LoadUser());
     }

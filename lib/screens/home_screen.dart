@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cyphercity/screens/detail_article_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../core/repos/repositories.dart';
 import '../utilities/config.dart';
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
@@ -22,10 +24,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final CarouselController _controller = CarouselController();
 
+  late final highlightsBloc =
+      NewsBloc(RepositoryProvider.of<NewsRepository>(context));
+  late final newsBloc =
+      NewsBloc(RepositoryProvider.of<NewsRepository>(context));
+
   @override
   void initState() {
-    context.read<NewsBloc>().add(LoadNews());
+    highlightsBloc.add(LoadHighlights());
+    newsBloc.add(LoadNews());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    highlightsBloc.close();
+    newsBloc.close();
+    super.dispose();
   }
 
   @override
@@ -98,30 +113,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    GestureDetector(
-                      onTap: widget.onEventsClicked,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Color.gray,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(Icons.emoji_events, size: 35),
-                            ),
-                            const SizedBox(height: 8),
-                            Text("Event",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: widget.onEventsClicked,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    //     child: Column(
+                    //       children: [
+                    //         Container(
+                    //           padding: const EdgeInsets.all(16),
+                    //           decoration: BoxDecoration(
+                    //             color: Color.gray,
+                    //             borderRadius: BorderRadius.circular(10),
+                    //           ),
+                    //           child: const Icon(Icons.emoji_events, size: 28),
+                    //         ),
+                    //         const SizedBox(height: 8),
+                    //         Text("Event",
+                    //             style: Theme.of(context)
+                    //                 .textTheme
+                    //                 .bodyMedium
+                    //                 ?.copyWith(color: Colors.white)),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     BlocSelector<UserBloc, UserState, bool>(
                         selector: (state) =>
                             state is UserAuthenticated &&
@@ -144,10 +159,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           child: const Icon(
                                               Icons.group_add_rounded,
-                                              size: 35),
+                                              size: 28),
                                         ),
                                         const SizedBox(height: 8),
                                         Text("Create Team",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    color: Colors.white)),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox();
+                        }),
+                    BlocSelector<UserBloc, UserState, bool>(
+                        selector: (state) =>
+                            state is UserAuthenticated &&
+                            state.user.level != "0",
+                        builder: (context, isSchoolAccess) {
+                          return isSchoolAccess
+                              ? GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, '/list-reg-event');
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Color.gray,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child:
+                                              const Icon(Icons.list, size: 28),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text("List Reg Event",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.fade,
+                                            textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium
@@ -173,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Color.gray,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(Icons.info_outlined, size: 35),
+                              child: const Icon(Icons.info_outlined, size: 28),
                             ),
                             const SizedBox(height: 8),
                             Text("Information",
@@ -192,30 +249,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Text("Hightlights",
+                    Text("Highlights",
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
                             ?.copyWith(color: Colors.white)),
                     const SizedBox(height: 8),
-                    BlocBuilder<NewsBloc, NewsState>(builder: (context, state) {
-                      if (state is NewsLoading) {
-                        return Center(
-                            child:
-                                CircularProgressIndicator(color: Color.yellow));
-                      }
+                    BlocBuilder<NewsBloc, NewsState>(
+                        bloc: highlightsBloc,
+                        builder: (context, state) {
+                          if (state is NewsLoading) {
+                            return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                        color: Color.yellow)));
+                          }
 
-                      if (state is NewsLoaded && state.data.isNotEmpty) {
-                        final data = state.data;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CarouselSlider.builder(
+                          if (state is NewsLoaded) {
+                            final data = state.data;
+                            return CarouselSlider.builder(
                               carouselController: _controller,
-                              itemCount: data.length,
+                              itemCount: data.isEmpty ? 1 : data.length,
                               itemBuilder: (BuildContext context, int itemIndex,
                                   int pageViewIndex) {
-                                final news = data.elementAt(itemIndex);
+                                if (data.isEmpty) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 8, right: 8),
+                                    decoration: BoxDecoration(
+                                        color: Color.redPurple,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    height: 100,
+                                    width: double.infinity,
+                                    child: const Center(
+                                        child: Text("Tidak ada konten",
+                                            style: TextStyle(
+                                                color: Colors.white))),
+                                  );
+                                }
+                                final news = data[itemIndex];
                                 return Container(
                                   margin:
                                       const EdgeInsets.only(left: 8, right: 8),
@@ -232,63 +307,140 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                               options: CarouselOptions(viewportFraction: 0.9),
-                            ),
-                            const SizedBox(height: 24),
-                            ...data.map((news) => Card(
-                                  margin: const EdgeInsets.only(bottom: 8),
-                                  color: Color.redPurple,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.all(8),
-                                    title: Text(
-                                      news.judul,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium
-                                          ?.copyWith(color: Colors.white),
-                                    ),
-                                    subtitle: Text(
-                                      news.deskripsi,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(color: Colors.white54),
-                                    ),
-                                    enabled: false,
-                                    leading: Container(
-                                      decoration: BoxDecoration(
-                                          color: Color.redPurple,
-                                          image: DecorationImage(
-                                                  image: CachedNetworkImageProvider(
-                                                "$baseImageUrlNews/${news.gambar}"),
-                                            fit: BoxFit.cover,
+                            );
+                          }
+
+                          if (state is NewsFailed) {
+                            return Center(
+                              child: Column(
+                                children: [
+                                  Text(state.error),
+                                  TextButton.icon(
+                                      onPressed: () async {
+                                        highlightsBloc.add(LoadNews());
+
+                                        await Future.delayed(
+                                            const Duration(seconds: 1));
+                                      },
+                                      icon: const Icon(Icons.refresh,
+                                          color: Colors.white),
+                                      label: const Text('Refresh',
+                                          style:
+                                              TextStyle(color: Colors.white)))
+                                ],
+                              ),
+                            );
+                          }
+
+                          return const SizedBox();
+                        }),
+                    BlocBuilder<NewsBloc, NewsState>(
+                        bloc: newsBloc,
+                        builder: (context, state) {
+                          if (state is NewsLoading) {
+                            return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                        color: Color.yellow)));
+                          }
+
+                          if (state is NewsLoaded && state.data.isNotEmpty) {
+                            final data = state.data;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(height: 24),
+                                Text("Informasi",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(color: Colors.white)),
+                                const SizedBox(height: 16),
+                                ...data.map((news) => GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailArticleScreen(
+                                                      news: news),
+                                            ));
+                                      },
+                                      child: Card(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 8),
+                                        color: Color.redPurple,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: ListTile(
+                                          contentPadding:
+                                              const EdgeInsets.all(8),
+                                          title: Text(
+                                            news.judul,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(color: Colors.white),
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      height: 60,
-                                      width: 60,
-                                    ),
-                                  ),
-                                )),
-                          ],
-                        );
-                      }
+                                          subtitle: Text(
+                                            news.deskripsi,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                    color: Colors.white54),
+                                          ),
+                                          enabled: false,
+                                          leading: Container(
+                                            decoration: BoxDecoration(
+                                                color: Color.redPurple,
+                                                image: DecorationImage(
+                                                  image: CachedNetworkImageProvider(
+                                                      "$baseImageUrlNews/${news.gambar}"),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            height: 60,
+                                            width: 60,
+                                          ),
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            );
+                          }
 
-                      if (state is NewsFailed) {
-                        return Center(
-                            child: Text(
-                          state.error,
-                          style: TextStyle(
-                            color: Color.yellow,
-                          ),
-                        ));
-                      }
+                          if (state is NewsFailed) {
+                            return Center(
+                              child: Column(
+                                children: [
+                                  Text(state.error),
+                                  TextButton.icon(
+                                      onPressed: () async {
+                                        newsBloc.add(LoadNews());
 
-                      return const SizedBox();
-                    }),
+                                        await Future.delayed(
+                                            const Duration(seconds: 1));
+                                      },
+                                      icon: const Icon(Icons.refresh,
+                                          color: Colors.white),
+                                      label: const Text('Refresh',
+                                          style:
+                                              TextStyle(color: Colors.white)))
+                                ],
+                              ),
+                            );
+                          }
+
+                          return const SizedBox();
+                        }),
                   ],
                 ),
               ),

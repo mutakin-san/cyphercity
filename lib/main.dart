@@ -1,3 +1,4 @@
+import 'package:cyphercity/screens/list_registration_event_screen.dart';
 import 'package:cyphercity/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,6 +92,12 @@ class MyApp extends StatelessWidget {
             final newsRepo = RepositoryProvider.of<NewsRepository>(context);
             return NewsBloc(newsRepo);
           },
+        ),
+        BlocProvider(
+          create: (_) {
+            final eventRepo = RepositoryProvider.of<EventRepository>(context);
+            return EventBloc(eventRepo);
+          },
         )
       ],
       child: MaterialApp(
@@ -133,13 +140,22 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                   builder: (context) => AddTeamScreen(cabor: args as Cabor));
             case '/submit-team':
-              return MaterialPageRoute(
-                  builder: (context) =>
-                      FormAddTeamScreen(caborId: args as String));
+              return MaterialPageRoute(builder: (context) {
+                final data = args as Map<String, dynamic>;
+                return FormAddTeamScreen(
+                  caborId: data['caborId'],
+                  teamId: data['teamId'],
+                );
+              });
             case '/submit-player':
               return MaterialPageRoute(
-                builder: (context) =>
-                    FormAddPlayerScreen(teamId: args as String),
+                builder: (context) {
+                  final data = args as Map<String, dynamic>;
+                  return FormAddPlayerScreen(
+                    teamId: data['teamId'],
+                    playerId: data['playerId'],
+                  );
+                },
               );
             case '/add-players':
               return MaterialPageRoute(
@@ -149,6 +165,9 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                   builder: (context) =>
                       RegisterCompetitionScreen(event: args as Event));
+            case '/list-reg-event':
+              return MaterialPageRoute(
+                  builder: (context) => const ListRegistrationEventScreen());
             case '/information':
               return MaterialPageRoute(
                   builder: (context) => const InformationScreen());

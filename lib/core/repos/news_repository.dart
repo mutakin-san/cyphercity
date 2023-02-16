@@ -9,4 +9,7 @@ class NewsRepository {
 
   Future<ApiReturnValue<List<News>>> getAllNews() =>
       _caborServices.getAllNews();
+
+  Future<ApiReturnValue<List<News>>> getHighlights() =>
+      _caborServices.getHighlights();
 }

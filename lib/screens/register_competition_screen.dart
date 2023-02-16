@@ -31,6 +31,8 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TimBloc timBloc;
+  late final eventBloc =
+      EventBloc(RepositoryProvider.of<EventRepository>(context));
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
 
   @override
   void dispose() {
+    eventBloc.close();
     super.dispose();
   }
 
@@ -158,8 +161,10 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                             onTap: () {
                                               Navigator.pushNamed(
                                                   context, '/submit-team',
-                                                  arguments:
-                                                      widget.event.idCabor);
+                                                  arguments: {
+                                                    "caborId":
+                                                        widget.event.idCabor,
+                                                  });
                                             },
                                             child: Text(
                                               "Click Here",
@@ -173,68 +178,60 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                                       ),
                                       const SizedBox(height: 16),
                                       Center(
-                                        child: isLoading
-                                            ? Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                        color: Color.yellow))
-                                            : CCMaterialRedButton(
+                                        child:
+                                            BlocConsumer<EventBloc, EventState>(
+                                          bloc: eventBloc,
+                                          listener: (context, state) {
+                                            if (state is RegisterEventSucces) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "Berhasil registrasi event!!")));
+                                            }
+
+                                            if (state is EventFailed) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content:
+                                                          Text(state.error)));
+                                            }
+                                          },
+                                          builder: (context, state) {
+                                            if (state is EventLoading) {
+                                              return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                          color: Color.yellow));
+                                            }
+
+                                            return CCMaterialRedButton(
                                                 onPressed: _numberOfTeam > 0
                                                     ? () async {
-                                                        setState(() {
-                                                          isLoading = true;
-                                                        });
                                                         if (userId.isNotEmpty &&
                                                             schoolId
                                                                 .isNotEmpty) {
                                                           for (var idTeam
                                                               in _selectedTeams) {
-                                                            final result = await RepositoryProvider
-                                                                    .of<EventRepository>(
-                                                                        context)
-                                                                .registerEvent(
-                                                                    idEvent:
-                                                                        widget
-                                                                            .event
-                                                                            .id,
-                                                                    idUser:
-                                                                        userId,
-                                                                    idSekolah:
-                                                                        schoolId,
-                                                                    idTim: idTeam
-                                                                        .toString());
-
-                                                            if (result.data !=
-                                                                    null &&
-                                                                result.data!
-                                                                        .status ==
-                                                                    'success') {
-                                                              // ignore: use_build_context_synchronously
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      SnackBar(
-                                                                          content:
-                                                                              Text("${result.message}")));
-                                                            } else {
-                                                              // ignore: use_build_context_synchronously
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      SnackBar(
-                                                                          content:
-                                                                              Text("${result.message}")));
-                                                            }
+                                                            eventBloc.add(
+                                                                RegisterEvent(
+                                                              idEvent: widget
+                                                                  .event.id,
+                                                              idUser: userId,
+                                                              idSekolah:
+                                                                  schoolId,
+                                                              idCabor: widget
+                                                                  .event
+                                                                  .idCabor,
+                                                              idTim: idTeam
+                                                                  .toString(),
+                                                            ));
                                                           }
                                                         }
-                                                        setState(() {
-                                                          isLoading = false;
-                                                        });
                                                       }
                                                     : null,
-                                                text: "REG"),
+                                                text: "REG");
+                                          },
+                                        ),
                                       ),
                                     ],
                                   )),
@@ -248,15 +245,6 @@ class _RegisterCompetitionScreenState extends State<RegisterCompetitionScreen> {
                       ],
                     ),
                   ],
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: DataTable(
-                    columns: const [DataColumn(label: Text(""))],
-                    rows: const [],
-                  ),
                 ),
               ),
             ],

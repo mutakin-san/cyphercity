@@ -11,6 +11,7 @@ import '../../models/cabor.dart';
 import '../../models/event.dart';
 import '../../models/news.dart';
 import '../../models/player.dart';
+import '../../models/reg_event.dart';
 import '../../models/regional.dart';
 import '../../models/school.dart';
 import '../../models/tim.dart';

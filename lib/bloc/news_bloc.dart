@@ -20,5 +20,17 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         emit(NewsFailed(result.message ?? "Something error"));
       }
     });
+
+    on<LoadHighlights>((event, emit) async {
+      emit(NewsLoading());
+
+      final result = await _newsRepository.getHighlights();
+
+      if (result.data != null) {
+        emit(NewsLoaded(result.data!));
+      } else {
+        emit(NewsFailed(result.message ?? "Something error"));
+      }
+    });
   }
 }

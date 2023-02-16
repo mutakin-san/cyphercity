@@ -8,3 +8,4 @@ abstract class NewsEvent extends Equatable {
 }
 
 class LoadNews extends NewsEvent {}
+class LoadHighlights extends NewsEvent {}
