@@ -4,3 +4,4 @@ export 'user_bloc.dart';
 export 'player_bloc.dart';
 export 'news_bloc.dart';
 export 'event_bloc.dart';
+export 'about_bloc.dart';

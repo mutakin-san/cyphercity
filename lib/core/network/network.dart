@@ -4,3 +4,4 @@ export 'cabor/cabor.dart';
 export 'event/event.dart';
 export 'school/school.dart';
 export 'team/team.dart';
+export 'about/about_services.dart';

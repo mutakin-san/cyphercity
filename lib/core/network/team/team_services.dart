@@ -149,7 +149,7 @@ class TeamServices {
 
     try {
       final result =
-          await _client.post(Uri.parse("$baseUrl/api/home/getIdTim"), body: {
+          await _client.post(Uri.parse(getIdTeamUrl), body: {
         'id_user': idUser.trim(),
         'id_sekolah': idSekolah.trim(),
       });

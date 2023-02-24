@@ -96,7 +96,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     });
                                   }),
                               Visibility(
-                                visible: _selectedUserType == 1,
+                                visible: _selectedUserType == 1 ||
+                                    _selectedUserType == 2,
                                 child: FutureBuilder(
                                     future:
                                         RepositoryProvider.of<RegionRepository>(
@@ -288,8 +289,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   statusSekolah: _selectedUserType,
                 ));
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Pilih Region Terlebih Dahulu")));
+            context.read<UserBloc>().add(UserRegister(
+                  email: emailCtrl.text,
+                  username: usernameCtrl.text,
+                  name: nameCtrl.text,
+                  noHp: noHpCtrl.text,
+                  password: passwordCtrl.text,
+                  confirmPassword: confirmPasswordCtrl.text,
+                  statusSekolah: _selectedUserType,
+                ));
           }
         }
       },

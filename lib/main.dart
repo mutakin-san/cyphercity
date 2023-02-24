@@ -98,6 +98,11 @@ class MyApp extends StatelessWidget {
             final eventRepo = RepositoryProvider.of<EventRepository>(context);
             return EventBloc(eventRepo);
           },
+        ),
+        BlocProvider(
+          create: (_) {
+            return AboutBloc()..add(LoadAbout());
+          },
         )
       ],
       child: MaterialApp(

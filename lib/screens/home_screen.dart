@@ -12,10 +12,9 @@ import '../widgets/background_gradient.dart';
 import '../widgets/brand_logo.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.onCreateTeamClicked, this.onEventsClicked});
+  const HomeScreen({super.key, this.onCreateTeamClicked});
 
   final VoidCallback? onCreateTeamClicked;
-  final VoidCallback? onEventsClicked;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -216,32 +215,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )
                               : const SizedBox();
                         }),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/information');
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Color.gray,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(Icons.info_outlined, size: 28),
-                            ),
-                            const SizedBox(height: 8),
-                            Text("Information",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(color: Colors.white)),
-                          ],
-                        ),
-                      ),
-                    ),
+                    BlocSelector<UserBloc, UserState, bool>(
+                        selector: (state) =>
+                            state is UserAuthenticated &&
+                            state.user.level != "0",
+                        builder: (context, isSchoolAccess) {
+                          return isSchoolAccess
+                              ? GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, '/information');
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: Color.gray,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: const Icon(Icons.info_outlined,
+                                              size: 28),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text("Information",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                    color: Colors.white)),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox();
+                        }),
                   ],
                 ),
               ),
