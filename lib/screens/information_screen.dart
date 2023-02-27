@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/bloc.dart';
 import '../utilities/colors.dart';
 import '../widgets/background_gradient.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class InformationScreen extends StatelessWidget {
   const InformationScreen({super.key, this.isShowBackButton = true});
@@ -48,7 +49,6 @@ class InformationScreen extends StatelessWidget {
                   children: [
                     Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.only(
                           top: 40, bottom: 45, left: 16, right: 16),
                       decoration: BoxDecoration(
@@ -90,16 +90,26 @@ class InformationScreen extends StatelessWidget {
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            description ?? "-",
-                            textAlign: TextAlign.justify,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.white),
-                          ),
-                        ),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Html(
+                              data: description,
+                              style: {
+                                "body": Style(
+                                  color: Colors.white,
+                                  lineHeight: LineHeight.rem(1.5),
+                                  textAlign: TextAlign.justify,
+                                ),
+                              },
+                            )
+                            // Text(
+                            //   description ?? "-",
+                            //   textAlign: TextAlign.justify,
+                            //   style: Theme.of(context)
+                            //       .textTheme
+                            //       .bodyMedium
+                            //       ?.copyWith(color: Colors.white),
+                            // ),
+                            ),
                       ),
                     )
                   ],
