@@ -36,26 +36,26 @@ Competition Turnament Apps. Built with [Flutter](https://flutter.dev/)
     
 ## Screenshots
 
-![Splashscreen](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346423_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Splashscreen](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346423_google-pixel4-clearlywhite-portrait.png?raw=true)
 
 
-![Login](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346450_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Login](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346450_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Register](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346603_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Register](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346603_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Register Scroll](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346606_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Register Scroll](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346606_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Home](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346803_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Home](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346803_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Home Scroll](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346810_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Home Scroll](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346810_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Detail Article](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346841_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Detail Article](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346841_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Events](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681346877_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Events](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681346877_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![School Information](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681347074_google-pixel4-clearlywhite-portrait.png?raw=true)
+![School Information](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681347074_google-pixel4-clearlywhite-portrait.png?raw=true)
 
-![Edit School Information](https://github.com/mutakin-san/cyphercity/blob/bloc-state-management/screenshots/Screenshot_1681347043_google-pixel4-clearlywhite-portrait.png?raw=true)
+![Edit School Information](https://github.com/mutakin-san/cyphercity/blob/main/screenshots/Screenshot_1681347043_google-pixel4-clearlywhite-portrait.png?raw=true)
 
 etc.
 ## 🔗 Links
